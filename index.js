@@ -385,7 +385,7 @@ bot.on('message', message => {
             
             
         }
-        else if (message.content.startsWith(prefix + "help")) {
+        /*else if (message.content.startsWith(prefix + "help")) {
             message.channel.send("Check your DMs!")
 		const help = {
 			"embed": {
@@ -423,7 +423,7 @@ bot.on('message', message => {
 			}
 		}
 			message.author.send(help);
-        }    
+        }    */
     }
 
     //Profanity
