@@ -37,7 +37,7 @@ module.exports = class HelpCommand extends Command {
 				"color": 4886754,
 				"footer": {
 					"icon_url": "https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676",
-					"text": "Bot Created by @E1ectric#1684"
+					"text": "Bot Created by @ᗴlectricↁiamond#1684"
 				},
 				"author": {
 					"name": "Bot Information",
