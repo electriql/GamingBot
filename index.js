@@ -16,7 +16,7 @@ bot.registry.registerGroup('server', 'Server');
 bot.registry.registerGroup('currency', 'Currency');
 bot.registry.registerDefaults();
 bot.registry.registerCommandsIn(__dirname + "/commands");
-bot.login('Mzk3MTQ5NDAyNDM2OTkzMDI1.DSrxuw.CrkYL6-_AHcp6JY5eyzW0BL07-4');
+bot.login('n13kdGZj7CDENt4unNtZMe5FHJSyxtSc');
 function roll(message) {
     var chance = Math.floor(Math.random() * 5) + 1;
     var slot1 = Math.floor(Math.random() * symbols.length);
