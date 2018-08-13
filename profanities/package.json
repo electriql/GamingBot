@@ -1,0 +1,106 @@
+{
+  "_from": "profanities",
+  "_id": "profanities@2.6.0",
+  "_inBundle": false,
+  "_integrity": "sha512-brklgT5PamV3Bzfx6wNHE+K+3/2P8H5sHSRHYrrurO2PL0lSaGquSfNGYSLykDc87NraofQYx/o3AnQDaJKnog==",
+  "_location": "/profanities",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "profanities",
+    "name": "profanities",
+    "escapedName": "profanities",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/profanities/-/profanities-2.6.0.tgz",
+  "_shasum": "ac2e443b281697684e05bf696fa297308166b009",
+  "_spec": "profanities",
+  "_where": "C:\\Users\\mkchen9\\Documents\\DiscordBot",
+  "author": {
+    "name": "Titus Wormer",
+    "email": "tituswormer@gmail.com",
+    "url": "http://wooorm.com"
+  },
+  "bugs": {
+    "url": "https://github.com/words/profanities/issues"
+  },
+  "bundleDependencies": false,
+  "contributors": [
+    {
+      "name": "Titus Wormer",
+      "email": "tituswormer@gmail.com",
+      "url": "http://wooorm.com"
+    }
+  ],
+  "dependencies": {},
+  "deprecated": false,
+  "description": "List of (possible) English profane words",
+  "devDependencies": {
+    "JSONStream": "^1.1.2",
+    "browserify": "^14.0.0",
+    "esmangle": "^1.0.0",
+    "got": "^8.0.0",
+    "join-stream": "0.0.0",
+    "map-stream": "0.0.7",
+    "merge-stream": "^1.0.0",
+    "nlcst-normalize": "^2.0.0",
+    "remark-cli": "^4.0.0",
+    "remark-preset-wooorm": "^3.0.0",
+    "sort-stream": "^1.0.1",
+    "split": "^1.0.0",
+    "stream-filter": "^2.1.0",
+    "tape": "^4.0.0",
+    "unique-stream": "^2.2.0",
+    "wrap-stream": "^2.0.0",
+    "xo": "^0.18.0"
+  },
+  "files": [
+    "index.json"
+  ],
+  "homepage": "https://github.com/words/profanities#readme",
+  "keywords": [
+    "offensive",
+    "profane",
+    "vulgar",
+    "word",
+    "list"
+  ],
+  "license": "MIT",
+  "main": "index.json",
+  "name": "profanities",
+  "remarkConfig": {
+    "plugins": [
+      "preset-wooorm"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/words/profanities.git"
+  },
+  "scripts": {
+    "build": "npm run build-md && npm run build-data && npm run build-support && npm run build-bundle && npm run build-mangle",
+    "build-bundle": "browserify index.json --bare -s profanities > profanities.js",
+    "build-data": "node script/build-data.js",
+    "build-mangle": "esmangle profanities.js > profanities.min.js",
+    "build-md": "remark . -qfo",
+    "build-support": "node script/build-support.js",
+    "lint": "xo",
+    "test": "npm run build && npm run lint && npm run test-api",
+    "test-api": "node test.js"
+  },
+  "version": "2.6.0",
+  "xo": {
+    "space": true,
+    "esnext": false,
+    "ignores": [
+      "profanities.js"
+    ]
+  }
+}
