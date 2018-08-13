@@ -16,7 +16,7 @@ bot.registry.registerGroup('server', 'Server');
 bot.registry.registerGroup('currency', 'Currency');
 bot.registry.registerDefaults();
 bot.registry.registerCommandsIn(__dirname + "/commands");
-bot.login('Mzk3MTQ5NDAyNDM2OTkzMDI1.DSrxuw.CrkYL6-_AHcp6JY5eyzW0BL07-4');
+bot.login('NDc4NTg4NDgzNTU2OTk5MTY5.DlM6Hw.2_9ILWdP3sIVdovRdKMpIk122so'); // Mzk3MTQ5NDAyNDM2OTkzMDI1.DSrxuw.CrkYL6-_AHcp6JY5eyzW0BL07-4
 function roll(message) {
     var chance = Math.floor(Math.random() * 5) + 1;
     var slot1 = Math.floor(Math.random() * symbols.length);
@@ -311,7 +311,7 @@ bot.on('message', message => {
         var time = date.getTime();
         let sender = message.author;
         let msg = message.content.toUpperCase;
-            if (message.author.id === '397149402436993025') {
+            if (message.author.id === '478588483556999169') {
                 return;
             }
             else {
@@ -385,7 +385,7 @@ bot.on('message', message => {
             
             
         }
-        /*else if (message.content.startsWith(prefix + "help")) {
+       /* else if (message.content.startsWith(prefix + "help")) {
             message.channel.send("Check your DMs!")
 		const help = {
 			"embed": {
@@ -423,15 +423,16 @@ bot.on('message', message => {
 			}
 		}
 			message.author.send(help);
-        }    */
+        }*/
     }
+    
 
     //Profanity
     var uppr = message.content.toUpperCase();
     var str = uppr.split(" ");
     if (message.channel.type == 'text') {
         if (message.guild.id == "415729604217798656") {
-            if (message.author.id === '397149402436993025') {
+            if (message.author.id === '478588483556999169') {
                 return;
             }
             else {
@@ -443,7 +444,7 @@ bot.on('message', message => {
         for (i = 0; i < str.length; i++) {
             for (x = 0; x < profanities.length; x++) {
                 if (str[i] == profanities[x].toUpperCase()) {
-                    if (message.author.id === '397149402436993025') {
+                    if (message.author.id === '478588483556999169') {
                         return;
                     }
                     else {
