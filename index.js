@@ -422,7 +422,7 @@ bot.on('message', message => {
 				]
 			}
 		}
-			msg.author.send(help);
+			message.author.send(help);
         }    
     }
 
