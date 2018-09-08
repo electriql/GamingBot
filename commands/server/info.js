@@ -7,7 +7,7 @@ class Info extends commando.Command {
             name: 'info',
             group: 'server',
             memberName: 'info',
-            description: 'Gives you sokme info of the server.',
+            description: 'Gives you some info of the server.',
             guildOnly: 'true'
         });
     }
