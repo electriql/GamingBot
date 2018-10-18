@@ -59,6 +59,10 @@ module.exports = class HelpCommand extends Command {
 						"value": "`diamonds`, `daily`, `slots`, `wheel`"
 					},
 					{
+						"name": "__**Moderator (must have the Manage Server permission)**__",
+						"value": "`toggleprofanity`"
+					},
+					{
 						"name": "**More features to come!**",
 						"value": "Send me your suggestions so new features come out sooner!"
 					}
