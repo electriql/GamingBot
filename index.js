@@ -1,4 +1,3 @@
-
 const commando = require('discord.js-commando');
 const bot = new commando.Client({
     commandPrefix: 'g!',
@@ -8,6 +7,7 @@ const prefix = "g!"
 const fs = require('fs');
 const moment = require('moment');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
+let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 const symbols = ["⭕", "🔵", "🔶", "⬜", "❤", "🔺", "💠", "🔻"];
 const wsymbol = ["💎", "💠", "🔸", "🔻", "🔴", "⭕", "❌", "🚫"];
 var profanities = require('profanities');
@@ -16,7 +16,20 @@ bot.registry.registerGroup('server', 'Server');
 bot.registry.registerGroup('currency', 'Currency');
 bot.registry.registerDefaults();
 bot.registry.registerCommandsIn(__dirname + "/commands");
-bot.login(process.env.BOT_TOKEN);
+bot.login("NDkwNjc0MjI3OTc2ODYzNzY1.Dn8w8A.bwu7snOybRyTern_QLzw8i4waxU");
+function toggleProfanity(guild) {
+    // 1 = on, -1 = off
+    if (!serverData[guild.id]) serverData[guild.id] = {
+        prof: 1,
+    }
+    else {
+        var prof = serverData[guild.id].prof;
+        serverData[guild.id].prof = prof * -1;
+    }
+    fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
+        if (err) console.log(err);
+    }) 
+}
 function roll(message) {
     var chance = Math.floor(Math.random() * 5) + 1;
     var slot1 = Math.floor(Math.random() * symbols.length);
@@ -385,6 +398,26 @@ bot.on('message', message => {
             
             
         }
+
+        // Toggle Profanity
+        else if (message.content.startsWith(prefix + "toggleprofanity")) {
+            if (message.channel.type == 'text') {
+                if (message.channel.guild.member(message.author).permissions.has('MANAGE_GUILD')) {
+                    toggleProfanity(message.channel.guild);
+                    var output = " "
+                    if (serverData[message.channel.guild.id].prof == -1) {
+                        output = "off"
+                    }
+                    else if (serverData[message.channel.guild.id].prof == 1) {
+                        output = "on"
+                    }
+                    message.channel.send("Profanity has been toggled to **" + output + "**!");
+                }
+                else {
+                    message.channel.send("You must have the **Manage Server** permission to execute this command!");
+                }
+            }
+        }
        /* else if (message.content.startsWith(prefix + "help")) {
             message.channel.send("Check your DMs!")
 		const help = {
@@ -428,44 +461,51 @@ bot.on('message', message => {
     
 
     //Profanity
-    var uppr = message.content.toUpperCase();
-    var str = uppr.split(" ");
     if (message.channel.type == 'text') {
-        if (message.guild.id == "415729604217798656") {
-            if (message.author.id === '478588483556999169') {
-                return;
-            }
-            else {
-                if (message.content.toUpperCase == "P SERVERS") {
-                    message.channel.send(bot.guilds);
-                }
-            }
-        }
-        for (i = 0; i < str.length; i++) {
-            for (x = 0; x < profanities.length; x++) {
-                if (str[i] == profanities[x].toUpperCase()) {
+        if (serverData[message.guild.id].prof == 1) {
+            var uppr = message.content.toUpperCase();
+            var str = uppr.split(" ");
+            if (message.channel.type == 'text') {
+                if (message.guild.id == "415729604217798656") {
                     if (message.author.id === '478588483556999169') {
                         return;
                     }
                     else {
-                            message.delete();
-                            message.channel.send("Whoa watch it " + message.author + "! Innapropriate language isn't allowed!");
-                            const p = message.guild.channels.find('name', 'profanity')
-                            if (!p) {
-                                message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
+                        if (message.content.toUpperCase == "P SERVERS") {
+                            message.channel.send(bot.guilds);
+                        }
+                    }
+                }
+                for (i = 0; i < str.length; i++) {
+                    for (x = 0; x < profanities.length; x++) {
+                        if (str[i] == profanities[x].toUpperCase()) {
+                            if (message.author.id === '478588483556999169') {
+                                return;
+                            }
+                            else if (message.author.id === '490674227976863765') {
                                 return;
                             }
                             else {
-                                p.send('**' + message.author.username + '** has been using some bad language just now. They said ```' + message.content + '``` __**Bad Word:**__ ' + str[i]);
-                                return;
+                                    message.delete();
+                                    message.channel.send("Whoa watch it " + message.author + "! Innapropriate language isn't allowed!");
+                                    const p = message.guild.channels.find('name', 'profanity')
+                                    if (!p) {
+                                        message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
+                                        return;
+                                    }
+                                    else {
+                                        p.send('**' + message.author.username + '** has been using some bad language just now. They said ```' + message.content + '``` __**Bad Word:**__ ' + str[i]);
+                                        return;
+                                    }
+                                    return;
                             }
-                            return;
+                    
+                        }
                     }
-            
                 }
             }
         }
-    }
+}
 });
 bot.on('guildCreate', guild => {
     guild.systemChannel.send("Hello I am **GamingBot!** Thanks for adding me to your server! Do __g!help__ to see what I can do!");
@@ -478,6 +518,10 @@ bot.on('ready', () => {
                 if (err) console.log(err);
             })
         });
+        fs.readFile('Storage/serverData.json', 'utf8', function(err, data) {
+            fs.writeFile('Storage/serverBackup.json', JSON.stringify(serverData), (err) => {
+                if (err) console.log(err);
+            })
+        });
     }, 1000);
 });
-
