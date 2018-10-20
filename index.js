@@ -462,6 +462,13 @@ bot.on('message', message => {
 
     //Profanity
     if (message.channel.type == 'text') {
+	if (!serverData[message.guild.id]) serverData[message.guild.id] = {
+            prof: 1,
+            
+        }
+        fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
+            if (err) console.log(err);
+        })
         if (serverData[message.guild.id].prof == 1) {
             var uppr = message.content.toUpperCase();
             var str = uppr.split(" ");
