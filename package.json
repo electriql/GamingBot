@@ -10,9 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.2.1",
-    "discord.js-commando": "^0.9.0",
     "moment": "^2.22.1",
+    "opusscript": "0.0.6",
     "profanities": "^2.6.0",
-    "profanity-censor": "^1.0.5"
+    "profanity-censor": "^1.0.5",
+    "yt-search": "^0.3.0",
+    "ytdl-core": "^0.26.3"
   }
 }

@@ -1,22 +1,18 @@
-const commando = require('discord.js-commando');
-const bot = new commando.Client({
-    commandPrefix: 'g!',
-    owner: '240982621247635456'
-});
+const discord = require('discord.js');
+const bot = new discord.Client();
 const prefix = "g!"
 const fs = require('fs');
 const moment = require('moment');
+const YTDL = require('ytdl-core');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 const symbols = ["⭕", "🔵", "🔶", "⬜", "❤", "🔺", "💠", "🔻"];
 const wsymbol = ["💎", "💠", "🔸", "🔻", "🔴", "⭕", "❌", "🚫"];
 var profanities = require('profanities');
-bot.registry.registerGroup('random', 'Random');
-bot.registry.registerGroup('server', 'Server');
-bot.registry.registerGroup('currency', 'Currency');
-bot.registry.registerDefaults();
-bot.registry.registerCommandsIn(__dirname + "/commands");
-bot.login(process.env.BOT_TOKEN);
+const servers = {};
+const active = new Map();
+
+bot.login("NDkwNjc0MjI3OTc2ODYzNzY1.Dn8w8A.bwu7snOybRyTern_QLzw8i4waxU");
 function toggleProfanity(guild) {
     // 1 = on, -1 = off
     if (!serverData[guild.id]) serverData[guild.id] = {
@@ -30,6 +26,7 @@ function toggleProfanity(guild) {
         if (err) console.log(err);
     }) 
 }
+
 function roll(message) {
     var chance = Math.floor(Math.random() * 5) + 1;
     var slot1 = Math.floor(Math.random() * symbols.length);
@@ -318,6 +315,31 @@ bot.on('guildMemberRemove', member => {
 
 
 bot.on('message', message => {
+    //Command Handler
+    
+    let args = message.content.slice(prefix.length).trim().split(' ');
+    
+    let cmd = args.shift().toLowerCase();
+    
+
+    if (message.author.bot) return;
+    if (!message.content.startsWith(prefix)) return;
+    if (message.channel.type != 'text') return message.channel.send("Commands must be used in a server channel.");
+    try {
+        if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
+        let commandFile = require(__dirname + "/commands/" + cmd + ".js");
+        
+        let client = bot;
+        let ops = {
+            active: active,
+        }
+        commandFile.run(message, args, client, ops);
+    }
+    catch (e) {
+        console.log(e.stack);
+    }
+
+
     //Currency
     if (message.channel.type == 'text') {
         var date = new Date();
@@ -343,8 +365,8 @@ bot.on('message', message => {
                 }) 
             }
         
-        
-
+        var server = servers[message.guild.id];
+        var dispatcher;
         if (message.content.startsWith(prefix + "diamonds")) {
             let sender = message.author;
             message.channel.send("**" + message.author.username + ",** You have 💎x" + userData[sender.id].diamonds + "!");
@@ -457,18 +479,17 @@ bot.on('message', message => {
 		}
 			message.author.send(help);
         }*/
-    }
     
 
     //Profanity
-    if (message.channel.type == 'text') {
-	if (!serverData[message.guild.id]) serverData[message.guild.id] = {
+    if (message.channel.type == 'text') {   
+        if (!serverData[message.guild.id]) serverData[message.guild.id] = {
             prof: 1,
             
         }
         fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
             if (err) console.log(err);
-        })
+        }) 
         if (serverData[message.guild.id].prof == 1) {
             var uppr = message.content.toUpperCase();
             var str = uppr.split(" ");
@@ -512,13 +533,20 @@ bot.on('message', message => {
                 }
             }
         }
+    }
 }
+    
 });
 bot.on('guildCreate', guild => {
     guild.systemChannel.send("Hello I am **GamingBot!** Thanks for adding me to your server! Do __g!help__ to see what I can do!");
 });
 bot.on('ready', () => {
     console.log("Gaming launched!");
+    if (bot.voiceConnections) {
+        for (i = 0; i < bot.voiceConnections.length; i++) {
+            bot.voiceConnections[i].disconnect();
+        }
+    }
     setInterval(function (){
         fs.readFile('Storage/userData.json', 'utf8', function(err, data) {
             fs.writeFile('Storage/backup.json', JSON.stringify(userData), (err) => {
@@ -530,5 +558,6 @@ bot.on('ready', () => {
                 if (err) console.log(err);
             })
         });
+        
     }, 1000);
 });
