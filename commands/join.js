@@ -1,7 +1,4 @@
 
-const YTDL = require('ytdl-core');
-const fs = require('fs');
-let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 exports.info = "Joins the channel you are currently in."
 
    exports.run = async (message, args, client, ops) => {
