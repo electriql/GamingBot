@@ -542,11 +542,7 @@ bot.on('guildCreate', guild => {
 });
 bot.on('ready', () => {
     console.log("Gaming launched!");
-    if (bot.voiceConnections) {
-        for (i = 0; i < bot.voiceConnections.length; i++) {
-            bot.voiceConnections[i].disconnect();
-        }
-    }
+    
     setInterval(function (){
         fs.readFile('Storage/userData.json', 'utf8', function(err, data) {
             fs.writeFile('Storage/backup.json', JSON.stringify(userData), (err) => {
