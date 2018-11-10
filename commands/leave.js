@@ -7,7 +7,7 @@ exports.info = "Leaves the channel I am currently in."
         if (!message.guild.me.voiceChannel) return message.channel.send("❌ I am currently not in a voice channel!");
         message.guild.me.voiceChannel.leave();
 
-                message.channel.send("**Successfully Disconnected!**");
+        message.channel.send("**Successfully Disconnected!**");
 
         if (fetched) fetched.queue = [];
         ops.active.set(message.guild.id, fetched);
