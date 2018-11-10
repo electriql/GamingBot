@@ -5,7 +5,7 @@ exports.info = "Joins the channel you are currently in."
         if (message.member.voiceChannel) {
             if (!message.guild.voiceConnection) {
                 if (message.member.voiceChannel != message.guild.me.voiceChannel) {
-                    message.member.voiceChannel.join()
+                    message.member.voiceChannel.join();
                         .then(connection => {
                             message.channel.send("**Successfully Joined!**");
                     })
