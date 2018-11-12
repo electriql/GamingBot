@@ -105,19 +105,20 @@ async function play(client, ops, data, message) {
     });
 }
 async function finish(client, ops, dispatcher, message, data) {
+    if (client.guilds.get(dispatcher.guildID).voiceConnection) {
         if (data.queue[0].looped) {
             if (data.queue[0].looped == -1) data.queue.shift();
         }
         
+            if (data.queue.length > 0) {
+                ops.active.set(dispatcher.guildID, data);
 
-        if (data.queue.length > 0) {
-            ops.active.set(dispatcher.guildID, data);
-
-            play(client, ops, data, message);
-        }
-        else {
-            ops.active.delete(dispatcher.guildID);
-        }
+                play(client, ops, data, message);
+            }
+            else {
+                ops.active.delete(dispatcher.guildID);
+            }
+       }
 
 }
 
