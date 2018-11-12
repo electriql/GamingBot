@@ -105,7 +105,6 @@ async function play(client, ops, data, message) {
     });
 }
 async function finish(client, ops, dispatcher, message, data) {
-    if (message.guild.voiceConnection) {
         if (data.queue[0].looped) {
             if (data.queue[0].looped == -1) data.queue.shift();
         }
@@ -119,7 +118,7 @@ async function finish(client, ops, dispatcher, message, data) {
         else {
             ops.active.delete(dispatcher.guildID);
         }
-}
+
 }
 
  
