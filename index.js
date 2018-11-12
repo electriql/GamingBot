@@ -542,7 +542,7 @@ bot.on('guildCreate', guild => {
 });
 bot.on('ready', () => {
     console.log("Gaming launched!");
-    
+    bot.user.setGame('g!help');
     setInterval(function (){
         fs.readFile('Storage/userData.json', 'utf8', function(err, data) {
             fs.writeFile('Storage/backup.json', JSON.stringify(userData), (err) => {
