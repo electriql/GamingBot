@@ -99,7 +99,7 @@ async function play(client, ops, data, message) {
     message.channel.send(embed);
     data.dispatcher = await data.connection.playStream(YTDL(data.queue[0].url, {filter: "audioonly"}));
     data.dispatcher.guildID = data.guildID;
-    ops.active.set(message.guild.id, data);
+    ops.active.set(data.dispatcher.guildID, data);
     data.dispatcher.once('end', function() {
         finish(client, ops, this, message, data);
     });
@@ -112,7 +112,7 @@ async function finish(client, ops, dispatcher, message, data) {
         
 
         if (data.queue.length > 0) {
-            ops.active.set(message.guild.id, data);
+            ops.active.set(dispatcher.guildID, data);
 
             play(client, ops, data, message);
         }
