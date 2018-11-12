@@ -11,7 +11,7 @@ exports.run = async (message, args, client, ops) => {
             
             for (i = 1; i < data.queue.length; i++) {
                 fields.push({
-                    'name': i + ". " + data.queue[i].songTitle,
+                    'name': i + ". " + data.queue[i].songTitle + " **[" + data.queue[0].duration + "]** ",
                     'value': "Requested by: " + data.queue[i].requester,
                 })
             }
@@ -22,7 +22,7 @@ exports.run = async (message, args, client, ops) => {
                 }
                 var embed = {
                     "embed": {
-                        "title": "Currently playing: " + data.queue[0].songTitle + l,
+                        "title": "Currently playing: " + data.queue[0].songTitle + " **[" + data.queue[0].duration + "]** " + l,
                         "description": "__Up Next__",
                         "url" : data.queue[0].url,
                         "color": 4886754,
