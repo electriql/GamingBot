@@ -1,7 +1,16 @@
 exports.info = "Gives a list of 10 songs you can choose from."
 const search = require("yt-search");
 const ytdl = require("ytdl-core");
-exports.run = async(message, args, client, ops) => {
+function secondsToHms(d) {
+    d = Number(d);
+
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+    return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
+}
+exports.run = async (message, args, client, ops) => {
 
     search(args.join(' '), function(err, res) {
         if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
@@ -13,8 +22,10 @@ exports.run = async(message, args, client, ops) => {
         let resp = [];
 
         for (var i in videos) {
+            let length = videos[i].duration.timestamp;
+
             resp.push({
-                'name': parseInt(i) + 1 + ". " + videos[i].title,
+                'name': parseInt(i) + 1 + ". " + videos[i].title + " **[" + length + "]**",
                 'value': "Type " + "'" + (parseInt(i) + 1) + "' to play this track!",
             })
         }
