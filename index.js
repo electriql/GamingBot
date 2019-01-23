@@ -12,7 +12,7 @@ var profanities = require('profanities');
 const servers = {};
 const active = new Map();
 
-bot.login(process.env.BOT_TOKEN);
+bot.login("NDkwNjc0MjI3OTc2ODYzNzY1.DylhWA.PuvnS6kbzYJA8_P3_kTR8m6yifQ"); //Development: NDkwNjc0MjI3OTc2ODYzNzY1.DylhWA.PuvnS6kbzYJA8_P3_kTR8m6yifQ, Client:NDc4NTg4NDgzNTU2OTk5MTY5.DsaoRA.PfErnlh5_Rz5KQWyrtbN7BdGoq8
 function toggleProfanity(guild) {
     // 1 = on, -1 = off
     if (!serverData[guild.id]) serverData[guild.id] = {
@@ -240,6 +240,7 @@ function spin(message) {
         message.channel.send(wheel);
     }
 }
+
 //Listners
 bot.on('guildMemberAdd', member => {
     
@@ -315,12 +316,34 @@ bot.on('guildMemberRemove', member => {
 
 
 bot.on('message', message => {
-    //Command Handler
+
     
+    //Command Handler
     let args = message.content.slice(prefix.length).trim().split(' ');
     
+    
+
     let cmd = args.shift().toLowerCase();
     
+    console.log(message.channel.name + ": " + message.toString());
+
+    //Messaging
+    
+    /*if (message.channel.type == 'dm') {
+        if (bot.guilds.get(args[0])) {
+            var guild = bot.guilds.get(args[0]);
+            var msg = "";
+            for (i = 1; i < args.length; i++) {
+                msg = msg + " " + args[i];
+            }
+            var channel = bot.channels.get(guild.systemChannelID);
+            if (guild.id == '439564187966898176') {
+                channel = guild.channels.find('name', 'mainstream');
+            }
+
+            channel.send(msg);
+        }
+    }*/
 
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
@@ -330,8 +353,14 @@ bot.on('message', message => {
         let commandFile = require(__dirname + "/commands/" + cmd + ".js");
         
         let client = bot;
+
+        let owner = bot.users.get("240982621247635456");
+
+        
+
         let ops = {
             active: active,
+            owner: owner,
         }
         commandFile.run(message, args, client, ops);
     }
@@ -339,9 +368,16 @@ bot.on('message', message => {
         console.log(e.stack);
     }
 
+    
 
     //Currency
     if (message.channel.type == 'text') {
+        
+        
+
+        let roles = message.guild.roles;
+
+
         var date = new Date();
         var time = date.getTime();
         let sender = message.author;
@@ -543,6 +579,7 @@ bot.on('guildCreate', guild => {
 bot.on('ready', () => {
     console.log("Gaming launched!");
     bot.user.setGame('g!help');
+    
     setInterval(function (){
         fs.readFile('Storage/userData.json', 'utf8', function(err, data) {
             fs.writeFile('Storage/backup.json', JSON.stringify(userData), (err) => {
