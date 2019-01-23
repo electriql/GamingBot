@@ -12,7 +12,7 @@ var profanities = require('profanities');
 const servers = {};
 const active = new Map();
 
-bot.login("NDkwNjc0MjI3OTc2ODYzNzY1.DylhWA.PuvnS6kbzYJA8_P3_kTR8m6yifQ"); //Development: NDkwNjc0MjI3OTc2ODYzNzY1.DylhWA.PuvnS6kbzYJA8_P3_kTR8m6yifQ, Client:NDc4NTg4NDgzNTU2OTk5MTY5.DsaoRA.PfErnlh5_Rz5KQWyrtbN7BdGoq8
+bot.login("");
 function toggleProfanity(guild) {
     // 1 = on, -1 = off
     if (!serverData[guild.id]) serverData[guild.id] = {
