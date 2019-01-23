@@ -12,7 +12,7 @@ var profanities = require('profanities');
 const servers = {};
 const active = new Map();
 
-bot.login("");
+bot.login(process.env.BOT_TOKEN);
 function toggleProfanity(guild) {
     // 1 = on, -1 = off
     if (!serverData[guild.id]) serverData[guild.id] = {
