@@ -49,8 +49,8 @@ function secondsToHms(d) {
                                 "url" : args[0],
                                 "color": 4886754,
                                 "footer": {
-                                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676",
-                                    "text": "Bot Created by @ᗴlectricↁiamond#1684"
+                                    "icon_url": ops.owner.displayAvatarURL,
+                                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
                                 },
                                 "author": {
                                     "name": "Adding to queue...",
@@ -98,8 +98,8 @@ async function play(client, ops, data, message) {
             "url" : data.queue[0].url,
             "color": 4886754,
             "footer": {
-                "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676",
-                "text": "Bot Created by @ᗴlectricↁiamond#1684"
+                "icon_url": ops.owner.displayAvatarURL,
+                "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
             },
             "author": {
                 "name": "Now Playing...",

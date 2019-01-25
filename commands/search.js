@@ -40,8 +40,8 @@ exports.run = async (message, args, client, ops) => {
                 "url" : "",
                 "color": 4886754,
                 "footer": {
-                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676",
-                    "text": "Bot Created by @ᗴlectricↁiamond#1684"
+                    "icon_url": ops.owner.displayAvatarURL,
+                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
                 },
                 "author": {
                     "name": "Searching...",

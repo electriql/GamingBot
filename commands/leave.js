@@ -12,7 +12,6 @@ exports.info = "Leaves the channel I am currently in."
             if (!fetched) {
 
             } else {
-                
                 ops.active.delete(message.guild.id);
             }
         }
