@@ -91,20 +91,22 @@ async function play(client, ops, data, message) {
     var l = data.queue.length - 1;
     var loop = "";
     if (data.queue[0].looped == 1) loop = " (looped)";
-    var embed = {
-        "embed": {
-            "title": data.queue[0].songTitle + loop,
-            "description": "Queue length: " + l  + ", Requested by: " + data.queue[0].requester + ", Duration: `" + data.queue[0].duration + "`",
-            "url" : data.queue[0].url,
-            "color": 4886754,
-            "footer": {
-                "icon_url": ops.owner.displayAvatarURL,
-                "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
-            },
-            "author": {
-                "name": "Now Playing...",
-                "url": "",
-                "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+    if (data.queue) {
+        var embed = {
+            "embed": {
+                "title": data.queue[0].songTitle + loop,
+                "description": "Queue length: " + l  + ", Requested by: " + data.queue[0].requester + ", Duration: `" + data.queue[0].duration + "`",
+                "url" : data.queue[0].url,
+                "color": 4886754,
+                "footer": {
+                    "icon_url": ops.owner.displayAvatarURL,
+                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                },
+                "author": {
+                    "name": "Now Playing...",
+                    "url": "",
+                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                }
             }
         }
     }
@@ -118,8 +120,10 @@ async function play(client, ops, data, message) {
 }
 async function finish(client, ops, dispatcher, message, data) {
 
-        if (data.queue[0].looped) {
-            if (data.queue[0].looped == -1) data.queue.shift();
+        if (data.queue[0]) {
+            if (data.queue[0].looped) {
+                if (data.queue[0].looped == -1) data.queue.shift();
+            }
         }
         
 
