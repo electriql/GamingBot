@@ -13,6 +13,64 @@ const servers = {};
 const active = new Map();
 
 bot.login(process.env.BOT_TOKEN);
+function filter(message) {
+    
+        //Profanity
+        if (message.channel.type == 'text') {
+            var pr = serverData[message.guild.id].prof;
+        
+            if (!serverData[message.guild.id]) serverData[message.guild.id] = {
+                prof: 1,
+            
+            }
+
+            if (pr == 1) {
+            
+                var uppr = message.content.toUpperCase();
+                var str = uppr.split(" ");
+                    if (message.guild.id == "415729604217798656") {
+                        if (message.author.id === '478588483556999169') {
+                            return;
+                        }
+                        else {
+                            if (message.content.toUpperCase == "P SERVERS") {
+                                message.channel.send(bot.guilds);
+                            }
+                        }
+                    }
+                    for (i = 0; i < str.length; i++) {
+                        for (x = 0; x < profanities.length; x++) {
+                            if (str[i] == profanities[x].toUpperCase()) {
+                                if (message.author.id === '478588483556999169') {
+                                    return;
+                                }
+                                else if (message.author.id === '490674227976863765') {
+                                    return;
+                                }
+                                else {
+                                    message.delete();
+                                    message.channel.send("Whoa watch it " + message.author + "! Inappropriate language isn't allowed!");
+                                    const p = message.guild.channels.find('name', 'profanity')
+                                    if (!p) {
+                                        message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
+                                        
+                                    return;
+                                    }
+                                    else {
+                                        p.send('**' + message.author.username + '** has been using some bad language just now. They said ```' + message.content + '``` __**Bad Word:**__ ' + str[i]);
+                                        return;
+                                    }
+                                    return;
+                                }
+                    
+                            }
+                        }
+                    }
+            
+                }
+            }
+        
+}
 function toggleProfanity(guild) {
     // 1 = on, -1 = off
     if (!serverData[guild.id]) serverData[guild.id] = {
@@ -324,8 +382,6 @@ bot.on('message', message => {
     
 
     let cmd = args.shift().toLowerCase();
-    
-    console.log(message.channel.name + ": " + message.toString());
 
     //Messaging
     
@@ -344,6 +400,8 @@ bot.on('message', message => {
             channel.send(msg);
         }
     }*/
+
+    filter(message);
 
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
@@ -376,8 +434,8 @@ bot.on('message', message => {
         
 
         let roles = message.guild.roles;
-
-
+        console.log("hello"); 
+        
         var date = new Date();
         var time = date.getTime();
         let sender = message.author;
@@ -476,101 +534,9 @@ bot.on('message', message => {
                 }
             }
         }
-       /* else if (message.content.startsWith(prefix + "help")) {
-            message.channel.send("Check your DMs!")
-		const help = {
-			"embed": {
-				"title": "__**Bot Features**__",
-				"description": "**This bot has an automatic join and leave message, curse filter, and more! Here are the commands that I can execute!**",
-				"color": 4886754,
-				"footer": {
-					"icon_url": "https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676",
-					"text": "Bot Created by @ᗴlectricↁiamond#1684"
-				},
-				"author": {
-					"name": "Bot Information",
-					"url": "",
-					"icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
-				},
-				"fields": [
-					{
-						"name": "__**User**__",
-						"value": "`help`, `uniqueid`"
-					},
-					
-					{
-						"name": "__**Fun**__",
-						"value": "`8ball`, `number`, `fact`, `pun`"
-					},
-					{
-						"name": "__**Currency**__",
-						"value": "`diamonds`, `daily`, `slots`, `wheel`"
-					},
-					{
-						"name": "**More features to come!**",
-						"value": "Send me your suggestions so new features come out sooner!"
-					}
-				]
-			}
-		}
-			message.author.send(help);
-        }*/
-    
-
-    //Profanity
-    if (message.channel.type == 'text') {   
-        if (!serverData[message.guild.id]) serverData[message.guild.id] = {
-            prof: 1,
-            
-        }
-        fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
-            if (err) console.log(err);
-        }) 
-        if (serverData[message.guild.id].prof == 1) {
-            var uppr = message.content.toUpperCase();
-            var str = uppr.split(" ");
-            if (message.channel.type == 'text') {
-                if (message.guild.id == "415729604217798656") {
-                    if (message.author.id === '478588483556999169') {
-                        return;
-                    }
-                    else {
-                        if (message.content.toUpperCase == "P SERVERS") {
-                            message.channel.send(bot.guilds);
-                        }
-                    }
-                }
-                for (i = 0; i < str.length; i++) {
-                    for (x = 0; x < profanities.length; x++) {
-                        if (str[i] == profanities[x].toUpperCase()) {
-                            if (message.author.id === '478588483556999169') {
-                                return;
-                            }
-                            else if (message.author.id === '490674227976863765') {
-                                return;
-                            }
-                            else {
-                                    message.delete();
-                                    message.channel.send("Whoa watch it " + message.author + "! Innapropriate language isn't allowed!");
-                                    const p = message.guild.channels.find('name', 'profanity')
-                                    if (!p) {
-                                        message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
-                                        return;
-                                    }
-                                    else {
-                                        p.send('**' + message.author.username + '** has been using some bad language just now. They said ```' + message.content + '``` __**Bad Word:**__ ' + str[i]);
-                                        return;
-                                    }
-                                    return;
-                            }
-                    
-                        }
-                    }
-                }
-            }
-        }
+           
+     
     }
-}
     
 });
 bot.on('guildCreate', guild => {
