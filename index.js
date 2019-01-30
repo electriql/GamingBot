@@ -17,13 +17,15 @@ function filter(message) {
     
         //Profanity
         if (message.channel.type == 'text') {
-            var pr = serverData[message.guild.id].prof;
+            
         
             if (!serverData[message.guild.id]) serverData[message.guild.id] = {
                 prof: 1,
             
             }
-
+            
+            var pr = serverData[message.guild.id].prof;
+            
             if (pr == 1) {
             
                 var uppr = message.content.toUpperCase();
