@@ -397,7 +397,7 @@ bot.on('message', message => {
 
     if (message.author.bot) return;
     if (message.channel.type != 'text') return message.channel.send("Commands must be used in a server channel.");
-    if (message.startsWith(prefix)) {
+    if (message.content.startsWith(prefix)) {
         try {
             if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
             let commandFile = require(__dirname + "/commands/" + cmd + ".js");
