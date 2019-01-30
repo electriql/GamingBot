@@ -391,10 +391,9 @@ bot.on('message', message => {
         }
     }*/
 
-    filter(message);
+    
 
     if (message.author.bot) return;
-    if (!message.content.startsWith(prefix)) return;
     if (message.channel.type != 'text') return message.channel.send("Commands must be used in a server channel.");
     try {
         if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
@@ -416,7 +415,7 @@ bot.on('message', message => {
         console.log(e.stack);
     }
 
-    
+    filter(message);
 
     //Currency
     if (message.channel.type == 'text') {
