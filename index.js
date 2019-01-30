@@ -397,24 +397,26 @@ bot.on('message', message => {
 
     if (message.author.bot) return;
     if (message.channel.type != 'text') return message.channel.send("Commands must be used in a server channel.");
-    try {
-        if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
-        let commandFile = require(__dirname + "/commands/" + cmd + ".js");
-        
-        let client = bot;
+    if (message.startsWith(prefix)) {
+        try {
+            if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
+            let commandFile = require(__dirname + "/commands/" + cmd + ".js");
+            
+            let client = bot;
 
-        let owner = bot.users.get("240982621247635456");
+            let owner = bot.users.get("240982621247635456");
 
-        
+            
 
-        let ops = {
-            active: active,
-            owner: owner,
+            let ops = {
+                active: active,
+                owner: owner,
+            }
+            commandFile.run(message, args, client, ops);
         }
-        commandFile.run(message, args, client, ops);
-    }
-    catch (e) {
-        console.log(e.stack);
+        catch (e) {
+            console.log(e.stack);
+        }
     }
 
     filter(message);
