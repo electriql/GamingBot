@@ -28,16 +28,6 @@ function filter(message) {
             
                 var uppr = message.content.toUpperCase();
                 var str = uppr.split(" ");
-                    if (message.guild.id == "415729604217798656") {
-                        if (message.author.id === '478588483556999169') {
-                            return;
-                        }
-                        else {
-                            if (message.content.toUpperCase == "P SERVERS") {
-                                message.channel.send(bot.guilds);
-                            }
-                        }
-                    }
                     for (i = 0; i < str.length; i++) {
                         for (x = 0; x < profanities.length; x++) {
                             if (str[i] == profanities[x].toUpperCase()) {
