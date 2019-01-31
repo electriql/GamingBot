@@ -19,8 +19,10 @@ exports.run = async (message, args, client, ops) => {
                         let number = parseInt(args[0]);
                         if (!fetched.queue[number]) return message.channel.send("❌ There is no clip in this spot!");
                         let target = fetched.queue[number];
+                        for (i = 1; i < number; i++) {
 
-                        while (fetched.queue[1] != target) {
+                            fetched.queue[0].looped = -1;
+                            fetched.queue[0] = {};
                             fetched.queue.shift();
                         }
                         message.channel.send("**Skipped to **`" + target.songTitle + "`**!**");
@@ -28,7 +30,7 @@ exports.run = async (message, args, client, ops) => {
                     else {
                         message.channel.send("**Skipped!**");
                     }
-                    
+                    fetched.queue[0].looped = -1;
                     return fetched.dispatcher.end();
                 }
                 else {
