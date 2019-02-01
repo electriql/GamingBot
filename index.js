@@ -427,7 +427,6 @@ bot.on('message', message => {
         
 
         let roles = message.guild.roles;
-        console.log("hello"); 
         
         var date = new Date();
         var time = date.getTime();
