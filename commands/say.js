@@ -1,4 +1,4 @@
-exports.info = "**Coming Soon!** Makes the bot say anything you would like (Except when profanity is turned on)."
+exports.info = "Makes the bot say anything you would like (Except when profanity is turned on)."
 var profanities = require('profanities');
 
 function filter(message) {
