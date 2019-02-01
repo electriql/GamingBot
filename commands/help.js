@@ -47,7 +47,7 @@ exports.info = "Brings up the list of available commands."
                     
                     {
                         "name": "__**Fun**__",
-                        "value": "`8ball`, `fact`, `pun`"
+                        "value": "`8ball`, `fact`, `pun`, `say`"
                     },
                     {
                         "name": "__**Currency**__",
@@ -55,7 +55,7 @@ exports.info = "Brings up the list of available commands."
                     },
                     {
                         "name": "__**Music**__",
-                        "value": "`clear`, `join`, `leave`, `loop`, `pause`, `play`, `queue`, `resume`, `skip`"
+                        "value": "`clear`, `join`, `leave`, `loop`, `pause`, `play`, `queue`, `remove`, `resume`, `search`, `skip`"
                     },
                     {
                         "name": "__**Moderator (must have the Manage Server permission)**__",
