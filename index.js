@@ -78,7 +78,8 @@ function toggleProfanity(guild) {
 }
 
 function roll(message) {
-    var chance = Math.floor(Math.random() * 5) + 1;
+    var chance = Math.floor(Math.random() * 4) + 1;
+    console.log(chance)
     var slot1 = Math.floor(Math.random() * symbols.length);
     var slot2 = Math.floor(Math.random() * symbols.length);
     var slot3 = Math.floor(Math.random() * symbols.length);
