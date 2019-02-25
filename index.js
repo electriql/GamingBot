@@ -11,6 +11,7 @@ const wsymbol = ["💎", "💠", "🔸", "🔻", "🔴", "⭕", "❌", "🚫"];
 var profanities = require('profanities');
 const servers = {};
 const active = new Map();
+const prof = new Map();
 
 bot.login(process.env.BOT_TOKEN);
 function filter(message) {
@@ -23,9 +24,9 @@ function filter(message) {
                 prof: 1,
             
             }
-            
+
             var pr = serverData[message.guild.id].prof;
-            
+
             if (pr == 1) {
             
                 var uppr = message.content.toUpperCase();
@@ -34,9 +35,11 @@ function filter(message) {
                         for (x = 0; x < profanities.length; x++) {
                             if (str[i] == profanities[x].toUpperCase()) {
                                 if (message.author.id === '478588483556999169') {
+                                    
                                     return;
                                 }
                                 else if (message.author.id === '490674227976863765') {
+                                    
                                     return;
                                 }
                                 else {
@@ -68,9 +71,12 @@ function toggleProfanity(guild) {
     if (!serverData[guild.id]) serverData[guild.id] = {
         prof: 1,
     }
+
     else {
         var prof = serverData[guild.id].prof;
-        serverData[guild.id].prof = prof * -1;
+        prof = prof * -1
+        serverData[guild.id].prof = prof
+        
     }
     fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
         if (err) console.log(err);
@@ -78,8 +84,7 @@ function toggleProfanity(guild) {
 }
 
 function roll(message) {
-    var chance = Math.floor(Math.random() * 4) + 1;
-    console.log(chance)
+    var chance = Math.random();
     var slot1 = Math.floor(Math.random() * symbols.length);
     var slot2 = Math.floor(Math.random() * symbols.length);
     var slot3 = Math.floor(Math.random() * symbols.length);
@@ -103,7 +108,8 @@ function roll(message) {
         }
     else {
         // If slots 4, 5, and 6 are the same then they win.
-        if (chance == 4) {
+        console.log(chance);
+        if (chance <= 0.25 || (slot4 == slot5 && slot5 == slot6)) {
             var ran = Math.floor(Math.random() * 151) + 49;
             var middle = Math.floor(Math.random() * symbols.length);
             const slots = {
@@ -411,6 +417,7 @@ bot.on('message', message => {
 
             let ops = {
                 active: active,
+                prof: prof,
                 owner: owner,
             }
             commandFile.run(message, args, client, ops);
@@ -540,6 +547,7 @@ bot.on('ready', () => {
     bot.user.setGame('g!help');
     
     setInterval(function (){
+
         fs.readFile('Storage/userData.json', 'utf8', function(err, data) {
             fs.writeFile('Storage/backup.json', JSON.stringify(userData), (err) => {
                 if (err) console.log(err);
