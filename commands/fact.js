@@ -1,7 +1,7 @@
 
     exports.info = "Gives a random fact about gaming."
     exports.run = async (message, args, client, ops) => {
-        var number = Math.floor(Math.random() * 10) + 1;
+        var number = Math.floor(Math.random() * 11) + 1;
         if (number == 1) {
             message.reply("59% of Americans play video games.");
         }
@@ -32,5 +32,7 @@
         else if (number == 10) {
             message.reply("Parents are present when games are purchased or rented 91% of the time.");
         }
+        else if (number == 11) {
+            message.reply("WZZ is trash lmao");
+        }
     }
-}
