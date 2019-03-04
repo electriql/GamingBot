@@ -75,7 +75,7 @@ function toggleProfanity(guild) {
     else {
         var prof = serverData[guild.id].prof;
         prof = prof * -1
-        serverData[guild.id].prof = prof
+        serverData[guild.id].prof = prof;
         
     }
     fs.writeFile('Storage/serverData.json', JSON.stringify(serverData), (err) => {
@@ -490,18 +490,28 @@ bot.on('message', message => {
                 var left = next - time;
                 if (left / 3600000 > 1) {
                     var hour = left / 3600000;
-                    var hr = Math.round(hour * 100) / 100
-                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + hr + "** hours!"); 
+                    let hr = Math.floor(hour);
+                    
+                    var minute = (left - (hr * 3600000)) / 60000;
+                    
+                    var min = Math.floor(minute);
+                    var second = (left - ((hr * 3600000) + (min * 60000))) / 1000;
+                    var s = Math.round(second * 100) / 100
+                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + hr + "** hours, **" + Math.floor(minute) + "** minutes, " + "and **" + s + "** seconds!"); 
                 }
                 else if (left / 60000 > 1) {
                     var minute = left / 60000;
-                    var min = Math.round(minute * 100) / 100
-                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + min + "** minutes!"); 
+                    var min = Math.floor(minute);
+
+                    var second = (left - ((min * 60000))) / 1000;
+                    var s = Math.round(second * 100) / 100
+                    
+                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + min + "** minutes, and **" + s + "** seconds!"); 
                 }
                 else {
                     var second = left / 1000;
                     var sec = Math.round(second * 100) / 100
-                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + sec + "** minutes!"); 
+                    message.channel.send("You have already recieved your daily reward! You can receive it again in **" + sec + "** seconds!"); 
                 }
                 
             }
