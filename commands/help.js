@@ -42,7 +42,7 @@ exports.info = "Brings up the list of available commands."
                 "fields": [
                     {
                         "name": "__**User**__",
-                        "value": "`help`, `uniqueid`"
+                        "value": "`help`, `timestamp`, `uniqueid`"
                     },
                     
                     {
