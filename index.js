@@ -555,7 +555,7 @@ bot.on('message', message => {
                         message.channel.send("You have recieved your daily 💎x100!");
                     });
                 }
-                else if (time >= daily + (hours * 24)) {
+                else if (time >= daily - (-(hours*24))) {
                     dbSelect(pool, 'userdata', 'id', 'daily', message.author.id, function(output) {
                         var diamonds = output.diamonds;
                         dbUpdate(pool, 'userdata', 'id', 'daily', message.author.id, time);
