@@ -26,47 +26,48 @@ exports.run = async (message, args, client, ops) => {
         }
     }
 
-    const filter = m => !m.author.bot;
+    const filter = m => m.author.equals(message.author);
     message.channel.send(embed)
     .then(msg => {
         const collector = message.channel.createMessageCollector(filter);
 
         collector.once('collect', function(m) {
             msg.delete();
-            if (!isNaN(m.content) && (m.content == 1 || m.content == 2)) {
-                let output = ""
-                for (i = 0; i < args.length; i++) {
-                    let letters = args[i].split('');
-                    for (j = 1; j <= letters.length; j++) {
-                        if (m.content == 1) {
-                            if (j % 2 == 0) {
-                                output = output + letters[j-1].toUpperCase();
-                            }
-                            else {
-                                output = output + letters[j-1].toLowerCase();
-                            }
+                if (!isNaN(m.content) && (m.content == 1 || m.content == 2)) {
+                    let output = ""
+                    for (i = 0; i < args.length; i++) {
+                        let letters = args[i].split('');
+                        for (j = 1; j <= letters.length; j++) {
+                            if (m.content == 1) {
+                                if (j % 2 == 0) {
+                                    output = output + letters[j-1].toUpperCase();
+                                }
+                                else {
+                                    output = output + letters[j-1].toLowerCase();
+                                }
 
-                        }
-                        else {
-                            if (j % 2 == 0) {
-                                output = output + letters[j-1].toLowerCase();
                             }
                             else {
-                                output = output + letters[j-1].toUpperCase();                              
+                                if (j % 2 == 0) {
+                                    output = output + letters[j-1].toLowerCase();
+                                }
+                                else {
+                                    output = output + letters[j-1].toUpperCase();                              
+                                }
                             }
                         }
+                        output = output + " ";
                     }
-                    output = output + " ";
+                    message.channel.send(output);
+                }  
+                else if (m.content.toUpperCase() == "CANCEL") {
+                    message.channel.send("**Cancelled!**");
+                    return;
                 }
-                message.channel.send(output);
-            }  
-            else if (m.content.toUpperCase() == "CANCEL") {
-                message.channel.send("**Cancelled!**");
-                return;
-            }
-            else {
-                return message.channel.send("❌ The message is invalid!");
-            }
+                else {
+                    return message.channel.send("❌ The message is invalid!");
+                }
+            
         });
     });
 }
