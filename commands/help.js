@@ -47,7 +47,7 @@ exports.info = "Brings up the list of available commands."
                     
                     {
                         "name": "__**Fun**__",
-                        "value": "`8ball`, `fact`, `mock`, `pun`, `say`"
+                        "value": "`8ball`, `fact`, `mock`, `pun`, `ren`, `say`"
                     },
                     {
                         "name": "__**Currency**__",
