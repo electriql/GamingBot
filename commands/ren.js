@@ -1,6 +1,6 @@
 
 //Puns
-const puns = [
+const quotes = [
 "Yeeaahhhh!",
  "No ignore pls",
 "*Insert Name Here* wanna bortnite?",
@@ -16,10 +16,23 @@ const puns = [
 "I finna die",
 "Ur head is blocking the wifi"];
 const ready = true;
-exports.info = "Gives a random Ren quote (There is a lot)"
+exports.info = "Gives a random Ren quote. Type 'mock' at the end to add a mocking style!" 
 exports.run = async (message, args, client, ops) => {
-        var pun = Math.floor(Math.random() * puns.length);
-        var msg = puns[pun];
-        message.channel.sendMessage(msg);
+    var quote = Math.floor(Math.random() * quotes.length);
+    var msg = quotes[quote];
+    if (args[0]) {
+        if (args[0].toUpperCase() == "MOCK") {
+            let commandFile = require('./mock.js');
+            let a = msg.split(' ');
+            commandFile.run(message, a, client, ops);
+        }
+        else { 
+            message.channel.send("❌ You must leave this field empty or type 'mock'!")
+        }
+    }
+    else {
+        message.channel.sendMessage(msg);   
+    }    
+    
         
     }
