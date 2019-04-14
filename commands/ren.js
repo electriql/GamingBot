@@ -3,9 +3,9 @@
 const quotes = [
 "Yeeaahhhh!",
  "No ignore pls",
-"*Insert Name Here* wanna bortnite?",
+"(*Insert Name Here*) wanna bortnite?",
 "Blytee lytee",
-"Hey Blytee",
+"hi (*Insert Name Here*)",
 "Macole!",
 "You wanna cry?...",
 "Cuz mc is very cool and I wanna be like him",
@@ -14,7 +14,13 @@ const quotes = [
 "Woah I just killed the very cool mc",
 "Hey Blytee do u want appel?",
 "I finna die",
-"Ur head is blocking the wifi"];
+"Ur head is blocking the wifi",
+"ok baudy",
+"uh oh",
+"hi nigs",
+"(*Insert Name Here*) can I go to ur house?",
+"crispy pine appel",
+"@(*Insert Ping Here*)"];
 const ready = true;
 exports.info = "Gives a random Ren quote. Type 'mock' at the end to add a mocking style!" 
 exports.run = async (message, args, client, ops) => {
