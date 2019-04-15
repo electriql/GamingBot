@@ -11,5 +11,6 @@ exports.run = async (message, args, client, ops) => {
                         var member = message.author;
                 }
         }
-        message.channel.send("**" + member.username + "'s** account was created on **" + date + "**");
+        var converted = date.toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
+        message.channel.send("**" + member.username + "'s** account was created on **" + converted + "**");
 }
