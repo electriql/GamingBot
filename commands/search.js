@@ -52,7 +52,7 @@ exports.run = async (message, args, client, ops) => {
             }
         }
 
-        const filter = m => !m.author.bot;
+        const filter = m => m.author.equals(message.author);
 
         message.channel.send(x)
         .then(msg => {
