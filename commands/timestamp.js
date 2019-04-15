@@ -1,4 +1,4 @@
-exports.info = "Says when your account was made! Type in another username to find when their account was made!"
+exports.info = "Says when your account was made! Type in another username to find when their account was made! (In Pacific Time)"
 exports.run = async (message, args, client, ops) => {
         var date = message.author.createdAt;
         var member = message.author;
