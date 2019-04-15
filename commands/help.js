@@ -13,7 +13,7 @@ exports.info = "Brings up the list of available commands."
             if (fs.existsSync(__dirname + "/" + cmd + ".js")) {
                 let commandFile = require(__dirname + "/" + cmd + ".js");
                 
-                message.channel.send("**g!" + cmd + "** - " + commandFile.info)
+                return message.channel.send("**g!" + cmd + "** - " + commandFile.info);
             }
         }   
         catch (e) {
@@ -21,8 +21,6 @@ exports.info = "Brings up the list of available commands."
         }
 
     }
-    else {
-        
         message.channel.send("Check your DMs!");
 
         const help =  {
@@ -71,6 +69,6 @@ exports.info = "Brings up the list of available commands."
             message.author.send(help);
     }
     
-}
+
     
 
