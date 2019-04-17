@@ -1,4 +1,5 @@
 
+//Puns
 const quotes = [
 "Yeeaahhhh!",
  "No ignore pls",
@@ -20,7 +21,8 @@ const quotes = [
 "(*Insert Name Here*) can I go to ur house?",
 "crispy pine appel",
 "@(*Insert Ping Here*)",
-"What the shit"];
+"What the shit",
+"(*Insert Object Here*) can go eat shit and die"];
 const ready = true;
 exports.info = "Gives a random Ren quote. Type 'mock' at the end to add a mocking style!" 
 exports.run = async (message, args, client, ops) => {
