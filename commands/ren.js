@@ -1,5 +1,4 @@
 
-//Puns
 const quotes = [
 "Yeeaahhhh!",
  "No ignore pls",
@@ -18,7 +17,7 @@ const quotes = [
 "ok baudy",
 "uh oh",
 "hi nigs",
-"(*Insert Name Here*) can I go to ur house?",
+"hey (*Insert Name Here*) can I go to ur house tomorrow?",
 "crispy pine appel",
 "@(*Insert Ping Here*)",
 "What the shit",
