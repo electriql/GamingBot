@@ -459,9 +459,35 @@ bot.on('message', message => {
         }
     }*/
 
-    
+    // Private Commands
 
+    
     if (message.author.bot) return;
+    if ((message.channel.type == "dm" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
+        try {
+            if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
+            let commandFile = require(__dirname + "/pc/" + cmd + ".js");
+            
+            let client = bot;
+
+            let owner = bot.users.get("240982621247635456");
+
+            
+
+            let ops = {
+                active: active,
+                prof: prof,
+                owner: owner,
+            }
+
+            commandFile.run(message, args, client, ops);
+
+        }
+        catch (e) {
+            console.log(e.stack);
+        }
+        return;
+    }
     if (message.channel.type != 'text') return message.channel.send("Commands must be used in a server channel.");
     if (message.content.startsWith(prefix)) {
         try {
@@ -479,12 +505,15 @@ bot.on('message', message => {
                 prof: prof,
                 owner: owner,
             }
+
             commandFile.run(message, args, client, ops);
+
         }
         catch (e) {
             console.log(e.stack);
         }
     }
+    
 
     filter(message);
 
