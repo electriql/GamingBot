@@ -3,6 +3,7 @@ const discord = require('discord.js');
 const bot = new discord.Client();
 
 const prefix = "g!"
+var express = require('express');
 const fs = require('fs');
 const moment = require('moment');
 const YTDL = require('ytdl-core');
@@ -24,7 +25,11 @@ const pool = new Pool({
   })
   
 
-
+var app = express();
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, function() {
+    console.log('Running on port ' + PORT);
+});
 bot.login(process.env.BOT_TOKEN); 
 
 //DATABASE INTERACTIONS
