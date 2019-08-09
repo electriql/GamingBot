@@ -668,7 +668,7 @@ bot.on('guildCreate', guild => {
 });
 bot.on('ready', () => {
     console.log("Gaming launched!");
-    bot.user.setGame('g!help');
+    bot.user.setActivity('g!help');
     
     setInterval(function (){
 
