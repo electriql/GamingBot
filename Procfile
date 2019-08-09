@@ -1,2 +1,2 @@
-worker: node --harmony .
+worker: node .
 web: node --inspect ./index.js
