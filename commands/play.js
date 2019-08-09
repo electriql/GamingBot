@@ -72,7 +72,7 @@ function secondsToHms(d) {
                 
                 }
                 else {
-                search(args.join(' '), function(err, res) {
+                search(args.join(' '), async function(err, res) {
                     if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
                     
                     if (!YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
@@ -84,9 +84,9 @@ function secondsToHms(d) {
                     let commandFile = require('./play.js');
 
                     commandFile.run(message, url, client, ops);
-                });
-                }        
+                });   
     }
+}
 async function play(client, ops, data, message) {
     var l = data.queue.length - 1;
     var loop = "";
@@ -114,7 +114,7 @@ async function play(client, ops, data, message) {
     data.dispatcher = await data.connection.playStream(YTDL(data.queue[0].url, {filter: "audioonly"}));
     data.dispatcher.guildID = data.guildID;
     ops.active.set(data.dispatcher.guildID, data);
-    data.dispatcher.once('end', function() {
+    data.dispatcher.once('end', async function() {
         finish(client, ops, this, message, data);
     });
 }
