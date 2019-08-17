@@ -25,11 +25,18 @@ const pool = new Pool({
   })
   
 
-var app = express();
+var http = require('http');
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, function() {
-    console.log('Running on port ' + PORT);
-});
+http.createServer(function (req, res) {
+  res.write('Hello World!');
+  
+  res.end();
+}).listen(PORT);
+setInterval(function() {
+    http.get("http://discord-gamingbot.herokuapp.com");
+}, 180000);
+console.log("Running on port " + PORT);
 bot.login(process.env.BOT_TOKEN); 
 
 //DATABASE INTERACTIONS
