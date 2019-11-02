@@ -17,7 +17,7 @@
     "profanities": "^2.11.0",
     "yt-search": "^0.4.1",
     "ytdl-core": "^0.29.5"
-  }
+  },
   "engines": {
     "node": "9.3.0"
   }
