@@ -10,15 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "express": "*",
+    "express": "^4.17.1",
     "moment": "^2.24.0",
+    "nan": "^2.14.0",
     "opusscript": "0.0.7",
-    "pg": "^7.12.0",
-    "profanities": "^2.11.0",
+    "pg": "^7.12.1",
+    "profanities": "^2.12.0",
     "yt-search": "^0.4.1",
-    "ytdl-core": "^0.29.5"
-  },
-  "engines": {
-    "node": "9.3.0"
+    "ytdl-core": "^0.29.7"
   }
 }
