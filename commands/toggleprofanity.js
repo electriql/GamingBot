@@ -55,6 +55,7 @@ function toggleProfanity(guild) {
 exports.filter = function(message) {
     var index = require('../index.js');
     var profanities = require('profanities');
+    console.log(index);
     //Profanity
     if (message.channel.type == 'text') {
         index.pool.query('SELECT * FROM serverdata WHERE id = ' + message.guild.id, [], (err, res) => {
