@@ -91,6 +91,29 @@ bot.on('message', message => {
 
     
     if (message.author.bot) return;
+    // Database initialization
+    if (message.channel.type == 'text') {
+        let roles = message.guild.roles;
+
+        let sender = message.author;
+        let msg = message.content.toUpperCase;
+            if (message.author.id === '478588483556999169') {
+                return;
+            }
+            else {
+                pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
+                    if (!res.rows[0]) {
+                        pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
+
+                        })
+                        console.log(res.rows);
+                    }
+                });
+            }
+        
+        var dispatcher;
+    }
+    
     if ((message.channel.type == "dm" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
         try {
             if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
@@ -143,29 +166,6 @@ bot.on('message', message => {
     
 
     toggleprofanity.filter(message);
-
-    // Database initialization
-    if (message.channel.type == 'text') {
-        let roles = message.guild.roles;
-
-        let sender = message.author;
-        let msg = message.content.toUpperCase;
-            if (message.author.id === '478588483556999169') {
-                return;
-            }
-            else {
-                pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
-                    if (!res.rows[0]) {
-                        pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
-
-                        })
-                        console.log(res.rows);
-                    }
-                });
-            }
-        
-        var dispatcher;
-    }
     
 });
 bot.on('guildCreate', guild => {
