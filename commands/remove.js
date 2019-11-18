@@ -1,3 +1,4 @@
+exports.category = "music";
 exports.info = "Removes a specified spot in the queue."
 exports.run = async(message, args, client, ops) => {
     let fetched = ops.active.get(message.guild.id);

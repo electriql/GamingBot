@@ -3,9 +3,7 @@ const YTDL = require('ytdl-core');
 const fs = require('fs');
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 
-
-
-    
+exports.category = "music";
 exports.info = "Skips the track that is currently playing."
 exports.run = async (message, args, client, ops) => {
     let fetched = ops.active.get(message.guild.id);

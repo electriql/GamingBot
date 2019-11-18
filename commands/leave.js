@@ -1,6 +1,7 @@
 
 const fs = require('fs');
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
+exports.category = "music";
 exports.info = "Leaves the channel I am currently in."
     exports.run = async (message, args, client, ops) => {
         let fetched = ops.active.get(message.guild.id);

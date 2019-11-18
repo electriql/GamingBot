@@ -1,4 +1,5 @@
 const YTDL = require('ytdl-core');
+exports.category = "music";
 exports.info = "Returns the current queue of tracks."
 exports.run = async (message, args, client, ops) => {
     let data = ops.active.get(message.guild.id);

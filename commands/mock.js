@@ -1,3 +1,4 @@
+exports.category = "fun";
 exports.info = "Mocks the given statement in 2 ways!"
 exports.run = async (message, args, client, ops) => {
     if (!args[0]) return message.channel.send("❌ Enter a message first.");

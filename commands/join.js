@@ -1,4 +1,5 @@
-exports.info = "Joins the channel you are currently in."
+exports.category = "music";
+exports.info = "I join the channel you are currently in."
 
    exports.run = async (message, args, client, ops) => {
         if (message.member.voiceChannel) {

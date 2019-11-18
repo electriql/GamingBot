@@ -1,4 +1,5 @@
 
+    exports.category = "fun";
     exports.info = "Answers your yes or no questions."
     
     exports.run = async (message, args, client, ops) => {
@@ -36,6 +37,6 @@
         }
     }
     else {
-        message.reply("✗ Ask me something first.");
+        message.reply("❌ Ask me something first.");
     }
 }

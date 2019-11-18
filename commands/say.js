@@ -1,3 +1,4 @@
+exports.category = "fun";
 exports.info = "Makes the bot say anything you would like (Automatically censors profanity)."
 var profanities = require('profanities');
 const fs = require('fs');
@@ -11,8 +12,7 @@ function filter(message, serverData) {
     for (i = 0; i < str.length; i++) {
         for (x = 0; x < profanities.length; x++) {
             if (str[i] == profanities[x].toLowerCase()) {
-                
-                
+                return true;
             }
         }
     }
@@ -25,14 +25,8 @@ exports.run = async(message, args, client, ops, serverData) => {
         for (i = 0; i < args.length; i++) {
             str = str + args[i] + " ";
         }
-        message.channel.send(str)
-        .then(msg => {
-            if (filter(msg)) {
-                msg.delete();
-
-            }
-        });
-        message.delete();
+        str = str + "\n\n - " + message.author.tag;
+        message.channel.send(str);
     }
     else {
         message.channel.send("❌ You must give me something to say!")

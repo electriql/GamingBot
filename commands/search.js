@@ -1,3 +1,4 @@
+exports.category = "music";
 exports.info = "Gives a list of 10 songs you can choose from."
 const search = require("yt-search");
 const ytdl = require("ytdl-core");
@@ -13,7 +14,7 @@ function secondsToHms(d) {
 exports.run = async (message, args, client, ops) => {
 
     search(args.join(' '), function(err, res) {
-        if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
+        if (err) return message.channel.send("❌ An error occurred.");
         
         if (!ytdl.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
 

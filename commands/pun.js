@@ -22,6 +22,7 @@ const puns = [
 "I went to the dentist without lunch, and he gave me a plate.",
 "A prisoner's favorite punctuation mark is the period. It marks the end of his sentence."];
 const ready = true;
+exports.category = "fun";
 exports.info = "Gives a random pun."
 exports.run = async (message, args, client, ops) => {
         var pun = Math.floor(Math.random() * puns.length);

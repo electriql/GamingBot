@@ -1,3 +1,4 @@
+exports.category = "music";
 exports.info = "Clears all the clips in the queue when playing music."
 
 exports.run = async(message, args, client, ops) => {

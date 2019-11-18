@@ -2,6 +2,7 @@ const search = require("yt-search");
 const YTDL = require('ytdl-core');
 const fs = require('fs');
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
+exports.category = "play";
 exports.info = "Plays a specified clip if in a voice channel."
 function secondsToHms(d) {
     d = Number(d);
@@ -14,7 +15,7 @@ function secondsToHms(d) {
 }
     exports.run = async (message, args, client, ops) => {
         
-        
+                if (!message.member.voiceChannel) return message.channel.send("❌ You must be in a voice channel!");
                 if (YTDL.validateURL(args[0])) {
                     
                     let data = ops.active.get(message.guild.id) || {};
@@ -50,7 +51,7 @@ function secondsToHms(d) {
                                 "color": 4886754,
                                 "footer": {
                                     "icon_url": ops.owner.displayAvatarURL,
-                                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                                    "text": "Bot Created by " + ops.owner.tag
                                 },
                                 "author": {
                                     "name": "Adding to queue...",
