@@ -53,7 +53,7 @@ function toggleProfanity(guild) {
 }
 
 exports.filter = function(message) {
-    var index = require('../index.js');
+    var index = require("../index.js");
     var profanities = require('profanities');
     console.log(index);
     //Profanity
