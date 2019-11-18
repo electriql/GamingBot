@@ -20,9 +20,9 @@ exports.run = async (message, args, client, ops) => {
                     }
             }
     }
-    index.pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
+    index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
         if (!res.rows[0]) {
-            pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
+            pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
 
             })
             console.log(res.rows);
