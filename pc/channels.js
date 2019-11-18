@@ -1,3 +1,4 @@
+exports.info = "Shows all the text and voice channels in a server given its id."
 exports.run = async (message, args, client, ops) => {
     if (!args[0]) return message.channel.send("Put a server id as an argument.");
 
