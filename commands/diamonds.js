@@ -20,13 +20,15 @@ exports.run = async (message, args, client, ops) => {
                     }
             }
     }
-    index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', user.id, function(data) {
+    index.pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
         if (!res.rows[0]) {
-                index.pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
+            pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
 
-                })
-                console.log(res.rows);
-            }
+            })
+            console.log(res.rows);
+        }
+    });
+    index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', user.id, function(data) {
     var diamonds = data.diamonds;
     message.channel.send("**" + user.username + "** has 💎x" + diamonds + "!");
     })
