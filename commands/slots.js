@@ -36,7 +36,7 @@ exports.run = async (message, args, client, ops) => {
                     message.channel.send(slots);
                 }
             else {
-                var multiplier = Math.floor((Math.random() * 85) + 15) / 10;
+                var multiplier = Math.floor((Math.random() * 35) + 15) / 10;
                 // If slots 4, 5, and 6 are the same then they win.
                 if (chance <= 0.2 || (slot4 == slot5 && slot5 == slot6)) {
                     
