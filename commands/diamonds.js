@@ -21,7 +21,12 @@ exports.run = async (message, args, client, ops) => {
             }
     }
     index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', user.id, function(data) {
-                    
+        if (!res.rows[0]) {
+                pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
+
+                })
+                console.log(res.rows);
+            }
     var diamonds = data.diamonds;
     message.channel.send("**" + user.username + "** has 💎x" + diamonds + "!");
     })
