@@ -173,7 +173,7 @@ exports.run = async (message, args, client, ops) => {
                     });
 
                     let decision = await decisionPromise;
-                    if (decision && !(ops.hangman.get(message.guild.id))) {
+                    if (decision) {
                         msg.channel.send("Hangman started!");
                         fetched = {
                             word : word,
