@@ -72,47 +72,55 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \
         
                     var d = "";
                     var multiplier = 0;
+                    var result = 0;
                     if (reward == 0) {
-                        d = "Awesome! You get 💎x" + Math.round(pay * 5) + " and your initial 💎x" + pay +"!";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds + Math.round(pay * 5)); 
+                        result = diamonds + Math.round(pay * 5);
+                        d = "Jackpot! You get 💎x" + Math.round(pay * 5) + " and your initial 💎x" + pay +"!";
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 5;
                     }
                     else if (reward == 1) {
-                        d = "Nice! You got 💎x" + (pay * 2.5) + " and your initial 💎x" + pay +"!";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds + Math.round(pay * 2.5));
+                        result = diamonds + Math.round(pay * 2.5);
+                        d = "Nice! You got 💎x" + Math.round(pay * 2.5) + " and your initial 💎x" + pay +"!";
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result);
                         multiplier = 2.5; 
                     }
                     else if (reward == 2) {
+                        result = diamonds;
                         d = "So close! You only get your initial 💎x" + pay +"!";
                         multiplier = 1;
                     }
                     else if (reward == 3) {
+                        result = diamonds - Math.round(pay * 0.25);
                         d = "You only get 💎x" + Math.round(pay * 0.75) + " but it could be worse!";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds - Math.round(pay * 0.25)); 
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 0.75;
                     }
                     else if (reward == 4) {
+                        result = diamonds - Math.round(pay * 0.5);
                         d = "You only get 💎x" + Math.round(pay * 0.5) + " back.";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds - Math.round(pay * 0.5)); 
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 0.5;
                     }
                     else if (reward == 5) {
+                        result = diamonds - Math.round(pay * 0.75);
                         d = "You only get 💎x" + Math.round(pay * 0.25) + " back.";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds - Math.round(pay * 0.75)); 
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 0.25;
                     }
                     else if (reward == 6) {
+                        result = diamonds - Math.round(pay * 0.875);
                         d = "You only get 💎x" + Math.round(pay * 0.125) + " back.";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds - Math.round(pay * 0.875)); 
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 0.125;
                     }
                     else if (reward == 7) {
+                        result = diamonds - pay;
                         d = "Unlucky! You don't get anything!";
-                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds - pay); 
+                        index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
                         multiplier = 0;
                     }
 
-                    index.dbSelect(pool, 'userdata', 'id', 'diamonds', message.author.id, function(data2) {    
                         const wheel = {
                             "embed": {
                             "title": "Wheel of Diamonds",
@@ -141,14 +149,13 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \
                                 },
                                 {
                                 "name" : "Prize Multiplier: " + multiplier + "x",
-                                "value" : "**Total Diamonds: " + (data2.diamonds) + "**"
+                                "value" : "**Total Diamonds: " + (result) + "**"
                                 }
                                 
                             ]
                             }
                         }
                         message.channel.send(wheel);
-                    });
                 }
             });
         }
