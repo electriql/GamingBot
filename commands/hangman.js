@@ -21,7 +21,7 @@ function rewardUsers(ops, data, message) {
             index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', key, user.diamonds + diamonds);
         });
     })
-    if (getHangman(ops, data).embed.description == "__**" + data.word.toUpperCase() + "**__") {
+    if (getHangman(ops, data).embed.description.startsWith("__**" + data.word.toUpperCase() + "**__")) {
         status = "The word was guessed!";
     }
     var embed = {
@@ -128,6 +128,9 @@ exports.run = async (message, args, client, ops) => {
                 
                 message.author.send("What do you want the word to be? (Expires in 30 seconds)")
                 .then(async function(msg) {
+                    if (!fetched.host) fetched.host = message.author;
+                    else return msg.channel.send("❌ A hangman is being created by **" + fetched.host.tag + "**!");
+                    ops.hangman.set(message.guild.id, fetched);
                     const filter = m => m.author.equals(message.author);
                     var wordPromise = new Promise(function getWord(resolve, reject) {
                         const collector = msg.channel.createMessageCollector(filter, {time: 30000});
@@ -167,7 +170,11 @@ exports.run = async (message, args, client, ops) => {
                                 msg.channel.send("❌ You must type **Y** or **N**!");
                                 getDecision(resolve, reject);
                             } 
-                            if (collected.array()[0].content.toLowerCase() == "n") return msg.channel.send("Canceled!");
+                            if (collected.array()[0].content.toLowerCase() == "n") {
+                                message.channel.send(message.author.tag + " canceled their custom hangman!");
+                                ops.hangman.set(message.guild.id, {});
+                                return msg.channel.send("Canceled!");
+                            }
                             resolve(decision);
                         });
                     });
@@ -185,6 +192,7 @@ exports.run = async (message, args, client, ops) => {
                         }
                         ops.hangman.set(message.guild.id, fetched);
                         message.channel.send(getHangman(ops, fetched));
+                        
                     }
                     else {
                         msg.channel.send("❌ Something went wrong!");
@@ -254,7 +262,6 @@ exports.run = async (message, args, client, ops) => {
                 fetched.wrongGuesses++;
             }
         }
-        console.log(fetchedUser.correctGuesses + "," + fetchedUser.wrongGuesses);
         var embed = getHangman(ops, fetched);
         embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
         message.channel.send(embed);
@@ -266,7 +273,7 @@ exports.run = async (message, args, client, ops) => {
             }
             fetched = {};
         }
-        else if (embed.embed.description == "__**" + fetched.word.toUpperCase() + "**__") {
+        else if (embed.embed.description.startsWith("__**" + fetched.word.toUpperCase() + "**__")) {
             message.channel.send("You guessed the word!");
             if (fetched.type == "random") {
                 rewardUsers(ops, fetched, message);
