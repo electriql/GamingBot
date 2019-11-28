@@ -100,7 +100,7 @@ function getHangman(ops, data) {
 }
 exports.run = async (message, args, client, ops) => {
     let fetched = ops.hangman.get(message.guild.id) || {};
-     if (!args[0]) return message.channel.send("❌ The correct syntax of this command is g!hangman <start,guess,stop>!");
+     if (!args[0]) return message.channel.send("❌ The correct syntax of this command is g!hangman <guess,start,stop,view>!");
      if (args[0].toLowerCase() == "start") {
          if(!args[1]) return message.channel.send("❌ The correct syntax of this command is g!hangman start <random/custom>!");
          
