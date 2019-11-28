@@ -2,7 +2,7 @@
 var randomWords = require('random-words');
 var person = ["  ___\n|    |\n|    \n|","  ___\n|    |\n|   O\n|","  ___\n|    |\n|   O\n|    |","  ___\n|    |\n|   O\n|  /| ","  ___\n|    |\n|   O\n|  /|\\","  ___\n|    |\n|   O\n|  /|\\\n   /","  ___\n|    |\n|   O\n|  /|\\\n    /\\"];
 exports.category = "fun";
-exports.info = "Users play the classic game of hangman! Only one game at a time! \n **g!hangman guess - ** guess a letter or the entire word. \n **g!hangman start <random/custom> -** Start a hangman game \n - **random** - the bot chooses a random word (whoever guesses the word wins diamonds!) \n - **custom** - the user chooses a custom word \n **g!hangman stop -** stops the game. \n **g!hangman view -** views the status of the current game."
+exports.info = "Users play the classic game of hangman! Only one game at a time! \n **g!hangman guess - ** guess a letter or the entire word. \n **g!hangman start <random/custom> -** Start a hangman game \n - **random** - the bot chooses a random word (whoever guesses the word wins diamonds!) \n - **custom** - the user chooses a custom word \n **g!hangman stop -** stops the game. \n **g!hangman view -** views the status of the current game. \n **Aliases:** `hm`"
 function rewardUsers(ops, data, message) {
     var status = "The word wasn't guessed!"
     var rewards = "";
