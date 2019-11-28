@@ -71,7 +71,7 @@ function getHangman(ops, data) {
     var embed = {
         "embed": {
             "title": person[data.wrongGuesses],
-            "description": "__**" + word + "**__",
+            "description": "__**" + word + "**__ " + " (" + word.length + " letters)",
             "url" : "",
             "color": 4886754,
             "footer": {
@@ -100,14 +100,14 @@ function getHangman(ops, data) {
 }
 exports.run = async (message, args, client, ops) => {
     let fetched = ops.hangman.get(message.guild.id) || {};
-     if (!args[0]) return message.channel.send("❌ The correct syntax of this command is g!hangman <guess,start,stop,view>!");
+     if (!args[0]) return message.channel.send("❌ The correct syntax of this command is g!hangman <start,guess,stop,view>!");
      if (args[0].toLowerCase() == "start") {
          if(!args[1]) return message.channel.send("❌ The correct syntax of this command is g!hangman start <random/custom>!");
          
          if (fetched.word) return message.channel.send("❌ There is already a hangman game in the server!");
          if (args[1].toLowerCase() == "random") {
             var word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
-            while (word.length < 3 || word.length > 10) {
+            while (word.length < 3 || word.length > 20) {
                 word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
             }
             console.log(word);
@@ -138,9 +138,9 @@ exports.run = async (message, args, client, ops) => {
                         });
                         collector.once('end', collected => {
                             if (!collected.array()[0]) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.array()[0].content.length < 3 || collected.array()[0].content.length > 10) {
+                            if (collected.array()[0].content.length < 3 || collected.array()[0].content.length > 20) {
                                 getWord(resolve, reject);
-                                return msg.channel.send("❌ That word is either too long or too short! The word must be 3-10 characters long! (Excluding spaces)");
+                                return msg.channel.send("❌ That word is either too long or too short! The word must be 3-20 characters long! (Excluding spaces)");
                             }
                             for (i = 0; i < word.length; i++) {
                                 if (!word.charAt(i).toLowerCase().match(/[a-z]/i)) {
@@ -173,7 +173,7 @@ exports.run = async (message, args, client, ops) => {
                     });
 
                     let decision = await decisionPromise;
-                    if (decision) {
+                    if (decision && !(ops.hangman.get(message.guild.id))) {
                         msg.channel.send("Hangman started!");
                         fetched = {
                             word : word,
@@ -187,7 +187,7 @@ exports.run = async (message, args, client, ops) => {
                         message.channel.send(getHangman(ops, fetched));
                     }
                     else {
-                        msg.channel.send("❌ Well something went wrong somehow.");
+                        msg.channel.send("❌ Something went wrong!");
                     }
                 });
             }
