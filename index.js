@@ -12,6 +12,7 @@ let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 
 const servers = {};
+const hangman = new Map();
 const active = new Map();
 const prof = new Map();
 
@@ -79,18 +80,6 @@ bot.on('guildMemberRemove', member => {
 
 bot.on('message', message => {
 
-    
-    //Command Handler
-    let args = message.content.slice(prefix.length).trim().split(' ');
-    
-    
-
-    let cmd = args.shift().toLowerCase();
-
-    // Private Commands
-
-    
-    if (message.author.bot) return;
     // Database initialization
     if (message.channel.type == 'text') {
         let roles = message.guild.roles;
@@ -113,7 +102,17 @@ bot.on('message', message => {
         
         var dispatcher;
     }
+    //Command Handler
+    let args = message.content.slice(prefix.length).trim().split(' ');
     
+    
+
+    let cmd = args.shift().toLowerCase();
+
+    // Private Commands
+
+    
+    if (message.author.bot) return;
     if ((message.channel.type == "dm" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
         try {
             if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
@@ -127,6 +126,7 @@ bot.on('message', message => {
 
             let ops = {
                 active: active,
+                hangman: hangman,
                 prof: prof,
                 owner: owner,
             }
@@ -153,6 +153,7 @@ bot.on('message', message => {
 
             let ops = {
                 active: active,
+                hangman: hangman,
                 prof: prof,
                 owner: owner,
             }
@@ -166,6 +167,8 @@ bot.on('message', message => {
     
 
     toggleprofanity.filter(message);
+
+    
     
 });
 bot.on('guildCreate', guild => {
