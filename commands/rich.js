@@ -40,7 +40,7 @@ exports.run = async (message, args, client, ops) => {
                   page = Math.floor(args[0]);
                 }
                 var str = "** ";
-                for(i = 5 * (page - 1); i < page * 5 - 1; i++) {
+                for(i = 5 * (page - 1); i < page * 5; i++) {
                   
                     var member = server.member(rich[i].id);
                     str = str + (i + 1) + ". " + member.user.tag + " - 💎x" + rich[i].diamonds + "\n";
