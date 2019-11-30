@@ -23,7 +23,9 @@ exports.run = async (message, args, client, ops) => {
               }
           });
        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', id, function(data) {
-         var diamonds = data.diamonds || 0;
+
+         var diamonds = 0;
+         if (data) diamonds = data.diamonds;
            members.push({
             "id" : id,
             "diamonds" : diamonds
