@@ -23,10 +23,10 @@ exports.run = async (message, args, client, ops) => {
               }
           });
        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', id, function(data) {
-           if (!data) data.diamonds = 0;
+         var diamonds = data.diamonds || 0;
            members.push({
             "id" : id,
-            "diamonds" : data.diamonds
+            "diamonds" : diamonds
             });
             loops++;
             var rich = members.sort((a, b) => (a.diamonds < b.diamonds) ? 1 : -1);
