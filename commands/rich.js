@@ -17,7 +17,7 @@ exports.run = async (message, args, client, ops) => {
             let id = element.id;
             index.pool.query('SELECT * FROM userdata WHERE id = ' + id, [], (err, res) => {
               if (!res.rows[0]) {
-                  pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + id + ',0,0)', [], (err, res) => {
+                  index.pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + id + ',0,0)', [], (err, res) => {
       
                   })
               }
