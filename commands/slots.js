@@ -38,7 +38,7 @@ exports.run = async (message, args, client, ops) => {
             else {
                 var multiplier = Math.floor((Math.random() * 35) + 15) / 10;
                 // If slots 4, 5, and 6 are the same then they win.
-                if (chance <= 0.2 || (slot4 == slot5 && slot5 == slot6)) {
+                if (chance <= (1.0/3.25) || (slot4 == slot5 && slot5 == slot6)) {
                     
                     var middle = Math.floor(Math.random() * symbols.length);
                     var prize = Math.round(multiplier * pay);
