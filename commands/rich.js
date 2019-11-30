@@ -17,7 +17,7 @@ exports.run = async (message, args, client, ops) => {
             let id = element.id;
     
        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', id, function(data) {
-           
+           console.log(data);
            members.push({
             "id" : id,
             "diamonds" : data.diamonds
