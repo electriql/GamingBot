@@ -15,9 +15,15 @@ exports.run = async (message, args, client, ops) => {
         
         if (!element.user.bot) {
             let id = element.id;
-    
+            index.pool.query('SELECT * FROM userdata WHERE id = ' + id, [], (err, res) => {
+              if (!res.rows[0]) {
+                  pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + id + ',0,0)', [], (err, res) => {
+      
+                  })
+              }
+          });
        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', id, function(data) {
-           console.log(data);
+           if (!data) data.diamonds = 0;
            members.push({
             "id" : id,
             "diamonds" : data.diamonds
