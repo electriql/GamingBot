@@ -13,9 +13,6 @@ function rewardUsers(ops, data, message) {
         if (value.correctGuesses == 0 || diamonds <= 0) {
             diamonds = 5;
         }
-        if (value.guessedWord) {
-            diamonds += 100;
-        }
         rewards += "**" + message.guild.members.get(key) + "** earned 💎x" + diamonds + "\n";
         index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', key, function(user) {
             index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', key, user.diamonds + diamonds);
@@ -225,6 +222,7 @@ exports.run = async (message, args, client, ops) => {
      else if (args[0].toLowerCase() == "guess") {
         if (!fetched.word) return message.channel.send("❌ There currently is no hangman game!");
         if (!args[1]) return message.channel.send("❌ You must guess a letter or the entire word!");
+        if (fetched.wrongGuesses >= person.length - 1) return message.channnel.send("❌ This hangman has expired!");
         if (args[1].length > 1 && args[1].length != fetched.word.length) return message.channel.send("❌ You can't guess this many letters!");
         if (args[1].length == 1 && fetched.guessedLetters.includes(args[1].toUpperCase())) return message.channel.send("❌ That letter has already been guessed!");
         if (fetched.type == "custom" && fetched.host == message.author) return message.channel.send("❌ You are the host of this hangman! Let other people guess your word!");
@@ -235,11 +233,10 @@ exports.run = async (message, args, client, ops) => {
             fetchedUser = {
                 correctGuesses : 0,
                 wrongGuesses : 0,
-                guessedWord : false
             }
         }
 
-        fetched.guessedLetters.push(args[1].toUpperCase());
+        
         if (args[1].length == 1) {
             if (fetched.word.toUpperCase().includes(args[1].toUpperCase())) {
                 correct = "**" + args[1].toUpperCase() + "** is part of the word!";
@@ -253,8 +250,16 @@ exports.run = async (message, args, client, ops) => {
         else {
             if (args[1].toUpperCase() == fetched.word.toUpperCase()) {
                 correct = "**" + args[1].toUpperCase() + "** is the word!"
-                fetchedUser.correctGuesses++;
-                fetchedUser.guessedWord = true;
+                for (i = 0; i < fetched.word.length; i++) {
+                    var index = i + 4;
+
+                    if (getHangman(ops, fetched).embed.description.charAt(index) == "?"){
+                        console.log((index) + " = " + getHangman(ops, fetched).embed.description.charAt(index));
+                        if (!fetched.word.substring(0, i).includes(fetched.word.charAt(i)))
+                            fetchedUser.correctGuesses++;
+                    }
+                        
+                }
             }
             else {
                 correct = "**" + args[1].toUpperCase() + "** is not the word!";
@@ -262,6 +267,7 @@ exports.run = async (message, args, client, ops) => {
                 fetched.wrongGuesses++;
             }
         }
+        fetched.guessedLetters.push(args[1].toUpperCase());
         var embed = getHangman(ops, fetched);
         embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
         message.channel.send(embed);
