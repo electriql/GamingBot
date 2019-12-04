@@ -254,7 +254,6 @@ exports.run = async (message, args, client, ops) => {
                     var index = i + 4;
 
                     if (getHangman(ops, fetched).embed.description.charAt(index) == "?"){
-                        console.log((index) + " = " + getHangman(ops, fetched).embed.description.charAt(index));
                         if (!fetched.word.substring(0, i).includes(fetched.word.charAt(i)))
                             fetchedUser.correctGuesses++;
                     }
