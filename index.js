@@ -12,6 +12,7 @@ let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 
 const servers = {};
+const cooldown = new Map();
 const hangman = new Map();
 const active = new Map();
 const prof = new Map();
@@ -126,6 +127,7 @@ bot.on('message', message => {
 
             let ops = {
                 active: active,
+                cooldown: cooldown,
                 hangman: hangman,
                 prof: prof,
                 owner: owner,
@@ -154,6 +156,7 @@ bot.on('message', message => {
             let ops = {
                 active: active,
                 hangman: hangman,
+                cooldown: cooldown,
                 prof: prof,
                 owner: owner,
             }
@@ -177,13 +180,22 @@ bot.on('guildCreate', guild => {
 bot.on('ready', () => {
     console.log("Gaming launched!");
     bot.user.setActivity('g!help');
-    
     setInterval(function (){
+        cooldown.forEach(function(value, key, map) {
+            if (value.mine) {
+                var updated = {
+                    mine : value.mine - 0.01
+                }
+                cooldown.set(key, updated);
+            }
+            if (value.mine <= 0) cooldown.set(key, {});
+            
+        });
         module.exports = {
             dbSelect,
             dbInsert,
             dbUpdate,
             pool
         }
-    }, 1000);
+    }, 10);
 });
