@@ -3,7 +3,7 @@ const wsymbol = ["💎", "💠", "🔸", "🔻", "🔴", "⭕", "❌", "🚫"];
 const fs = require('fs');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 exports.category = "currency";
-exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \n__**Rewards**	__\n💎 = Initial Bet + 5x(Initial Bet)\n💠 = Initial Bet + 2.5x(Initial Bet)\n🔸 = Initial Bet\n🔻 = 75% of Bet\n🔴 = 50% of Bet\n⭕ = 25% of Bet\n❌ = 12.5% of Bet\n🚫 = Nothing!"; 
+exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \n__**Rewards**	__\n💎 = Initial Bet + 2x(Initial Bet)\n💠 = Initial Bet + 1x(Initial Bet)\n🔸 = Initial Bet\n🔻 = 75% of Bet\n🔴 = 50% of Bet\n⭕ = 25% of Bet\n❌ = 12.5% of Bet\n🚫 = Nothing!"; 
     exports.run = async (message, args, client, ops) => {
         if (args[0] && (!isNaN(args[0]) || args[0].toLowerCase() == "all")) {
             if (args[0].toLowerCase() != "all" && Math.floor(args[0]) < 8) return message.channel.send("❌ That number isn't valid!");
@@ -74,16 +74,16 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \
                     var multiplier = 0;
                     var result = 0;
                     if (reward == 0) {
-                        result = diamonds + Math.round(pay * 5);
-                        d = "Jackpot! You get 💎x" + Math.round(pay * 5) + " and your initial 💎x" + pay +"!";
+                        result = diamonds + Math.round(pay * 2);
+                        d = "Jackpot! You get 💎x" + Math.round(pay * 2) + " and your initial 💎x" + pay +"!";
                         index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result); 
-                        multiplier = 5;
+                        multiplier = 3;
                     }
                     else if (reward == 1) {
                         result = diamonds + Math.round(pay * 2.5);
-                        d = "Nice! You got 💎x" + Math.round(pay * 2.5) + " and your initial 💎x" + pay +"!";
+                        d = "Nice! You got 💎x" + Math.round(pay) + " and your initial 💎x" + pay +"!";
                         index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, result);
-                        multiplier = 2.5; 
+                        multiplier = 2; 
                     }
                     else if (reward == 2) {
                         result = diamonds;
