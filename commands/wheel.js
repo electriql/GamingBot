@@ -5,14 +5,15 @@ let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 exports.category = "currency";
 exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \n__**Rewards**	__\n💎 = Initial Bet + 2x(Initial Bet)\n💠 = Initial Bet + 1x(Initial Bet)\n🔸 = Initial Bet\n🔻 = 75% of Bet\n🔴 = 50% of Bet\n⭕ = 25% of Bet\n❌ = 12.5% of Bet\n🚫 = Nothing!"; 
     exports.run = async (message, args, client, ops) => {
+        var cooldown = ops.cooldown.get(message.author.id) || {};
+        if (cooldown.wheel) return message.channel.send("❌ You can use this command again in **" + Math.round(cooldown.wheel * 100) / 100 + "** seconds!")
         if (args[0] && (!isNaN(args[0]) || args[0].toLowerCase() == "all")) {
-            if (args[0].toLowerCase() != "all" && Math.floor(args[0]) < 8) return message.channel.send("❌ That number isn't valid!");
             var pay = args[0];
             var pool = index.pool;
             index.dbSelect(pool, 'userdata', 'id', 'diamonds', message.author.id, function(data) {
                 var diamonds = data.diamonds;
                 if (args[0].toLowerCase() == "all") pay = diamonds;
-                if (diamonds < pay || pay <= 0) {
+                if (diamonds < pay || pay < 8) {
                     const slots = {
                             "embed": {
                             "title": "Wheel of Diamonds",
@@ -23,6 +24,8 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \
                         message.channel.send(slots);
                 }
                 else {
+                    cooldown.wheel = 5;
+                    ops.cooldown.set(message.author.id, cooldown);
                     var reward = Math.floor(Math.random() * wsymbol.length);
                     var slot1 = reward - 1;
                     var slot3 = reward + 1;
