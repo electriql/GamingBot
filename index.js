@@ -182,14 +182,20 @@ bot.on('ready', () => {
     bot.user.setActivity('g!help');
     setInterval(function (){
         cooldown.forEach(function(value, key, map) {
+            var updated = {};
             if (value.mine) {
-                var updated = {
-                    mine : value.mine - 0.01
-                }
-                cooldown.set(key, updated);
+                updated.mine = value.mine - 0.01
+                if (value.mine <= 0) delete updated.mine;
             }
-            if (value.mine <= 0) cooldown.set(key, {});
-            
+            if (value.slots) {
+                updated.slots = value.slots - 0.01
+                if (value.slots <= 0) delete updated.slots;
+            }
+            if (value.wheel) {
+                updated.wheel = value.wheel - 0.01
+                if (value.wheel <= 0) delete updated.wheel;
+            }
+            cooldown.set(key, updated);
         });
         module.exports = {
             dbSelect,
