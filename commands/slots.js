@@ -6,8 +6,13 @@ let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 exports.category = "currency";
 exports.info = "Rolls a slot machine where you can give a custom input."
 exports.run = async (message, args, client, ops) => {
+    var cooldown = ops.cooldown.get(message.author.id) || {};
+    if (cooldown.slots) return message.channel.send("❌ You can use this command again in **" + Math.round(cooldown.slots * 100) / 100 + "** seconds!")
+    
     if (args[0] && (!isNaN(args[0]) || args[0].toLowerCase() == "all")) {
         if (args[0].toLowerCase() != "all" && Math.floor(args[0]) < 1) return message.channel.send("❌ That number isn't valid!");
+        cooldown.slots = 5;
+        ops.cooldown.set(message.author.id, cooldown);
         var pay = args[0];
         
         var pool = index.pool;
