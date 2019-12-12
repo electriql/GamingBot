@@ -195,6 +195,10 @@ bot.on('ready', () => {
                 updated.wheel = value.wheel - 0.01
                 if (value.wheel <= 0) delete updated.wheel;
             }
+            if (value.roll) {
+                updated.roll = value.roll - 0.01
+                if (value.roll <= 0) delete updated.roll;
+            }
             cooldown.set(key, updated);
         });
         module.exports = {
