@@ -29,7 +29,7 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. C
                     cooldown.wheel = 10;
                     ops.cooldown.set(message.author.id, cooldown);
                     var chance = Math.random();
-                    if (chance <= 0.1) reward = Math.round(Math.random());
+                    if (chance <= 0.15) reward = Math.round(Math.random());
                     else reward = Math.round(Math.random() * 5 + 2)
                     var slot1 = reward - 1;
                     var slot3 = reward + 1;
