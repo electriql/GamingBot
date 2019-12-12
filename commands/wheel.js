@@ -3,10 +3,12 @@ const wsymbol = ["💎", "💠", "🔸", "🔻", "🔴", "⭕", "❌", "🚫"];
 const fs = require('fs');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 exports.category = "currency";
-exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \n__**Rewards**	__\n💎 = Initial Bet + 2x(Initial Bet)\n💠 = Initial Bet + 1x(Initial Bet)\n🔸 = Initial Bet\n🔻 = 75% of Bet\n🔴 = 50% of Bet\n⭕ = 25% of Bet\n❌ = 12.5% of Bet\n🚫 = Nothing!"; 
+exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. Chances are not equal. \n__**Rewards**	__\n💎 = Initial Bet + 2x(Initial Bet)\n💠 = Initial Bet + 1x(Initial Bet)\n🔸 = Initial Bet\n🔻 = 75% of Bet\n🔴 = 50% of Bet\n⭕ = 25% of Bet\n❌ = 12.5% of Bet\n🚫 = Nothing!"; 
     exports.run = async (message, args, client, ops) => {
         var cooldown = ops.cooldown.get(message.author.id) || {};
-        if (cooldown.wheel) return message.channel.send("❌ You can use this command again in **" + Math.round(cooldown.wheel * 100) / 100 + "** seconds!")
+        if (cooldown.wheel) {
+            return message.channel.send("❌ You can use this command again in **" + Math.round(cooldown.wheel * 100) / 100 + "** seconds!")
+        }
         if (args[0] && (!isNaN(args[0]) || args[0].toLowerCase() == "all")) {
             var pay = args[0];
             var pool = index.pool;
@@ -24,9 +26,11 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. \
                         message.channel.send(slots);
                 }
                 else {
-                    cooldown.wheel = 5;
+                    cooldown.wheel = 10;
                     ops.cooldown.set(message.author.id, cooldown);
-                    var reward = Math.floor(Math.random() * wsymbol.length);
+                    var chance = Math.random();
+                    if (chance <= 0.1) reward = Math.round(Math.random());
+                    else reward = Math.round(Math.random() * 5 + 2)
                     var slot1 = reward - 1;
                     var slot3 = reward + 1;
                     var slot4 = reward + 2;
