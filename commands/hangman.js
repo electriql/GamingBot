@@ -104,7 +104,7 @@ exports.run = async (message, args, client, ops) => {
          if (fetched.word) return message.channel.send("❌ There is already a hangman game in the server!");
          if (args[1].toLowerCase() == "random") {
             var word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
-            while (word.length < 3 || word.length > 20) {
+            while (word.length < 4 || word.length > 20) {
                 word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
             }
             console.log(word);
@@ -138,9 +138,9 @@ exports.run = async (message, args, client, ops) => {
                         });
                         collector.once('end', collected => {
                             if (!collected.array()[0]) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.array()[0].content.length < 3 || collected.array()[0].content.length > 20) {
+                            if (collected.array()[0].content.length < 4 || collected.array()[0].content.length > 20) {
                                 getWord(resolve, reject);
-                                return msg.channel.send("❌ That word is either too long or too short! The word must be 3-20 characters long! (Excluding spaces)");
+                                return msg.channel.send("❌ That word is either too long or too short! The word must be 4-20 characters long! (Excluding spaces)");
                             }
                             for (i = 0; i < word.length; i++) {
                                 if (!word.charAt(i).toLowerCase().match(/[a-z]/i)) {
