@@ -8,8 +8,50 @@ exports.run = async (message, args, client, ops) => {
     if (guilds.get(args[0]).channels.length < 1) return message.channel.send("This server doesn't have any channels.");
 
     var channels = guilds.get(args[0]).channels.array();
+    let text = {
+        "name" : "**Text Channels**",
+        "value" : ""
+    };
+    let voice = {
+        "name" : "**Voice Channels**",
+        "value" : ""
+    };
+    let categories = {
+        "name" : "**Categories**",
+        "value" : ""
+    };
+    var textLength = 0;
+    var voiceLength = 0;
     for (i = 0; i < channels.length; i++) {
-        message.channel.send((i + 1) + ". " + channels[i].name + ", Type: "  + channels[i].type + ", ID: " + channels[i].id);
+        if (channels[i].type == "text") {
+            textLength++;
+            text.value = text.value + "**" + (textLength) + ". " + channels[i].name + "**, " + "ID: **" + channels[i].id + "**\n"
+        }
+        else if(channels[i].type == "voice") {
+            voiceLength++;
+            voice.value = voice.value + "**" + (voiceLength) + ". " + channels[i].name + "**, " + "ID: **" + channels[i].id + "**\n"
+        }
+        else if(channels[i].type == "category") {
+            categories.value = categories.value + "**" + channels[i].name + "**\n"
+        }
+        //message.channel.send((i + 1) + ". " + channels[i].name + ", Type: "  + channels[i].type + ", ID: " + channels[i].id);
     }
+    var embed = {
+
+        "embed": {
+          "color": 4886754,
+          "author": {
+            "name": "List of Channels in " + guilds.get(args[0]).name,
+            "url": "",
+            "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+          },
+          "fields": [
+              categories,
+              text,
+              voice
+          ]
+        }
+      }
+      message.channel.send(embed);
         
 }
