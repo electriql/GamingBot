@@ -39,6 +39,7 @@ exports.run = async (message, args, client, ops) => {
     var embed = {
 
         "embed": {
+          "title" : "**" + channels.length + "** channels",
           "color": 4886754,
           "author": {
             "name": "List of Channels in " + guilds.get(args[0]).name,
