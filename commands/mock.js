@@ -59,7 +59,7 @@ exports.run = async (message, args, client, ops) => {
                         }
                         output = output + " ";
                     }
-                    message.channel.send(output);
+                    message.channel.send(output + "\n\n - " + message.author.tag);
                 }  
                 else if (m.content.toUpperCase() == "CANCEL") {
                     message.channel.send("**Cancelled!**");
