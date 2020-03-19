@@ -96,7 +96,6 @@ bot.on('message', message => {
                         pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
 
                         })
-                        console.log(res.rows);
                     }
                 });
             }
