@@ -16,8 +16,13 @@ exports.run = async (message, args, client, ops) => {
     search(args.join(' '), function(err, res) {
         if (err) return message.channel.send("❌ An error occurred.");
         
+        try {
         if (!ytdl.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
-
+        }
+        catch (e) {
+            console.log(e);
+            return message.channel.send("❌ An error occurred.");
+        }
         let videos = res.videos.slice(0, 10);
 
         let resp = [];
