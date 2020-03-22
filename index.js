@@ -38,8 +38,8 @@ setInterval(function() {
 console.log("Running on port " + PORT);
 
 bot.login(process.env.BOT_TOKEN);
-//DATABASE INTERACTIONS
 
+//DATABASE INTERACTIONS
 function dbSelect(pool, db, c1, c2, key, callback) {
     pool.query('SELECT ' + c2 + ' FROM ' + db + ' WHERE ' + c1 + ' = ' + key + ' FETCH FIRST ROW ONLY', [], (err, res) => {
         if (err) {
