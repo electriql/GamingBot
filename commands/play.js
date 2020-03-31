@@ -16,8 +16,15 @@ function secondsToHms(d) {
     exports.run = async (message, args, client, ops) => {
         
                 if (!message.member.voiceChannel) return message.channel.send("❌ You must be in a voice channel!");
+                
                 if (YTDL.validateURL(args[0])) {
-                    
+                    try {
+                    YTDL.validateURL(args[0]);
+                    }
+                    catch (e) {
+                        console.log(e);
+                        return message.channel.send("❌ An error occurred.");
+                    }
                     let data = ops.active.get(message.guild.id) || {};
                     
                     if (!data.connection) data.connection = await message.member.voiceChannel.join();
@@ -74,10 +81,15 @@ function secondsToHms(d) {
                 }
                 else {
                 search(args.join(' '), async function(err, res) {
+                   
                     if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
-                    
-                    if (!YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
-            
+                    try {
+                        if (!YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
+                    }
+                    catch (e) {
+                        console.log(e);
+                        return message.channel.send("❌ An error occurred.");
+                    }
                     let video = res.videos[0];
                     
                     let url = ["https://www.youtube.com" + video.url];
