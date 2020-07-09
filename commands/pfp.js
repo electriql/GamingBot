@@ -8,7 +8,6 @@ exports.run = async (message, args, client, ops) => {
                       name += args[i] + " "; 
                 }
                 name = name.trim();
-                console.log(name + ".");
                 for (i = 0; i < message.guild.memberCount; i++) {
                         if (((name.toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
                         || name.toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
