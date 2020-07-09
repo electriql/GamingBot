@@ -3,10 +3,16 @@ exports.category = "user";
 exports.run = async (message, args, client, ops) => {
         var member;
         if (args[0]) {
+                var name = "";
+                for (i = 0; i < args.length; i++) {
+                      name += args[i] + " "; 
+                }
+                name = name.trim();
+                console.log(name + ".");
                 for (i = 0; i < message.guild.memberCount; i++) {
-                        if (((args[0].toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
-                        || args[0].toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
-                         || args[0].toLowerCase() == message.guild.members.array()[i].user.tag.toLowerCase())) {    
+                        if (((name.toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
+                        || name.toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
+                         || name.toLowerCase() == message.guild.members.array()[i].user.tag.toLowerCase())) {    
                                 member = message.guild.members.array()[i].user;    
                         }
                         else if (message.mentions.members.first()) {
