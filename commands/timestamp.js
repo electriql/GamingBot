@@ -4,12 +4,21 @@ exports.run = async (message, args, client, ops) => {
         var date = message.author.createdAt;
         var member = message.author;
         if (args[0]) {
-                if (message.mentions.members.first()) {    
-                        var member = message.mentions.members.first().user;           
-                        var date = member.createdAt;
+                var name = "";
+                for (i = 0; i < args.length; i++) {
+                      name += args[i] + " "; 
                 }
-                else {
-                        var member = message.author;
+                name = name.trim();
+                for (i = 0; i < message.guild.memberCount; i++) {
+                        if (((name.toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
+                        || name.toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
+                         || name.toLowerCase() == message.guild.members.array()[i].user.tag.toLowerCase())) {    
+                                member = message.guild.members.array()[i].user;    
+                        }
+                        else if (message.mentions.members.first()) {
+                                member = message.mentions.members.first().user;           
+                                date = member.createdAt;
+                        }
                 }
         }
         var converted = date.toLocaleString("en-US", {timeZone: "America/Los_Angeles"})
