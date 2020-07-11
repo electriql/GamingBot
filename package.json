@@ -10,17 +10,18 @@
   "author": "ElectricDiamond",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^11.6.2",
+    "discord.js": "^11.6.4",
     "express": "^4.17.1",
-    "moment": "^2.24.0",
-    "nan": "^2.14.0",
+    "moment": "^2.27.0",
+    "nan": "^2.14.1",
+    "npm-check-updates": "^7.0.1",
     "opusscript": "0.0.7",
     "pg": "^7.18.2",
-    "profanities": "^2.12.1",
-    "random-words": "^1.1.0",
-    "yt-search": "^0.4.5",
-    "ytdl-core": "^1.0.9"
-  },
+    "profanities": "^2.13.0",
+    "random-words": "^1.1.1",
+    "yt-search": "^2.1.1",
+    "ytdl-core": "^3.1.2"
+  }
   "engines": {
     "node": "9.3.0"
   }
