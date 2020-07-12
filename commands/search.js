@@ -14,10 +14,13 @@ function secondsToHms(d) {
 exports.run = async (message, args, client, ops) => {
 
     search(args.join(' '), function(err, res) {
-        if (err) return message.channel.send("❌ An error occurred.");
+        if (err) {
+            console.log(err);
+            return message.channel.send("❌ An error occurred.");
+        }
         
         try {
-        if (!ytdl.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
+            if (ytdl.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
         }
         catch (e) {
             console.log(e);
