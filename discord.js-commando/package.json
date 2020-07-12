@@ -41,7 +41,7 @@
   "description": "The official command framework for Discord.js",
   "devDependencies": {
     "discord.js-docgen": "github:hydrabolt/discord.js-docgen",
-    "eslint": "^3.11.0",
+    "eslint": "^6.6.0",
     "jsdoc-strip-async-await": "^0.1.0"
   },
   "engines": {
