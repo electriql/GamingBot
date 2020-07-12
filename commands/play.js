@@ -35,10 +35,10 @@ function secondsToHms(d) {
                     
                     data.guildID = message.guild.id;
                     let info = await YTDL.getInfo(args[0]);
-                    let length = secondsToHms(info.length_seconds); 
+                    let length = secondsToHms(info.videoDetails.lengthSeconds); 
 
                     data.queue.push({
-                        songTitle: info.title,
+                        songTitle: info.videoDetails.title,
                         url: args[0].toString(),
                         announceChannel: message.channel.id,
                         requester: message.author,
@@ -81,10 +81,10 @@ function secondsToHms(d) {
                 }
                 else {
                 search(args.join(' '), async function(err, res) {
-                   
                     if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
                     try {
-                        if (!YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
+                        
+                        if (YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
                     }
                     catch (e) {
                         console.log(e);
@@ -92,8 +92,7 @@ function secondsToHms(d) {
                     }
                     let video = res.videos[0];
                     
-                    let url = ["https://www.youtube.com" + video.url];
-
+                    let url = [video.url];
                     let commandFile = require('./play.js');
 
                     commandFile.run(message, url, client, ops);
@@ -113,7 +112,7 @@ async function play(client, ops, data, message) {
                 "color": 4886754,
                 "footer": {
                     "icon_url": ops.owner.displayAvatarURL,
-                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                    "text": "Bot Created by " + ops.owner.tag
                 },
                 "author": {
                     "name": "Now Playing...",
