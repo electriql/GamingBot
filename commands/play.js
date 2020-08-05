@@ -2,7 +2,7 @@ const search = require("yt-search");
 const YTDL = require('ytdl-core');
 const fs = require('fs');
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
-exports.category = "play";
+exports.category = "music";
 exports.info = "Plays a specified clip if in a voice channel."
 function secondsToHms(d) {
     d = Number(d);
