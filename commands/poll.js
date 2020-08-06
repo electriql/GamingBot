@@ -41,4 +41,5 @@ exports.run = async (message, args, client, ops) => {
             msg.react(emotes[i]);
         }
     });
+    message.delete();
 }
