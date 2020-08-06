@@ -1,5 +1,5 @@
 exports.category = "misc";
-exports.info = "Makes a poll of up to 10 options. Syntax: \"option_1\" \"option_2\"...";
+exports.info = "Makes a poll of up to 10 options. Syntax: \"question\" \"option_1\" \"option_2\"...";
 
 exports.run = async (message, args, client, ops) => {
     //var emotes = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"];
