@@ -1,7 +1,7 @@
 
 const fs = require('fs');
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
-exports.category = "user";
+exports.category = "misc";
 exports.info = "Brings up the list of available commands."
    exports.run = async (message, args, client, ops) => {
     if (args[0]) {
@@ -20,7 +20,7 @@ exports.info = "Brings up the list of available commands."
 
     }
         message.channel.send("Check your DMs!");
-        let user = "";
+        let misc = "";
         let fun = "";
         let currency = "";
         let music = "";
@@ -32,7 +32,7 @@ exports.info = "Brings up the list of available commands."
             files.forEach(function (file) {
                 var fileName = file.slice(0, file.length - 3);
                 let commandFile = require(__dirname + '/' + file);
-                if (commandFile.category == "user") user = user + "`" + fileName + "`,";
+                if (commandFile.category == "misc") misc = misc + "`" + fileName + "`,";
                 if (commandFile.category == "fun") fun = fun + "`" + fileName + "`,";
                 if (commandFile.category == "currency") currency = currency + "`" + fileName + "`,";
                 if (commandFile.category == "music") music = music + "`" + fileName + "`,";
@@ -55,8 +55,8 @@ exports.info = "Brings up the list of available commands."
                     },
                     "fields": [
                         {
-                            "name": "__**User**__",
-                            "value": user
+                            "name": "__**Miscellaneous**__",
+                            "value": misc
                         },
                         
                         {

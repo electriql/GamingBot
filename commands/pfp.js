@@ -1,5 +1,5 @@
 exports.info = "Gives the profile picture of the specified user!"
-exports.category = "user";
+exports.category = "misc";
 exports.run = async (message, args, client, ops) => {
         var member;
         if (args[0]) {
