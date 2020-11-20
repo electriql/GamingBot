@@ -1,13 +1,10 @@
-
+require('dotenv').config();
 const discord = require('discord.js');
 
 const bot = new discord.Client();
 var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
 const prefix = "g!"
-var express = require('express');
 const fs = require('fs');
-const moment = require('moment');
-const YTDL = require('ytdl-core');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 

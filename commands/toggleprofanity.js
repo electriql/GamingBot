@@ -37,7 +37,6 @@ function toggleProfanity(guild) {
             index.pool.query('INSERT INTO serverdata(id, prof) VALUES(' + guild.id + ',1)', [], (err, res) => {
 
             })
-            console.log(res.rows);
         }
     });
     index.dbSelect(index.pool, 'serverdata', 'id', 'prof', guild.id, function(data) {
@@ -55,7 +54,6 @@ function toggleProfanity(guild) {
 exports.filter = function(message) {
     var index = require("../index.js");
     var profanities = require('profanities');
-    console.log(index);
     //Profanity
     if (message.channel.type == 'text') {
         index.pool.query('SELECT * FROM serverdata WHERE id = ' + message.guild.id, [], (err, res) => {
@@ -63,7 +61,6 @@ exports.filter = function(message) {
                 index.pool.query('INSERT INTO serverdata(id, prof) VALUES(' + message.guild.id + ',1)', [], (err, res) => {
 
                 })
-                console.log(res.rows);
             }
         });
         index.dbSelect(index.pool, 'serverdata', 'id', 'prof', message.guild.id, function(data) {
