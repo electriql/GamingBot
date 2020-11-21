@@ -21,7 +21,7 @@
     "node-pre-gyp": "^0.16.0",
     "npm-check-updates": "^7.0.1",
     "opusscript": "0.0.7",
-    "pg": "file:pg",
+    "pg": "^8.5.1",
     "postgres-array": "^3.0.1",
     "profanities": "^2.13.0",
     "random-words": "^1.1.1",
