@@ -4,18 +4,18 @@ exports.info = "Gives the a user a specified amount of diamonds!"
 exports.run = async (message, args, client, ops) => {
     if (!args[0]) return message.channel.send("❌ You must specifiy someone to pay!");
     var member;
-    for (i = 0; i < message.guild.memberCount; i++) {
-        if (((args[0].toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
-        || args[0].toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
-         || args[0].toLowerCase() == message.guild.members.array()[i].user.tag.toLowerCase())) {    
-                member = message.guild.members.array()[i].user;    
+    message.guild.members.forEach(user => {
+        if (((name.toLowerCase() == user.displayName.toLowerCase() 
+        || name.toLowerCase() == user.user.username.toLowerCase())
+         || name.toLowerCase() == user.user.tag.toLowerCase())) {    
+                member = user.user;
         }
         else if (message.mentions.members.first()) {
-                if (message.mentions.members.first().user == message.guild.members.array()[i].user) {
-                        member = message.guild.members.array()[i].user; 
+                if (message.mentions.members.first().user == user.user) {
+                        member = user.user; 
                 }
         }
-    }
+    });
     if (!member) return message.channel.send("❌ This user doesn't exist!");
     if (member == message.author) return message.channel.send("❌ You can't pay yourself!");
     if (!args[1]) return message.channel.send("❌ You must specify an amount!");

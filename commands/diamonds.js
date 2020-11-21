@@ -7,18 +7,18 @@ exports.info = "Shows how many diamonds you currently have."
 exports.run = async (message, args, client, ops) => {
     var user = message.author;
     if (args[0]) {
-            for (i = 0; i < message.guild.memberCount; i++) {
-                    if (((args[0].toLowerCase() == message.guild.members.array()[i].displayName.toLowerCase() 
-                    || args[0].toLowerCase() == message.guild.members.array()[i].user.username.toLowerCase())
-                     || args[0].toLowerCase() == message.guild.members.array()[i].user.tag.toLowerCase())) {    
-                            user = message.guild.members.array()[i].user;    
-                    }
-                    else if (message.mentions.members.first()) {
-                            if (message.mentions.members.first().user == message.guild.members.array()[i].user) {
-                                    user = message.guild.members.array()[i].user; 
-                            }
-                    }
-            }
+        message.guild.members.forEach(member => {
+                if (((name.toLowerCase() == member.displayName.toLowerCase() 
+                || name.toLowerCase() == member.user.username.toLowerCase())
+                 || name.toLowerCase() == member.user.tag.toLowerCase())) {    
+                        user = member.user;
+                }
+                else if (message.mentions.members.first()) {
+                        if (message.mentions.members.first().user == member.user) {
+                                user = member.user; 
+                        }
+                }
+        });
     }
     index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
         if (!res.rows[0]) {

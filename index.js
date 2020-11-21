@@ -21,6 +21,7 @@ const conString = process.env.DATABASE_URL;
 const pool = new Pool({
     connectionString: conString,
 })
+
 var http = require('http');
 
 const PORT = process.env.PORT || 5000;
