@@ -7,18 +7,23 @@ exports.info = "Shows how many diamonds you currently have."
 exports.run = async (message, args, client, ops) => {
     var user = message.author;
     if (args[0]) {
-        message.guild.members.forEach(member => {
-                if (((name.toLowerCase() == member.displayName.toLowerCase() 
-                || name.toLowerCase() == member.user.username.toLowerCase())
-                 || name.toLowerCase() == member.user.tag.toLowerCase())) {    
-                        user = member.user;
+        var name = "";
+                for (i = 0; i < args.length; i++) {
+                      name += args[i] + " "; 
                 }
-                else if (message.mentions.members.first()) {
-                        if (message.mentions.members.first().user == member.user) {
-                                user = member.user; 
+                name = name.trim();
+                message.guild.members.forEach(member => {
+                        if (((name.toLowerCase() == member.displayName.toLowerCase() 
+                        || name.toLowerCase() == member.user.username.toLowerCase())
+                         || name.toLowerCase() == member.user.tag.toLowerCase())) {    
+                                user = member.user;
                         }
-                }
-        });
+                        else if (message.mentions.members.first()) {
+                                if (message.mentions.members.first().user == member.user) {
+                                        user = member.user; 
+                                }
+                        }
+                });
     }
     index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
         if (!res.rows[0]) {
