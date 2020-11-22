@@ -15,7 +15,7 @@ function secondsToHms(d) {
 }
     exports.run = async (message, args, client, ops) => {
         
-                if (!message.member.voiceChannel) return message.channel.send("❌ You must be in a voice channel!");
+                if (!message.member.voice.channel) return message.channel.send("❌ You must be in a voice channel!");
                 
                 if (YTDL.validateURL(args[0])) {
                     try {
@@ -27,7 +27,7 @@ function secondsToHms(d) {
                     }
                     let data = ops.active.get(message.guild.id) || {};
                     
-                    if (!data.connection) data.connection = await message.member.voiceChannel.join();
+                    if (!data.connection) data.connection = await message.member.voice.channel.join();
                     if (!data.queue) {
                         
                          data.queue = [];
@@ -52,18 +52,24 @@ function secondsToHms(d) {
                         
                         var embed1 = {
                             "embed": {
-                                "title": "__**" + info.title + "**__",
-                                "description": "Requested By:" + message.author + ", Duration: `" + length + "`",
+                                "title": "__**" + info.videoDetails.title + "**__",
+                                "description": "Requested By:" + message.author.toString() + ", Duration: `" + length + "`",
                                 "url" : args[0],
                                 "color": 4886754,
                                 "footer": {
-                                    "icon_url": ops.owner.displayAvatarURL,
+                                    "icon_url": ops.owner.displayAvatarURL({
+                                        size: 2048,
+                                        format: "png"
+                                    }),
                                     "text": "Bot Created by " + ops.owner.tag
                                 },
                                 "author": {
                                     "name": "Adding to queue...",
                                     "url": "",
-                                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                                    "icon_url": client.user.displayAvatarURL({
+                                        size: 2048,
+                                        format: "png"
+                                    }),
                                 },
                                 "fields": [
                                 {
@@ -107,26 +113,32 @@ async function play(client, ops, data, message) {
         var embed = {
             "embed": {
                 "title": data.queue[0].songTitle + loop,
-                "description": "Queue length: " + l  + ", Requested by: " + data.queue[0].requester + ", Duration: `" + data.queue[0].duration + "`",
+                "description": "Queue length: " + l  + ", Requested by: " + data.queue[0].requester.toString() + ", Duration: `" + data.queue[0].duration + "`",
                 "url" : data.queue[0].url,
                 "color": 4886754,
                 "footer": {
-                    "icon_url": ops.owner.displayAvatarURL,
+                    "icon_url": ops.owner.displayAvatarURL({
+                        size: 2048,
+                        format: "png"
+                    }),
                     "text": "Bot Created by " + ops.owner.tag
                 },
                 "author": {
                     "name": "Now Playing...",
                     "url": "",
-                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                    "icon_url": client.user.displayAvatarURL({
+                        size: 2048,
+                        format: "png"
+                    })
                 }
             }
         }
     }
     message.channel.send(embed);
-    data.dispatcher = await data.connection.playStream(YTDL(data.queue[0].url, {filter: "audioonly"}));
+    data.dispatcher = await data.connection.play(YTDL(data.queue[0].url, {filter: "audioonly", quality: "highestaudio"}));
     data.dispatcher.guildID = data.guildID;
     ops.active.set(data.dispatcher.guildID, data);
-    data.dispatcher.once('end', async function() {
+    data.dispatcher.once('finish', async function() {
         finish(client, ops, this, message, data);
     });
 }
@@ -137,7 +149,6 @@ async function finish(client, ops, dispatcher, message, data) {
                 if (data.queue[0].looped == -1) data.queue.shift();
             }
         }
-        
 
         if (data.queue.length > 0) {
             ops.active.set(dispatcher.guildID, data);

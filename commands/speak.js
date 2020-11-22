@@ -1,4 +1,4 @@
-exports.category = "fun";
+exports.category = "hidden";
 exports.info = "A command that you aren't supposed to and can't use."
 exports.run = async(message, args, client, ops, serverData) => {
     if (message.author == ops.owner) {

@@ -13,7 +13,7 @@ function rewardUsers(ops, data, message) {
         if (value.correctGuesses == 0 || diamonds <= 0) {
             diamonds = 5;
         }
-        rewards += "**" + message.guild.members.get(key) + "** earned 💎x" + diamonds + "\n";
+        rewards += "**" + message.guild.members.cache.get(key).user.tag + "** earned 💎x" + diamonds + "\n";
         index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', key, function(user) {
             index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', key, user.diamonds + diamonds);
         });
@@ -30,7 +30,10 @@ function rewardUsers(ops, data, message) {
             "author": {
                 "name": "Rewards",
                 "url": "",
-                "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                "icon_url": client.user.displayAvatarURL({
+                    size: 2048,
+                    format: "png"
+                }),
             }
           
         }
@@ -72,13 +75,19 @@ function getHangman(ops, data) {
             "url" : "",
             "color": 4886754,
             "footer": {
-                "icon_url": ops.owner.displayAvatarURL,
+                "icon_url": ops.owner.displayAvatarURL({
+                    size: 2048,
+                    format: "png"
+                }),
                 "text": "Bot Created by " + ops.owner.tag
             },
             "author": {
                 "name": "Current Hangman",
                 "url": "",
-                "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                "icon_url": client.user.displayAvatarURL({
+                    size: 2048,
+                    format: "png"
+                }),
             },
             "fields": [
             {
@@ -211,7 +220,7 @@ exports.run = async (message, args, client, ops) => {
      }
      else if (args[0].toLowerCase() == "stop") {
          if (!fetched.word) return message.channel.send("❌ There is currently no hangman game!");
-         if (!message.guild.members.get(fetched.host.id)){
+         if (!message.guild.members.cache.get(fetched.host.id)){
             ops.hangman.set(message.guild.id, {});
             return message.channel.send("The host isn't in the server! The game has been stopped automatically.");
          } 

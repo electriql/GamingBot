@@ -32,7 +32,10 @@ exports.run = async (message, args, client, ops) => {
             "author": {
                 "name": message.member.displayName,
                 "url": "",
-                "icon_url": message.author.displayAvatarURL
+                "icon_url": message.author.displayAvatarURL({
+                    size: 2048,
+                    format: "png"
+                })
             },
         }
     }

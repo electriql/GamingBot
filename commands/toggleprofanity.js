@@ -1,4 +1,5 @@
 
+const { SystemChannelFlags } = require('discord.js');
 const fs = require('fs');
 
 exports.info = "A toggleable feature that turns the profanity filter on or off."
@@ -59,13 +60,13 @@ exports.filter = function(message) {
         index.pool.query('SELECT * FROM serverdata WHERE id = ' + message.guild.id, [], (err, res) => {
             if (!res.rows[0]) {
                 index.pool.query('INSERT INTO serverdata(id, prof) VALUES(' + message.guild.id + ',1)', [], (err, res) => {
-
+                    if (err) console.log(err);
                 })
             }
         });
         index.dbSelect(index.pool, 'serverdata', 'id', 'prof', message.guild.id, function(data) {
-
-            var pr = data.prof;
+            var pr = 1;
+            if (data) pr = data.prof;
 
             if (pr == 1) {
             
@@ -84,8 +85,8 @@ exports.filter = function(message) {
                                 }
                                 else {
                                     message.delete();
-                                    message.channel.send("Whoa watch it " + message.author + "! Inappropriate language isn't allowed!");
-                                    const p = message.guild.channels.find('name', 'profanity')
+                                    message.channel.send("Whoa watch it " + message.author.toString() + "! Inappropriate language isn't allowed!");
+                                    const p = message.guild.channels.cache.find(channel => channel.name == 'profanity');
                                     if (!p) {
                                         message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
                                         

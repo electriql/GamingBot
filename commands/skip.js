@@ -8,9 +8,10 @@ exports.info = "Skips the track that is currently playing."
 exports.run = async (message, args, client, ops) => {
     let fetched = ops.active.get(message.guild.id);
     if (fetched) {
-       if (message.member.voiceChannel) {
-            if (message.guild.voiceConnection) {
-                if (message.member.voiceChannel == message.guild.me.voiceChannel) {
+       if (message.member.voice.channel) {
+            if (message.guild.voice.channel) {
+                console.log(message.member.voice.channel + "\n" + message.guild.voice.channel);
+                if (message.member.voice.channel == message.guild.voice.channel) {
                     
                     
                     if (!isNaN(args[0])) {

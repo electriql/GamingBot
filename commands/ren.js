@@ -25,7 +25,6 @@ const quotes = [
 "(*Insert Object Here*) can go eat shit and die",
 "and its really cool",
 "*Gay laugh*"];
-const ready = true;
 exports.category = "fun";
 exports.info = "Gives a random Ren (very gay) quote. Type 'mock' at the end to add a mocking style!" 
 exports.run = async (message, args, client, ops) => {
@@ -42,7 +41,7 @@ exports.run = async (message, args, client, ops) => {
         }
     }
     else {
-        message.channel.sendMessage(msg);   
+        message.channel.send(msg);   
     }    
     
         

@@ -49,13 +49,19 @@ exports.run = async (message, args, client, ops) => {
                 "url" : "",
                 "color": 4886754,
                 "footer": {
-                    "icon_url": ops.owner.displayAvatarURL,
-                    "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                    "icon_url": ops.owner.displayAvatarURL({
+                        size: 2048,
+                        format: "png"
+                    }),
+                    "text": "Bot Created by " + ops.owner.tag
                 },
                 "author": {
                     "name": "Searching...",
                     "url": "",
-                    "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                    "icon_url": client.user.displayAvatarURL({
+                        size: 2048,
+                        format: "png"
+                    }),
                 },
                 "fields": resp
             }
@@ -82,8 +88,8 @@ exports.run = async (message, args, client, ops) => {
                     return message.channel.send("❌ The message is invalid!");
                 }
                 let commandFile = require('./play.js');
-                let a = ["https://www.youtube.com" + this.videos[parseInt(m.content)-1].url]
-                
+                let a = [this.videos[parseInt(m.content)-1].url];
+
                 commandFile.run(message, a, client, ops);
             });
         });

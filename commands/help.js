@@ -45,13 +45,19 @@ exports.info = "Brings up the list of available commands."
                     "description": "**This bot has an automatic join and leave message, curse filter, music, and more! Here are the commands that I can execute! Type g!help <command> to see what the command does!**",
                     "color": 4886754,
                     "footer": {
-                        "icon_url": ops.owner.displayAvatarURL,// https://media.discordapp.net/attachments/415729242341507076/439987020853411844/ElectricDiamondCrop.png?width=676&height=676
-                        "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                        "icon_url": ops.owner.displayAvatarURL({
+                            size: 2048,
+                            format: "png"
+                        }),
+                        "text": "Bot Created by " + ops.owner.tag 
                     },
                     "author": {
                         "name": "Bot Information",
                         "url": "",
-                        "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                        "icon_url": client.user.displayAvatarURL({
+                            size: 2048,
+                            format: "png"
+                        }),
                     },
                     "fields": [
                         {

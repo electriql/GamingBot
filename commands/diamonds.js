@@ -2,9 +2,12 @@ var index = require('../index.js');
 const fs = require('fs');
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 
+const Utils = require("../util.js");
+
 exports.category = "currency";
 exports.info = "Shows how many diamonds you currently have."
 exports.run = async (message, args, client, ops) => {
+    let utils = new Utils();
     var user = message.author;
     if (args[0]) {
         var name = "";
@@ -12,28 +15,18 @@ exports.run = async (message, args, client, ops) => {
                       name += args[i] + " "; 
                 }
                 name = name.trim();
-                message.guild.members.forEach(member => {
-                        if (((name.toLowerCase() == member.displayName.toLowerCase() 
-                        || name.toLowerCase() == member.user.username.toLowerCase())
-                         || name.toLowerCase() == member.user.tag.toLowerCase())) {    
-                                user = member.user;
-                        }
-                        else if (message.mentions.members.first()) {
-                                if (message.mentions.members.first().user == member.user) {
-                                        user = member.user; 
-                                }
-                        }
-                });
+                user = await utils.findUser(message, name);
     }
     index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
         if (!res.rows[0]) {
-            pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
-
+            index.pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
+                
             })
         }
     });
     index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', user.id, function(data) {
-    var diamonds = data.diamonds;
-    message.channel.send("**" + user.username + "** has 💎x" + diamonds + "!");
+        if (!data) return message.channel.send("**" + user.username + "** has 💎x0!");
+        var diamonds = data.diamonds;
+        message.channel.send("**" + user.username + "** has 💎x" + diamonds + "!");
     })
 }

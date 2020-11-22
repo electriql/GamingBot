@@ -21,23 +21,11 @@ const puns = [
 "I'm reading a book about anti-gravity. It's impossible to put down.",
 "I went to the dentist without lunch, and he gave me a plate.",
 "A prisoner's favorite punctuation mark is the period. It marks the end of his sentence."];
-const ready = true;
+
 exports.category = "fun";
 exports.info = "Gives a random pun."
 exports.run = async (message, args, client, ops) => {
         var pun = Math.floor(Math.random() * puns.length);
-        if (ready == false) {
-            if (message.guild.id == "415729604217798656") {
-                var msg = puns[pun];
-                message.channel.sendMessage(msg + "*Ba doom, crash!*");
-            }
-            else {
-                message.reply("That feature is not ready yet!");
-            }
-            
-        }
-        else {
-            var msg = puns[pun];
-            message.channel.sendMessage(msg + " *Ba doom, crash!*");
-        }
+        var msg = puns[pun];
+        message.channel.send(msg + " *Ba doom, crash!*");
     }

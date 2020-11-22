@@ -5,7 +5,7 @@ exports.category = "music";
 exports.info = "Leaves the channel I am currently in."
     exports.run = async (message, args, client, ops) => {
         let fetched = ops.active.get(message.guild.id);
-        if (message.guild.voiceConnection) {
+        if (message.guild.voice.channel) {
             
             
             
@@ -18,7 +18,7 @@ exports.info = "Leaves the channel I am currently in."
                 fetched.queue = [];
                 ops.active.delete(message.guild.id);
             }
-            message.guild.voiceConnection.disconnect();
+            message.guild.voice.channel.leave();
             message.channel.send("**Successfully Disconnected!**");
         }
         else {

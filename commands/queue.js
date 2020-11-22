@@ -13,7 +13,7 @@ exports.run = async (message, args, client, ops) => {
             for (i = 1; i < data.queue.length; i++) {
                 fields.push({
                     'name': i + ". " + data.queue[i].songTitle + " **[" + data.queue[0].duration + "]** ",
-                    'value': "Requested by: " + data.queue[i].requester,
+                    'value': "Requested by: " + data.queue[i].requester.toString(),
                 })
             }
             let l = ""
@@ -28,13 +28,19 @@ exports.run = async (message, args, client, ops) => {
                         "url" : data.queue[0].url,
                         "color": 4886754,
                         "footer": {
-                            "icon_url": ops.owner.displayAvatarURL,
-                            "text": "Bot Created by " + ops.owner.tag //@ᗴlectricↁiamond#1684
+                            "icon_url": ops.owner.displayAvatarURL({
+                                size: 2048,
+                                format: "png"
+                            }),
+                            "text": "Bot Created by " + ops.owner.tag 
                         },
                         "author": {
                             "name": "Queue",
                             "url": "",
-                            "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                            "icon_url": client.user.displayAvatarURL({
+                                size: 2048,
+                                format: "png"
+                            }),
                         },
                         "fields": fields
                     

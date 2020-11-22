@@ -1,7 +1,10 @@
 require('dotenv').config();
-const discord = require('discord.js');
-
-const bot = new discord.Client();
+const { Client, Intents } = require("discord.js");
+const intents = new Intents([
+    Intents.NON_PRIVILEGED,
+    "GUILD_MEMBERS",
+]);
+const bot = new Client({ ws: { intents } });
 var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
 const prefix = "g!"
 const fs = require('fs');
@@ -14,14 +17,13 @@ const hangman = new Map();
 const active = new Map();
 const prof = new Map();
 
-const { Pool, Client } = require('pg');
+const { Pool } = require('pg');
 
 const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
 })
-
 var http = require('http');
 
 const PORT = process.env.PORT || 5000;
@@ -38,15 +40,15 @@ console.log("Running on port " + PORT);
 bot.login(process.env.BOT_TOKEN);
 
 //DATABASE INTERACTIONS
-function dbSelect(pool, db, c1, c2, key, callback) {
+async function dbSelect(pool, db, c1, c2, key, callback) {
     pool.query('SELECT ' + c2 + ' FROM ' + db + ' WHERE ' + c1 + ' = ' + key + ' FETCH FIRST ROW ONLY', [], (err, res) => {
         if (err) {
-          throw err;
+          console.log(err.stack);
         }
         return callback(res.rows[0]);
     });
 }
-function dbUpdate(pool, db, c1, c2, key, value) {
+async function dbUpdate(pool, db, c1, c2, key, value) {
     pool.query('UPDATE ' + db + ' SET ' + c2 + ' = ' + value + ' WHERE ' + c1 + ' = ' + key, [], (err, res) => {
         if (err) {
             console.log(err.stack)
@@ -54,7 +56,7 @@ function dbUpdate(pool, db, c1, c2, key, value) {
     })
 }
 
-function dbInsert(pool, db, c1, c2, key, value) {
+async function dbInsert(pool, db, c1, c2, key, value) {
     let text = 'INSERT INTO ' +  db + '(' + c1 + ', ' + c2 + ') VALUES($1, $2)';
     let values = [key, value];
       
@@ -73,7 +75,7 @@ bot.on('guildMemberAdd', member => {
     
 });
 bot.on('guildMemberRemove', member => {
-    bot.channels.get(member.guild.systemChannelID).send('**' + member.user.username + '** has left the server. Come back soon.');
+    bot.channels.cache.get(member.guild.systemChannelID).send('**' + member.user.username + '** has left the server. Come back soon.');
 });
 
 
@@ -118,7 +120,7 @@ bot.on('message', message => {
             
             let client = bot;
 
-            let owner = bot.users.get("240982621247635456");
+            let owner = bot.users.cache.get("240982621247635456");
 
             
 
@@ -146,7 +148,7 @@ bot.on('message', message => {
             
             let client = bot;
 
-            let owner = bot.users.get("240982621247635456");
+            let owner = bot.users.cache.get("240982621247635456");
 
             
 
@@ -177,6 +179,7 @@ bot.on('guildCreate', guild => {
 bot.on('ready', () => {
     console.log("Gaming launched!");
     bot.user.setActivity('g!help');
+
     setInterval(function (){
         cooldown.forEach(function(value, key, map) {
             var updated = {};

@@ -11,7 +11,7 @@ exports.run = async (message, args, client, ops) => {
      let members = [];
      let loops = 0;
      var bots = 0;
-    server.members.array().forEach(element => {
+    server.members.cache.array().forEach(element => {
         
         if (!element.user.bot) {
             let id = element.id;
@@ -52,13 +52,19 @@ exports.run = async (message, args, client, ops) => {
                   
                       "color": 4886754,
                       "footer": {
-                        "icon_url": ops.owner.displayAvatarURL,
+                        "icon_url": ops.owner.displayAvatarURL({
+                          size: 2048,
+                          format: "png"
+                        }),
                         "text": "Bot Created by " + ops.owner.tag 
                       },
                       "author": {
                         "name": "The Richest in " + server.name,
                         "url": "",
-                        "icon_url": "https://media.discordapp.net/attachments/415729242341507076/439978267156545546/BotLogo.png?width=676&height=676"
+                        "icon_url": client.user.displayAvatarURL({
+                          size: 2048,
+                          format: "png"
+                      }),
                       },
                       "fields": [
                         {
