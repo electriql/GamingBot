@@ -20,8 +20,7 @@ class Utils {
         return user;
     }
     async insertEmotes(string, client) {
-        console.log(string);
-        string = string.replaceAll("<", ">");
+        string = string.replace(/</g, ">");
         var sections = string.split(">");
         string = "";
         sections.forEach(str => {
@@ -31,6 +30,7 @@ class Utils {
                 })
                 string += str;
         })
+        console.log(string);
         var output = "";
         var emoteName = ":";
         var emote = false;
@@ -46,7 +46,7 @@ class Utils {
                                 emoteName+=":";
                                 let animated = false;
                                 client.emojis.cache.forEach(emoji => {
-                                        if (emoji.name.toLowerCase() == emoteName.replaceAll(":", "").toLowerCase()) {
+                                        if (emoji.name.toLowerCase() == emoteName.replace(/:/g, "").toLowerCase()) {
                                                 emoteName = emoji.identifier;
                                                 animated = emoji.animated;
                                         }
