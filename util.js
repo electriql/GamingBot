@@ -30,7 +30,6 @@ class Utils {
                 })
                 string += str;
         })
-        console.log(string);
         var output = "";
         var emoteName = ":";
         var emote = false;
