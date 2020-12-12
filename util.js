@@ -19,5 +19,44 @@ class Utils {
         }).catch(console.error);
         return user;
     }
+    insertEmotes(string, client) {
+        string = string.replaceAll("<", ">");
+        var sections = string.split(">");
+        string = "";
+        sections.forEach(str => {
+                client.emojis.cache.forEach(emoji => {
+                        if (emoji.identifier == str.replace(":", ""))
+                                str = ":" + emoji.name + ":"; 
+                })
+                string += str;
+        })
+        var output = "";
+        var emoteName = ":";
+        var emote = false;
+        for (i = 0; i < string.length; i++) {
+                if (string.charAt(i) != ':') { 
+                        if (emote)
+                                emoteName += string.charAt(i);
+                        else output+=string.charAt(i);
+                }
+                else {
+                        emote = !emote;
+                        if (!emote && emoteName.replace(":", "").length > 0) {
+                                emoteName+=":";
+                                let animated = false;
+                                client.emojis.cache.forEach(emoji => {
+                                        if (emoji.name.toLowerCase() == emoteName.replaceAll(":", "").toLowerCase()) {
+                                                emoteName = emoji.identifier;
+                                                animated = emoji.animated;
+                                        }
+                                })
+                                if (animated) output+="<" + emoteName + ">";
+                                else output+="<:" + emoteName + ">";
+                                emoteName = "";
+                        }
+                }
+        }
+        return output;
+    }
 }
 module.exports = Utils;

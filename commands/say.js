@@ -3,7 +3,7 @@ exports.info = "Makes the bot say anything you would like (Automatically censors
 var profanities = require('profanities');
 const fs = require('fs');
 const serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
-
+const Utils = require("../util.js");
 function filter(message, serverData) {
     var msg = message.toString();
     var lower = msg.toLowerCase();
@@ -20,12 +20,13 @@ function filter(message, serverData) {
 }
 
 exports.run = async(message, args, client, ops, serverData) => {
+    let utils = new Utils();
     if (args[0]) {
         let str = ""
         for (i = 0; i < args.length; i++) {
             str = str + args[i] + " ";
         }
-        str = str + "\n\n - " + message.author.tag;
+        str = utils.insertEmotes(str, client) + "\n\n - " + message.author.tag;
         message.channel.send(str);
     }
     else {

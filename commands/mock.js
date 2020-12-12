@@ -1,6 +1,8 @@
 exports.category = "fun";
 exports.info = "Mocks the given statement in 2 ways!"
+const Utils = require("../util.js");
 exports.run = async (message, args, client, ops) => {
+    let utils = new Utils();
     if (!args[0]) return message.channel.send("❌ Enter a message first.");
 
     var embed = {
@@ -65,7 +67,7 @@ exports.run = async (message, args, client, ops) => {
                         }
                         output = output + " ";
                     }
-                    message.channel.send(output + "\n\n - " + message.author.tag);
+                    message.channel.send(utils.insertEmotes(output, client) + "\n\n - " + message.author.tag);
                 }  
                 else if (m.content.toUpperCase() == "CANCEL") {
                     message.channel.send("**Cancelled!**");
