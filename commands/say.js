@@ -26,7 +26,7 @@ exports.run = async(message, args, client, ops, serverData) => {
         for (i = 0; i < args.length; i++) {
             str = str + args[i] + " ";
         }
-        str = utils.insertEmotes(str, client) + "\n\n - " + message.author.tag;
+        str = await utils.insertEmotes(str, client) + "\n\n - " + message.author.tag;
         message.channel.send(str);
     }
     else {

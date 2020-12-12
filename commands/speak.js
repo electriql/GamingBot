@@ -9,7 +9,8 @@ exports.run = async(message, args, client, ops, serverData) => {
             for (i = 0; i < args.length; i++) {
                 str = str + args[i] + " ";
             }
-            message.channel.send(utils.insertEmotes(str, client));
+            str = await utils.insertEmotes(str, client);
+            message.channel.send(str);
         }
         else {
             message.channel.send("❌ You must give me something to say!");

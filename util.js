@@ -19,7 +19,7 @@ class Utils {
         }).catch(console.error);
         return user;
     }
-    insertEmotes(string, client) {
+    async insertEmotes(string, client) {
         string = string.replaceAll("<", ">");
         var sections = string.split(">");
         string = "";

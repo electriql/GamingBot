@@ -40,7 +40,7 @@ exports.run = async (message, args, client, ops) => {
     .then(msg => {
         const collector = message.channel.createMessageCollector(filter);
 
-        collector.once('collect', function(m) {
+        collector.once('collect', async function(m) {
             msg.delete();
                 if (!isNaN(m.content) && (m.content == 1 || m.content == 2)) {
                     let output = ""
@@ -67,7 +67,8 @@ exports.run = async (message, args, client, ops) => {
                         }
                         output = output + " ";
                     }
-                    message.channel.send(utils.insertEmotes(output, client) + "\n\n - " + message.author.tag);
+                    output = await utils.insertEmotes(output, client) + "\n\n - " + message.author.tag;
+                    message.channel.send(output);
                 }  
                 else if (m.content.toUpperCase() == "CANCEL") {
                     message.channel.send("**Cancelled!**");
