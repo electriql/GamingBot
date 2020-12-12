@@ -20,6 +20,7 @@ class Utils {
         return user;
     }
     async insertEmotes(string, client) {
+        console.log(string);
         string = string.replaceAll("<", ">");
         var sections = string.split(">");
         string = "";
