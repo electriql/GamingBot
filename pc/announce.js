@@ -5,8 +5,8 @@ exports.run = async (message, args, client, ops) => {
     const collector = message.channel.createMessageCollector(filter);
     collector.once('collect', function(m) {
         if (m.content.toUpperCase() == "CANCEL") return message.channel.send("Successfully canceled!");
-        for (i = 0; i < client.guilds.array().length; i++) {
-            let guild = client.guilds.array()[i];
+        for (i = 0; i < client.guilds.cache.array().length; i++) {
+            let guild = client.guilds.cache.array()[i];
             guild.systemChannel.send(m.content);
         }
         return message.channel.send("Successfully sent!");

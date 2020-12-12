@@ -1,6 +1,6 @@
 exports.info = "Shows all the servers that I am in.";
 exports.run = async (message, args, client, ops) => {
-    let guilds = client.guilds.array();
+    let guilds = client.guilds.cache.array();
     let serverList = [];
     for (i = 0; i < guilds.length; i++) {
         serverList.push({
