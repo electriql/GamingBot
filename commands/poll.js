@@ -4,7 +4,7 @@ exports.info = "Makes a poll of up to 10 options. Syntax: \"question\" \"option_
 exports.run = async (message, args, client, ops) => {
     //var emotes = [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:", ":nine:", ":keycap_ten:"];
     var emotes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
-    var split = args.join(" ").split("\"");
+    var split = args.join(" ").replace(/“/g, "\"").replace(/”/g, "\"").split("\"");
     var options = [];
     split.forEach(element => {
         

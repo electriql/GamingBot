@@ -75,7 +75,7 @@ bot.on('guildMemberAdd', member => {
     
 });
 bot.on('guildMemberRemove', member => {
-    bot.channels.cache.get(member.guild.systemChannelID).send('**' + member.user.username + '** has left the server. Come back soon.');
+    bot.channels.cache.get(member.guild.systemChannelID).send('**' + member.user.username + '** has left the server.');
 });
 
 
