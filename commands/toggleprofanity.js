@@ -65,7 +65,7 @@ exports.filter = function(message) {
             }
         });
         index.dbSelect(index.pool, 'serverdata', 'id', 'prof', message.guild.id, function(data) {
-            var pr = 1;
+            var pr = -1;
             if (data) pr = data.prof;
 
             if (pr == 1) {
