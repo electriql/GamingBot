@@ -85,17 +85,14 @@ exports.filter = function(message) {
                                 }
                                 else {
                                     message.delete();
-                                    message.channel.send("Whoa watch it " + message.author.toString() + "! Inappropriate language isn't allowed!");
+                                    message.channel.send(message.author.toString() + " calm down jamal. This is mainland china");
                                     const p = message.guild.channels.cache.find(channel => channel.name == 'profanity');
-                                    if (!p) {
-                                        message.channel.send('Error: A channel named "profanity" does not exist. Add one please.');
-                                        
-                                    return;
-                                    }
-                                    else {
-                                        p.send('**' + message.author.username + '** has been using some bad language just now. They said ```' + message.content + '``` __**Bad Word:**__ ' + str[i]);
-                                        return;
-                                    }
+                                    if (!p)
+                                            message.channel.send('Error: A text channel named "profanity" does not exist. Add one please.');
+                                    else if (p.type == 'text')
+                                        p.send('**' + message.author.username + '** just said a no no word. They said ```' + message.content + '``` __**No no Word:**__ ' + str[i]);
+                                    else 
+                                        message.channel.send('Error: A text channel named "profanity" does not exist. Add one please.');
                                     return;
                                 }
                     
