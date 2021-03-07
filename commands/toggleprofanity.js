@@ -58,10 +58,12 @@ exports.filter = function(message) {
     //Profanity
     if (message.channel.type == 'text') {
         index.pool.query('SELECT * FROM serverdata WHERE id = ' + message.guild.id, [], (err, res) => {
-            if (!res.rows[0]) {
-                index.pool.query('INSERT INTO serverdata(id, prof) VALUES(' + message.guild.id + ',1)', [], (err, res) => {
-                    if (err) console.log(err);
-                })
+            if (res) {
+                if (!res.rows[0]) {
+                    index.pool.query('INSERT INTO serverdata(id, prof) VALUES(' + message.guild.id + ',1)', [], (err, res) => {
+                        if (err) console.log(err);
+                    })
+                }
             }
         });
         index.dbSelect(index.pool, 'serverdata', 'id', 'prof', message.guild.id, function(data) {
