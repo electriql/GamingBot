@@ -3,7 +3,7 @@ var randomWords = require('random-words');
 var person = ["  ___\n|    |\n|    \n|","  ___\n|    |\n|   O\n|","  ___\n|    |\n|   O\n|    |","  ___\n|    |\n|   O\n|  /| ","  ___\n|    |\n|   O\n|  /|\\","  ___\n|    |\n|   O\n|  /|\\\n   /","  ___\n|    |\n|   O\n|  /|\\\n    /\\"];
 exports.category = "fun";
 exports.info = "Users play the classic game of hangman! Only one game at a time! \n **g!hangman guess - ** guess a letter or the entire word. \n **g!hangman start <random/custom> -** Start a hangman game \n - **random** - the bot chooses a random word (whoever guesses the word wins diamonds!) \n - **custom** - the user chooses a custom word \n **g!hangman stop -** stops the game. \n **g!hangman view -** views the status of the current game. \n **Aliases:** `hm`"
-function rewardUsers(ops, data, message) {
+function rewardUsers(client, ops, data, message) {
     var status = "The word wasn't guessed!"
     var rewards = "";
     var index = require('../index.js');
@@ -18,7 +18,7 @@ function rewardUsers(ops, data, message) {
             index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', key, user.diamonds + diamonds);
         });
     })
-    if (getHangman(ops, data).embed.description.startsWith("__**" + data.word.toUpperCase() + "**__")) {
+    if (getHangman(client, ops, data).embed.description.startsWith("__**" + data.word.toUpperCase() + "**__")) {
         status = "The word was guessed!";
     }
     var embed = {
@@ -41,7 +41,7 @@ function rewardUsers(ops, data, message) {
     
     message.channel.send(embed);
 }
-function getHangman(ops, data) {
+function getHangman(client, ops, data) {
     
     var word = "";
     var guessedLetters = "";
@@ -126,7 +126,7 @@ exports.run = async (message, args, client, ops) => {
                 type : "random"
             }
             ops.hangman.set(message.guild.id, fetched);
-            message.channel.send(getHangman(ops, fetched));
+            message.channel.send(getHangman(client, ops, fetched));
          }
          else if (args[1].toLowerCase() == "custom") {
             message.channel.send("Check your DMs!");
@@ -197,7 +197,7 @@ exports.run = async (message, args, client, ops) => {
                             type : "custom"
                         }
                         ops.hangman.set(message.guild.id, fetched);
-                        message.channel.send(getHangman(ops, fetched));
+                        message.channel.send(getHangman(client, ops, fetched));
                         
                     }
                     else {
@@ -216,7 +216,7 @@ exports.run = async (message, args, client, ops) => {
      }
      else if (args[0].toLowerCase() == "view") {
         if (!fetched.word) return message.channel.send("❌ There currently is no hangman game!");
-        message.channel.send(getHangman(ops, fetched));
+        message.channel.send(getHangman(client, ops, fetched));
      }
      else if (args[0].toLowerCase() == "stop") {
          if (!fetched.word) return message.channel.send("❌ There is currently no hangman game!");
@@ -262,7 +262,7 @@ exports.run = async (message, args, client, ops) => {
                 for (i = 0; i < fetched.word.length; i++) {
                     var index = i + 4;
 
-                    if (getHangman(ops, fetched).embed.description.charAt(index) == "?"){
+                    if (getHangman(client, ops, fetched).embed.description.charAt(index) == "?"){
                         if (!fetched.word.substring(0, i).includes(fetched.word.charAt(i)))
                             fetchedUser.correctGuesses++;
                     }
@@ -276,21 +276,21 @@ exports.run = async (message, args, client, ops) => {
             }
         }
         fetched.guessedLetters.push(args[1].toUpperCase());
-        var embed = getHangman(ops, fetched);
+        var embed = getHangman(client, ops, fetched);
         embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
         message.channel.send(embed);
         fetched.guesses.set(message.author.id, fetchedUser);
         if (fetched.wrongGuesses >= person.length - 1) {
             message.channel.send("You are out of guesses! The word is **" + fetched.word.toUpperCase() + "**!");
             if (fetched.type == "random") {
-                rewardUsers(ops, fetched, message);
+                rewardUsers(client, ops, fetched, message);
             }
             fetched = {};
         }
         else if (embed.embed.description.startsWith("__**" + fetched.word.toUpperCase() + "**__")) {
             message.channel.send("You guessed the word!");
             if (fetched.type == "random") {
-                rewardUsers(ops, fetched, message);
+                rewardUsers(client, ops, fetched, message);
             }
             fetched = {};
         }

@@ -23,6 +23,7 @@ class Utils {
         string = string.replace(/</g, ">");
         var sections = string.split(">");
         string = "";
+        var output = "";
         sections.forEach(str => {
                 client.emojis.cache.forEach(emoji => {
                         if (emoji.identifier == str.replace(":", ""))
@@ -30,31 +31,30 @@ class Utils {
                 })
                 string += str;
         })
-        var output = "";
-        var emoteName = ":";
-        var emote = false;
+        var end = 0;
         for (i = 0; i < string.length; i++) {
-                if (string.charAt(i) != ':') { 
-                        if (emote)
-                                emoteName += string.charAt(i);
-                        else output+=string.charAt(i);
-                }
-                else {
-                        emote = !emote;
-                        if (!emote && emoteName.replace(":", "").length > 0) {
-                                emoteName+=":";
+                var emote = false;
+                if (string.charAt(i) == ':') {
+                        end = string.indexOf(":", i + 1);
+                        if (end != -1) {
+                                var emoteName = string.substring(i + 1, end);
                                 let animated = false;
                                 client.emojis.cache.forEach(emoji => {
-                                        if (emoji.name.toLowerCase() == emoteName.replace(/:/g, "").toLowerCase()) {
+                                        if (emoji.name.toLowerCase() == emoteName.toLowerCase()) {
+                                                emote = true;
                                                 emoteName = emoji.identifier;
                                                 animated = emoji.animated;
                                         }
                                 })
-                                if (animated) output+="<" + emoteName + ">";
-                                else output+="<:" + emoteName + ">";
-                                emoteName = "";
+                                if (emote) {
+                                        i = end;
+                                        if (animated) output+="<" + emoteName + ">";
+                                        else output+="<:" + emoteName + ">";
+                                }
+                                
                         }
                 }
+                if (!emote) output+=string.charAt(i);
         }
         return output;
     }
