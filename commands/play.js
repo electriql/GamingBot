@@ -87,7 +87,7 @@ function secondsToHms(d) {
                 }
                 else {
                 search(args.join(' '), async function(err, res) {
-                    if (err) return message.channel.send("❌ An error occurred. Please contact <@240982621247635456>.");
+                    if (err) return message.channel.send("❌ An error occurred.");
                     try {
                         
                         if (YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
