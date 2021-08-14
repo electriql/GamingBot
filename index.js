@@ -22,7 +22,9 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
-    ssl: false
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
 var http = require('http');
 
