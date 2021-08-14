@@ -22,7 +22,7 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
-    ssl: true
+    ssl: false
 })
 var http = require('http');
 
@@ -91,6 +91,8 @@ bot.on('messageCreate', message => {
             }
             else {
                 pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
+                    if (err)
+                        console.log(err)
                     if (!res.rows[0]) {
                         pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
 
