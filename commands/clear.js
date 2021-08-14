@@ -10,7 +10,7 @@ exports.run = async(message, args, client, ops) => {
 
     fetched.queue.length = 0;
 
-    fetched.dispatcher.end();
+    fetched.dispatcher.stop();
 
     ops.active.set(message.guild.id, fetched);
 

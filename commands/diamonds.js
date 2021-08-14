@@ -18,6 +18,8 @@ exports.run = async (message, args, client, ops) => {
                 user = await utils.findUser(message, name);
     }
     index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
+        if (err)
+            return console.log(err);
         if (!res.rows[0]) {
             index.pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
                 

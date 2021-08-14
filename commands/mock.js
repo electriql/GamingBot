@@ -36,7 +36,7 @@ exports.run = async (message, args, client, ops) => {
     }
 
     const filter = m => m.author.equals(message.author);
-    message.channel.send(embed)
+    message.channel.send({embeds :[embed.embed]})
     .then(msg => {
         const collector = message.channel.createMessageCollector(filter);
 

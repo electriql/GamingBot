@@ -139,7 +139,7 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. C
                                 "value": "================"
                                 },
                                 {
-                                "name": "---------vv-----------",
+                                "name": "-------🔰------------",
                                 "value": "| " + wsymbol[slot1] + " | " + wsymbol[reward] + " | " + wsymbol[slot3] + " |"
                                 },
                                 {
@@ -162,7 +162,7 @@ exports.info = "Spins a built-in 'wheel of fortune' where you can win rewards. C
                             ]
                             }
                         }
-                        message.channel.send(wheel);
+                        message.channel.send({embeds: [wheel.embed]});
                 }
             });
         }

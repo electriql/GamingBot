@@ -76,7 +76,7 @@ exports.run = async (message, args, client, ops) => {
                         ]
                         }
                     }
-                    message.channel.send(slots);
+                    message.channel.send({embeds: [slots.embed]});
                     index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds + prize); 
                 }
                 else {
@@ -114,7 +114,7 @@ exports.run = async (message, args, client, ops) => {
                     var final = diamonds - pay;
                     index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, final);
                     
-                    message.channel.send(slots);
+                    message.channel.send({embeds: [slots.embed]});
                 }
             }
         });

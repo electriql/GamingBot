@@ -42,7 +42,7 @@ exports.run = async (message, args, client, ops) => {
               var str = "** ";
               for(i = 5 * (page - 1); i < page * 5; i++) {
                 
-                  var member = server.member(rich[i].id);
+                  var member = server.members.cache.get(rich[i].id);
                   str = str + (i + 1) + ". " + member.user.tag + " - 💎x" + rich[i].diamonds + "\n";
                   if (!rich[i + 1]) break;
               }
@@ -74,7 +74,7 @@ exports.run = async (message, args, client, ops) => {
                   ]
                 }
               }
-              message.channel.send(embed);
+              message.channel.send({embeds: [embed.embed]});
             }
           });
         }

@@ -9,9 +9,8 @@ exports.run = async (message, args, client, ops) => {
     let fetched = ops.active.get(message.guild.id);
     if (fetched) {
        if (message.member.voice.channel) {
-            if (message.guild.voice.channel) {
-                console.log(message.member.voice.channel + "\n" + message.guild.voice.channel);
-                if (message.member.voice.channel == message.guild.voice.channel) {
+            if (message.guild.me.voice.channel) {
+                if (message.member.voice.channel == message.guild.me.voice.channel) {
                     
                     
                     if (!isNaN(args[0])) {
@@ -30,7 +29,7 @@ exports.run = async (message, args, client, ops) => {
                         message.channel.send("**Skipped!**");
                     }
                     fetched.queue[0].looped = -1;
-                    return fetched.dispatcher.end();
+                    return fetched.dispatcher.stop();
                 }
                 else {
                     message.channel.send("❌ Sorry, but you must be in the same voice channel as me to skip.");

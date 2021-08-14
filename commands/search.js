@@ -69,7 +69,7 @@ exports.run = async (message, args, client, ops) => {
 
         const filter = m => m.author.equals(message.author);
 
-        message.channel.send(x)
+        message.channel.send({embeds: [x.embed]})
         .then(msg => {
             const collector = message.channel.createMessageCollector(filter);
 
@@ -78,7 +78,10 @@ exports.run = async (message, args, client, ops) => {
             collector.once('collect', function(m) {
                 msg.delete();
                 if (!isNaN(m.content) && m.content < videos.length + 1 && m.content > 0) {
+                    let commandFile = require('./play.js');
+                    let a = [this.videos[parseInt(m.content)-1].url];
 
+                    commandFile.run(message, a, client, ops);
                 }  
                 else if (m.content.toUpperCase() == "CANCEL") {
                     message.channel.send("**Cancelled!**");
@@ -87,10 +90,6 @@ exports.run = async (message, args, client, ops) => {
                 else {
                     return message.channel.send("❌ The message is invalid!");
                 }
-                let commandFile = require('./play.js');
-                let a = [this.videos[parseInt(m.content)-1].url];
-
-                commandFile.run(message, a, client, ops);
             });
         });
         

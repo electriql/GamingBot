@@ -39,7 +39,7 @@ function rewardUsers(client, ops, data, message) {
         }
     }
     
-    message.channel.send(embed);
+    message.channel.send({embeds: [embed.embed]});
 }
 function getHangman(client, ops, data) {
     
@@ -126,7 +126,7 @@ exports.run = async (message, args, client, ops) => {
                 type : "random"
             }
             ops.hangman.set(message.guild.id, fetched);
-            message.channel.send(getHangman(client, ops, fetched));
+            message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
          }
          else if (args[1].toLowerCase() == "custom") {
             message.channel.send("Check your DMs!");
@@ -197,7 +197,7 @@ exports.run = async (message, args, client, ops) => {
                             type : "custom"
                         }
                         ops.hangman.set(message.guild.id, fetched);
-                        message.channel.send(getHangman(client, ops, fetched));
+                        message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
                         
                     }
                     else {
@@ -216,7 +216,7 @@ exports.run = async (message, args, client, ops) => {
      }
      else if (args[0].toLowerCase() == "view") {
         if (!fetched.word) return message.channel.send("❌ There currently is no hangman game!");
-        message.channel.send(getHangman(client, ops, fetched));
+        message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
      }
      else if (args[0].toLowerCase() == "stop") {
          if (!fetched.word) return message.channel.send("❌ There is currently no hangman game!");
@@ -278,7 +278,7 @@ exports.run = async (message, args, client, ops) => {
         fetched.guessedLetters.push(args[1].toUpperCase());
         var embed = getHangman(client, ops, fetched);
         embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
-        message.channel.send(embed);
+        message.channel.send({embeds: [embed.embed]});
         fetched.guesses.set(message.author.id, fetchedUser);
         if (fetched.wrongGuesses >= person.length - 1) {
             message.channel.send("You are out of guesses! The word is **" + fetched.word.toUpperCase() + "**!");

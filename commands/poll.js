@@ -39,7 +39,7 @@ exports.run = async (message, args, client, ops) => {
             },
         }
     }
-    message.channel.send(poll).then(msg => {
+    message.channel.send({embeds: [poll.embed]}).then(msg => {
         for (i = 0; i < options.length - 1; i++) {
             msg.react(emotes[i]);
         }

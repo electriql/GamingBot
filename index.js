@@ -1,13 +1,12 @@
 require('dotenv').config();
 const { Client, Intents } = require("discord.js");
-const intents = new Intents([
-    Intents.NON_PRIVILEGED,
-    "GUILD_MEMBERS",
-]);
-const bot = new Client({ ws: { intents } });
+const bot = new Client({
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES]
+});
 var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
 const prefix = "g!"
 const fs = require('fs');
+
 let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
 let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 
@@ -23,9 +22,7 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
-    ssl: {
-        rejectUnauthorized: false
-    }
+    ssl: false
 })
 var http = require('http');
 
@@ -46,7 +43,7 @@ bot.login(process.env.BOT_TOKEN);
 async function dbSelect(pool, db, c1, c2, key, callback) {
     pool.query('SELECT ' + c2 + ' FROM ' + db + ' WHERE ' + c1 + ' = ' + key + ' FETCH FIRST ROW ONLY', [], (err, res) => {
         if (err) {
-          console.log(err.stack);
+           return console.log(err.stack);
         }
         return callback(res.rows[0]);
     });
@@ -54,7 +51,7 @@ async function dbSelect(pool, db, c1, c2, key, callback) {
 async function dbUpdate(pool, db, c1, c2, key, value) {
     pool.query('UPDATE ' + db + ' SET ' + c2 + ' = ' + value + ' WHERE ' + c1 + ' = ' + key, [], (err, res) => {
         if (err) {
-            console.log(err.stack)
+            return console.log(err.stack)
         }
     })
 }
@@ -65,7 +62,7 @@ async function dbInsert(pool, db, c1, c2, key, value) {
       
       pool.query(text, values, (err, res) => {
         if (err) {
-          console.log(err.stack)
+          return console.log(err.stack)
         } 
       })
 }
@@ -82,10 +79,9 @@ bot.on('guildMemberRemove', member => {
 });
 
 
-bot.on('message', message => {
-
+bot.on('messageCreate', message => {
     // Database initialization
-    if (message.channel.type == 'text') {
+    if (message.channel.type == 'GUILD_TEXT') {
         let roles = message.guild.roles;
 
         let sender = message.author;
@@ -116,7 +112,7 @@ bot.on('message', message => {
 
     
     if (message.author.bot) return;
-    if ((message.channel.type == "dm" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
+    if ((message.channel.type == "DM" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
         try {
             if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
             let commandFile = require(__dirname + "/pc/" + cmd + ".js");
@@ -143,7 +139,7 @@ bot.on('message', message => {
         }
         return;
     }
-    if (message.channel.type != 'text') return;
+    if (message.channel.type != 'GUILD_TEXT') return;
     if (message.content.startsWith(prefix)) {
         try {
             if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");

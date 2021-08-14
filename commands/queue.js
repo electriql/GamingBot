@@ -12,7 +12,7 @@ exports.run = async (message, args, client, ops) => {
             
             for (i = 1; i < data.queue.length; i++) {
                 fields.push({
-                    'name': i + ". " + data.queue[i].songTitle + " **[" + data.queue[0].duration + "]** ",
+                    'name': i + ". " + data.queue[i].songTitle + " **[" + data.queue[i].duration + "]** ",
                     'value': "Requested by: " + data.queue[i].requester.toString(),
                 })
             }
@@ -46,7 +46,7 @@ exports.run = async (message, args, client, ops) => {
                     
                     }
                 }
-                message.channel.send(embed);
+                message.channel.send({embeds: [embed.embed]});
             }
         }
     }

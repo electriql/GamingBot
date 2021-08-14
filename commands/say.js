@@ -1,6 +1,6 @@
 exports.category = "fun";
 exports.info = "Makes the bot say anything you would like (Automatically censors profanity)."
-var profanities = require('profanities');
+var profanities = import('profanities');
 const fs = require('fs');
 const serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 const Utils = require("../util.js");

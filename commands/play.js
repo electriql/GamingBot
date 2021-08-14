@@ -1,3 +1,4 @@
+const voice = require('@discordjs/voice');
 const search = require("yt-search");
 const YTDL = require('ytdl-core');
 const fs = require('fs');
@@ -27,7 +28,12 @@ function secondsToHms(d) {
                     }
                     let data = ops.active.get(message.guild.id) || {};
                     
-                    if (!data.connection) data.connection = await message.member.voice.channel.join();
+                    if (!data.connection) data.connection = voice.joinVoiceChannel({
+                        channelId: message.member.voice.channel.id,
+                        guildId: message.guild.id,
+                        adapterCreator: message.guild.voiceAdapterCreator,
+                        selfDeaf: false,
+                    })
                     if (!data.queue) {
                         
                          data.queue = [];
@@ -74,13 +80,13 @@ function secondsToHms(d) {
                                 "fields": [
                                 {
                                     "name": "__Position in Queue__",
-                                    "value": data.queue.length - 1
+                                    "value": (data.queue.length - 1).toString()
                                 }
                                 ]
                               
                             }
                         }
-                        message.channel.send(embed1);
+                        message.channel.send({embeds: [embed1.embed]});
                         ops.active.set(message.guild.id, data);
                     }
                 
@@ -134,13 +140,21 @@ async function play(client, ops, data, message) {
             }
         }
     }
-    message.channel.send(embed);
-    data.dispatcher = await data.connection.play(YTDL(data.queue[0].url, {filter: "audioonly", quality: "highestaudio"}));
+    message.channel.send({embeds: [embed.embed]});
+    const player = voice.createAudioPlayer()
+    data.dispatcher = player;
+    const resource = voice.createAudioResource(YTDL(data.queue[0].url, {filter: "audioonly", quality: "highestaudio"}), {
+        inlineVolume: true
+    });
+    resource.volume.setVolumeDecibels(-15);
+    data.dispatcher.play(resource);
+    voice.getVoiceConnection(message.guild.id).subscribe(player);
     data.dispatcher.guildID = data.guildID;
     ops.active.set(data.dispatcher.guildID, data);
-    data.dispatcher.once('finish', async function() {
+    data.dispatcher.on(voice.AudioPlayerStatus.Idle, async function() {
         finish(client, ops, this, message, data);
     });
+    
 }
 async function finish(client, ops, dispatcher, message, data) {
 

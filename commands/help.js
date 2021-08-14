@@ -39,8 +39,8 @@ exports.info = "Brings up the list of available commands."
                 if (commandFile.category == "moderator") moderator = moderator + "`" + fileName + "`,";
                 
             });
-            const help =  {
-                "embed": {
+            const help = {
+                embed: {
                     "title": "__**Bot Features**__",
                     "description": "**This bot has an automatic join and leave message, curse filter, music, and more! Here are the commands that I can execute! Type g!help <command> to see what the command does!**",
                     "color": 4886754,
@@ -88,7 +88,7 @@ exports.info = "Brings up the list of available commands."
                     ]
                 }
             }
-                message.author.send(help);
+                message.author.send({embeds: [help.embed]});
         });
         
     }
