@@ -139,15 +139,15 @@ exports.run = async (message, args, client, ops) => {
                     ops.hangman.set(message.guild.id, fetched);
                     const filter = m => m.author.equals(message.author);
                     var wordPromise = new Promise(function getWord(resolve, reject) {
-                        const collector = msg.channel.createMessageCollector(filter, {time: 30000});
+                        const collector = msg.channel.createMessageCollector({filter, time: 30000});
                         var word = "";
                         collector.once('collect', function(m) {
                             word = m.content.replace(/\s/g,'');
                             collector.stop();
                         });
                         collector.once('end', collected => {
-                            if (!collected.array()[0]) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.array()[0].content.length < 4 || collected.array()[0].content.length > 20) {
+                            if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
+                            if (collected.first().content.length < 4 || collected.first().content.length > 20) {
                                 getWord(resolve, reject);
                                 return msg.channel.send("❌ That word is either too long or too short! The word must be 4-20 characters long! (Excluding spaces)");
                             }
@@ -164,19 +164,19 @@ exports.run = async (message, args, client, ops) => {
                     
                     msg.channel.send("Are you sure you want the word to be **" + word + "**? Type **Y** for yes and **N** to cancel. (Expires in 30 seconds)")
                     var decisionPromise = new Promise(function getDecision(resolve, reject) {
-                        const collector = msg.channel.createMessageCollector(filter, {time: 30000});
+                        const collector = msg.channel.createMessageCollector({filter, time: 30000});
                         var decision = "";
                         collector.once('collect', function(m) {
                             decision = m.content.trim();
                             collector.stop();
                         });
                         collector.once('end', collected => {
-                            if (!collected.array()[0]) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.array()[0].content.toLowerCase() != "y" && collected.array()[0].content.toLowerCase() != "n") {
+                            if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
+                            if (collected.first().content.toLowerCase() != "y" && collected.first().content.toLowerCase() != "n") {
                                 msg.channel.send("❌ You must type **Y** or **N**!");
                                 getDecision(resolve, reject);
                             } 
-                            if (collected.array()[0].content.toLowerCase() == "n") {
+                            if (collected.first().content.toLowerCase() == "n") {
                                 message.channel.send(message.author.tag + " canceled their custom hangman!");
                                 ops.hangman.set(message.guild.id, {});
                                 return msg.channel.send("Canceled!");

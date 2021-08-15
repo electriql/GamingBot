@@ -1,6 +1,6 @@
 const { Message, SystemChannelFlags } = require("discord.js");
 
-exports.info = "Shows message history of a channel in a server.";
+exports.info = "Shows message history of a channel in a server. (excludes embeds)";
 exports.run = async (message, args, client, ops) => {
     if (!args[0]) return message.channel.send("Usage: p!messages <serverid> <channelid> [length]");
     
@@ -48,7 +48,7 @@ exports.run = async (message, args, client, ops) => {
               "fields": messages
             }
           }
-          message.channel.send(embed);
+          message.channel.send({embeds: [embed.embed]});
     })
     
 }

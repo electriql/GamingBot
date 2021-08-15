@@ -1,7 +1,8 @@
 require('dotenv').config();
 const { Client, Intents } = require("discord.js");
 const bot = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES]
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.DIRECT_MESSAGES],
+    partials: ['CHANNEL']
 });
 var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
 const prefix = "g!"
@@ -86,10 +87,7 @@ bot.on('messageCreate', message => {
 
         let sender = message.author;
         let msg = message.content.toUpperCase;
-            if (message.author.id === '478588483556999169') {
-                return;
-            }
-            else {
+            if (message.author.id != bot.user.id) {
                 pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
                     if (!res.rows[0]) {
                         pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
@@ -98,20 +96,16 @@ bot.on('messageCreate', message => {
                     }
                 });
             }
-        
-        var dispatcher;
     }
     //Command Handler
     let args = message.content.slice(prefix.length).trim().split(' ');
     
-    
-
     let cmd = args.shift().toLowerCase();
 
     // Private Commands
-
     
     if (message.author.bot) return;
+    
     if ((message.channel.type == "DM" && message.content.startsWith("p!")) && message.author.id === '240982621247635456') {
         try {
             if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
