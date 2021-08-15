@@ -23,7 +23,9 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
-    ssl: false
+    ssl: {
+        rejectUnauthorized: false
+    }
 })
 var http = require('http');
 
@@ -89,6 +91,8 @@ bot.on('messageCreate', message => {
         let msg = message.content.toUpperCase;
             if (message.author.id != bot.user.id) {
                 pool.query('SELECT * FROM userdata WHERE id = ' + sender.id, [], (err, res) => {
+                    if (err)
+                        console.log(err)
                     if (!res.rows[0]) {
                         pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + sender.id + ',0,0)', [], (err, res) => {
 
