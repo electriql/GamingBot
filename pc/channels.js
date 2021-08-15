@@ -1,5 +1,10 @@
+const { MessageButton, MessageActionRow } = require("discord.js");
+
+const discord = import("discord.js");
+const pageMax = 10;
 exports.info = "Shows all the text and voice channels in a server given its id."
 exports.run = async (message, args, client, ops) => {
+    
     if (!args[0]) return message.channel.send("Put a server id as an argument.");
 
     var guilds = client.guilds.cache;
@@ -8,58 +13,71 @@ exports.run = async (message, args, client, ops) => {
     if (guilds.get(args[0]).channels.length < 1) return message.channel.send("This server doesn't have any channels.");
 
     var channels = guilds.get(args[0]).channels.cache;
-    console.log(channels)
-    let text = {
-        "name" : "**Text Channels**",
-        "value" : ""
-    };
-    let voice = {
-        "name" : "**Voice Channels**",
-        "value" : ""
-    };
-    let categories = {
-        "name" : "**Categories**",
-        "value" : ""
-    };
-    var textLength = 0;
-    var voiceLength = 0;
-    var categoryLength = 0;
-    channels.map(channel => {
-        if (channel.type == "GUILD_TEXT") {
-            textLength++;
-            text.value = text.value + "**" + (textLength) + ". " + channel.name + "**, " + "ID: **" + channel.id + "**\n"
+    const generateEmbed = async index => {
+        let currentChannels = Array.from(channels.values()).slice(index, index + pageMax);
+        var string = "";
+        for (i = 0; i < currentChannels.length; i++) {
+            channel = currentChannels[i];
+            string += "**" + (i + index + 1) + ". " + channel.name + "**, " + "ID: **" + channel.id + "** (" + channel.type + ")\n"
         }
-        else if(channel.type == "GUILD_VOICE") {
-            voiceLength++;
-            voice.value = voice.value + "**" + (voiceLength) + ". " + channel.name + "**, " + "ID: **" + channel.id + "**\n"
+        var embed = {
+    
+            "embed": {
+              "title" : "Channels #" + (index + 1) + "-" + (index + currentChannels.length),
+              "color": 4886754,
+              "author": {
+                "name": "List of Channels in " + guilds.get(args[0]).name,
+                "url": "",
+                "icon_url": client.user.displayAvatarURL({
+                    size: 2048,
+                    format: "png"
+                })
+              },
+              "fields": {
+                  "name" : "Page 1/69",
+                  "value" : string
+              }
+            }
         }
-        else if(channel.type == "GUILD_CATEGORY") {
-            categoryLength++;
-            categories.value = categories.value + "**" + channel.name + "**\n"
-        }
-        //message.channel.send((i + 1) + ". " + channels[i].name + ", Type: "  + channels[i].type + ", ID: " + channels[i].id);
+        return embed;
+    }
+
+    const forward = new MessageButton({
+        style: 'PRIMARY',
+        emoji: '▶',
+        customId: 'forward'
     })
-    let fields = [];
-    if (categoryLength > 0) fields.push(categories);
-    if (textLength > 0) fields.push(text);
-    if (voiceLength > 0) fields.push(voice);
+    const back = new MessageButton({
+        style: 'PRIMARY',
+        emoji: '◀',
+        customId: 'back'
+    })
 
-    var embed = {
+    const msg = await message.channel.send({
+        embeds: [(await generateEmbed(0)).embed],
+        components: channels.size <= pageMax ? [] : [new MessageActionRow({components : [forward]})]
+    });
 
-        "embed": {
-          "title" : "**" + (categoryLength + textLength + voiceLength) + "** channels",
-          "color": 4886754,
-          "author": {
-            "name": "List of Channels in " + guilds.get(args[0]).name,
-            "url": "",
-            "icon_url": client.user.displayAvatarURL({
-                size: 2048,
-                format: "png"
-            })
-          },
-          "fields": fields
-        }
-      }
-      message.channel.send({embeds: [embed.embed]});
+    if (channels.size > pageMax) {
         
+        const collector = msg.createMessageComponentCollector()
+        
+        let currentIndex = 0;
+        collector.on('collect', async interaction => {
+            interaction.customId === 'back' ? (currentIndex -= pageMax) : (currentIndex += pageMax)
+            let buttons = [];
+            let components = [];
+            if (currentIndex - pageMax >= 0) buttons.push(back);
+            if (currentIndex + pageMax < channels.size) buttons.push(forward);
+            if (buttons[0]) components = [
+                new MessageActionRow({
+                    components: buttons
+                })
+            ]
+            await interaction.update({
+                embeds: [(await generateEmbed(currentIndex)).embed],
+                components: components
+            })
+        })
+    }
 }
