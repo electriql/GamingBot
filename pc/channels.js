@@ -34,7 +34,7 @@ exports.run = async (message, args, client, ops) => {
                 })
               },
               "fields": {
-                  "name" : "Page 1/69",
+                  "name" : "Page " + Math.floor((index / pageMax) + 1) + "/" + Math.ceil(channels.size / pageMax),
                   "value" : string
               }
             }
