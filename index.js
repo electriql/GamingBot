@@ -1,8 +1,8 @@
 require('dotenv').config();
 const { Client, Intents } = require("discord.js");
 const bot = new Client({
-    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.DIRECT_MESSAGES],
-    partials: ['CHANNEL']
+    intents: [Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MESSAGE_REACTIONS, Intents.FLAGS.GUILD_VOICE_STATES, Intents.FLAGS.DIRECT_MESSAGES],
+    partials: ['CHANNEL', 'GUILD_MEMBER', 'USER']
 });
 var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
 const prefix = "g!"
@@ -23,6 +23,7 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
+    // ssl: false
     ssl: {
         rejectUnauthorized: false
     }
@@ -78,7 +79,7 @@ bot.on('guildMemberAdd', member => {
     
 });
 bot.on('guildMemberRemove', member => {
-    bot.channels.cache.get(member.guild.systemChannelID).send('**' + member.user.username + '** has left the server.');
+    member.guild.systemChannel.send('**' + member.user.username + '** has left the server.');
 });
 
 
