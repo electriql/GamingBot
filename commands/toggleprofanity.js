@@ -1,15 +1,13 @@
 
 const { SystemChannelFlags } = require('discord.js');
-const fs = require('fs');
 
 exports.info = "A toggleable feature that turns the profanity filter on or off."
 exports.category = "moderator";
-let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 exports.run = async (message, args, client, ops) => { 
     var index = require('../index.js');
     var pool = index.pool;
-    if (message.channel.type == 'text') {
-        if (message.channel.guild.member(message.author).permissions.has('MANAGE_GUILD')) {
+    if (message.channel.type == 'GUILD_TEXT') {
+        if (message.member.permissions.has('MANAGE_GUILD')) {
             toggleProfanity(message.channel.guild);
             var output = " "
             setTimeout(function(){
@@ -47,16 +45,13 @@ function toggleProfanity(guild) {
         
     
     });
-    fs.writeFileSync('Storage/serverData.json', JSON.stringify(serverData), (err) => {
-        if (err) console.log(err);
-    }) 
 }
 
 exports.filter = function(message) {
     var index = require("../index.js");
-    var profanities = import('profanities');
+    var profanity = require('../profanities.js');
     //Profanity
-    if (message.channel.type == 'text') {
+    if (message.channel.type == 'GUILD_TEXT') {
         index.pool.query('SELECT * FROM serverdata WHERE id = ' + message.guild.id, [], (err, res) => {
             if (res) {
                 if (!res.rows[0]) {
@@ -71,34 +66,25 @@ exports.filter = function(message) {
             if (data) pr = data.prof;
 
             if (pr == 1) {
-            
-                var uppr = message.content.toUpperCase();
+                var uppr = message.content.toLowerCase();
                 var str = uppr.split(" ");
                     for (i = 0; i < str.length; i++) {
-                        for (x = 0; x < profanities.length; x++) {
-                            if (str[i] == profanities[x].toUpperCase()) {
-                                if (message.author.id === '478588483556999169') {
-                                    
-                                    return;
-                                }
-                                else if (message.author.id === '490674227976863765') {
-                                    
-                                    return;
-                                }
-                                else {
-                                    message.delete();
-                                    message.channel.send(message.author.toString() + " calm down jamal. This is mainland china");
-                                    const p = message.guild.channels.cache.find(channel => channel.name == 'profanity');
-                                    if (!p)
-                                            message.channel.send('Error: A text channel named "profanity" does not exist. Add one please.');
-                                    else if (p.type == 'text')
-                                        p.send('**' + message.author.username + '** just said a no no word. They said ```' + message.content + '``` __**No no Word:**__ ' + str[i]);
-                                    else 
+                        if (profanity.profanities.includes(str[i])) {
+                            if (message.author.bot)
+                                return;
+                            else {
+                                message.delete();
+                                message.channel.send(message.author.toString() + " calm down jamal. This is mainland china");
+                                const p = message.guild.channels.cache.find(channel => channel.name == 'profanity');
+                                if (!p)
                                         message.channel.send('Error: A text channel named "profanity" does not exist. Add one please.');
-                                    return;
-                                }
-                    
+                                else if (p.type == 'text')
+                                    p.send('**' + message.author.username + '** just said a no no word. They said ```' + message.content + '``` __**No no Word:**__ ' + str[i]);
+                                else 
+                                    message.channel.send('Error: A text channel named "profanity" does not exist. Add one please.');
+                                return;
                             }
+                
                         }
                     }
             
