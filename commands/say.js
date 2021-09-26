@@ -1,6 +1,6 @@
 exports.category = "fun";
 exports.info = "Makes the bot say anything you would like (Automatically censors profanity)."
-var profanities = import('profanities');
+var profanity = require('../profanities.js');
 const fs = require('fs');
 const serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
 const Utils = require("../util.js");
@@ -10,8 +10,8 @@ function filter(message, serverData) {
     var str = lower.split(" ");
 
     for (i = 0; i < str.length; i++) {
-        for (x = 0; x < profanities.length; x++) {
-            if (str[i] == profanities[x].toLowerCase()) {
+        for (i = 0; i < str.length; i++) {
+            if (profanity.profanities.includes(str[i])) {
                 return true;
             }
         }
