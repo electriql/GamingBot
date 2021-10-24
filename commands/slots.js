@@ -38,7 +38,7 @@ exports.run = async (message, args, client, ops) => {
                         "color": 5375
                         }
                     }
-                    message.channel.send(slots);
+                    message.channel.send({embeds: [slots.embed]});
                 }
             else {
                 var multiplier = Math.floor((Math.random() * 15) + 15) / 10;
