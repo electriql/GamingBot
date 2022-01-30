@@ -14,7 +14,8 @@ exports.run = async (message, args, client, ops) => {
     }
     name = name.trim();
     member = await utils.findUser(message, name);
-    if (!member) return message.channel.send("❌ This user doesn't exist!");
+    if (!member) return message.channel.send("❌ This user isn't valid!");
+    if (member.bot) return message.channel.send("❌ This user isn't valid!");
     if (member == message.author) return message.channel.send("❌ You can't pay yourself!");
     if (args[args.length - 1] < 1) return message.channel.send("❌ The amount must be greater than 0!");
     var pay = Math.floor(args[args.length - 1]);
