@@ -16,6 +16,7 @@ const cooldown = new Map();
 const hangman = new Map();
 const active = new Map();
 const prof = new Map();
+const wordles = new Map();
 
 const { Pool } = require('pg');
 
@@ -128,6 +129,7 @@ bot.on('messageCreate', message => {
                 hangman: hangman,
                 prof: prof,
                 owner: owner,
+                wordles: wordles,
             }
 
             commandFile.run(message, args, client, ops);
@@ -156,6 +158,7 @@ bot.on('messageCreate', message => {
                 cooldown: cooldown,
                 prof: prof,
                 owner: owner,
+                wordles: wordles,
             }
             commandFile.run(message, args, client, ops);
 
