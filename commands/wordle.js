@@ -93,7 +93,13 @@ class Wordle {
         this.squares.push(str);
     }
     display(channel, client, ops) {
+        let tempKeys = "Q W E R T Y U I O P\n" +
+                       "A S D F G H J K L\n" +
+                       "Z X C V B N M\n"
         let board = "";
+        let green = new Set();
+        let yellow = new Set();
+        let black = new Set();
         for (let i = 0; i < this.guesses; i++) {
             let clue = "";
             let colors = "";
@@ -104,12 +110,16 @@ class Wordle {
                 if (char == 'g') {
                     format = "**";
                     colors += '🟩';
+                    green.add(this.list[i].charAt(j));
                 }
-                else if (char == 'y')
+                else if (char == 'y') {
                     colors += '🟨';
+                    yellow.add(this.list[i].charAt(j));
+                }
                 else if (char == 'b') {
                     colors += '⬛';
                     format = "~~";
+                    black.add(this.list[i].charAt(j));
                 }
                 if (prev != format) {
                     clue += prev + format;
@@ -118,10 +128,27 @@ class Wordle {
                 clue += this.list[i].charAt(j);
             }
             clue += prev;
-            
-                
             board += colors + " " + clue.toUpperCase() + "\n";
         }
+
+        let keyboard = "";
+        for (let i = 0; i < tempKeys.length; i++) {
+            let char = tempKeys.charAt(i);
+            if (green.has(char.toLowerCase())) {
+                keyboard += "**" + char + "** "
+            }
+            else if (black.has(char.toLowerCase())) {
+                keyboard += "~~" + char + "~~ ";
+            }
+            else if (yellow.has(char.toLowerCase())) {
+                keyboard += "__" + char + "__ ";
+            }
+            else if (char.trim().length != 0) {
+                keyboard += "*" + char + "*";
+            }
+            else keyboard += char;
+        }
+        board += "\n" + keyboard;
         var embed = {
             "embed": {
                 "title": this.guesses + "/6",
@@ -150,8 +177,11 @@ class Wordle {
     checkWin() {
         if (this.squares.length <= 0)
             return 0;
+        else if (this.squares[this.squares.length - 1] == "ggggg") {
+            return 1;
+        }
         else if (this.squares.length >= 6)
             return -1;
-        return this.squares[this.squares.length - 1] == "ggggg" ? 1 : 0;
+        return 0;
     }
 }
