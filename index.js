@@ -24,10 +24,10 @@ const conString = process.env.DATABASE_URL;
 
 const pool = new Pool({
     connectionString: conString,
-    //ssl: false
-    ssl: {
-         rejectUnauthorized: false
-    }
+    ssl: false
+    // ssl: {
+    //      rejectUnauthorized: false
+    // }
 })
 var http = require('http');
 
@@ -43,6 +43,12 @@ setInterval(function() {
 console.log("Running on port " + PORT);
 
 bot.login(process.env.BOT_TOKEN);
+
+let client = bot;
+
+let owner = null;
+
+let ops = {}
 
 //DATABASE INTERACTIONS
 async function dbSelect(pool, db, c1, c2, key, callback) {
@@ -146,20 +152,6 @@ bot.on('messageCreate', message => {
             if (!fs.existsSync(__dirname + "/commands/" + cmd + ".js")) return message.channel.send("Unknown command. Type `g!help` to see a list of commands.");
             let commandFile = require(__dirname + "/commands/" + cmd + ".js");
             
-            let client = bot;
-
-            let owner = bot.users.cache.get("240982621247635456");
-
-            
-
-            let ops = {
-                active: active,
-                hangman: hangman,
-                cooldown: cooldown,
-                prof: prof,
-                owner: owner,
-                wordles: wordles,
-            }
             commandFile.run(message, args, client, ops);
 
         }
@@ -178,6 +170,15 @@ bot.on('guildCreate', guild => {
     guild.systemChannel.send("Hello I am **GamingBot!** Thanks for adding me to your server! Do __g!help__ to see what I can do!");
 });
 bot.on('ready', () => {
+    owner = bot.users.cache.get("240982621247635456");
+    ops = {
+        active: active,
+        hangman: hangman,
+        cooldown: cooldown,
+        prof: prof,
+        owner: owner,
+        wordles: wordles,
+    }
     console.log("Gaming launched!");
     bot.user.setActivity('g!help');
 
