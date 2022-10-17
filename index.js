@@ -46,8 +46,6 @@ bot.login(process.env.BOT_TOKEN);
 
 let client = bot;
 
-let owner = null;
-
 let ops = {}
 
 //DATABASE INTERACTIONS
@@ -169,8 +167,15 @@ bot.on('messageCreate', message => {
 bot.on('guildCreate', guild => {
     guild.systemChannel.send("Hello I am **GamingBot!** Thanks for adding me to your server! Do __g!help__ to see what I can do!");
 });
-bot.on('ready', () => {
-    owner = bot.users.cache.get("240982621247635456");
+bot.on('ready', async function() {
+    var owner = bot.user;
+    client.guilds.cache.every(async function(guild) {
+        var mc = await guild.members.fetch().then(function(members) {
+             return members.find(member => member.id == "240982621247635456");
+        })
+        if (mc)
+            ops.owner = mc.user;
+    })
     ops = {
         active: active,
         hangman: hangman,
