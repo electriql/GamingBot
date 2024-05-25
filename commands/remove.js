@@ -1,28 +1,32 @@
-exports.category = "music";
-exports.info = "Removes a specified spot in the queue."
-exports.run = async(message, args, client, ops) => {
-    let fetched = ops.active.get(message.guild.id);
-
-    if (!fetched) return message.channel.send("❌ There is currently no music playing in the server!");
-
-    if (!fetched.queue[1]) return message.channel.send("❌ There are no clips waiting in the queue! Type `g!skip` to remove currently playing clip!");
-
-    if (isNaN(args[0])) return message.channel.send("❌ The argument needs to be an integer!");
-
-    let number = parseInt(args[0]);
-
-    if (!fetched.queue[number]) return message.channel.send("❌ This spot in the queue is not occupied! If you want to see the queue, type `g!queue`!");
-
-    if (number == 0) return message.channel.send("❌ That spot is currently playing! Type `g!skip` if you want to remove it!");
-
-    let i = fetched.queue.indexOf(fetched.queue[number]);
-
-    message.channel.send("**Successfully Removed** `" + fetched.queue[number].songTitle + "`** from the queue!**");
-
-    var removed = fetched.queue.splice(i, 1);
-
-    ops.active.set(message.guild.id, fetched);
-
-    
-    
+const { SlashCommandBuilder } = require("discord.js");
+const voice = require('@discordjs/voice');
+module.exports = {
+    category: "music",
+    info: "Removes the track in a specified spot in the music queue.",
+    data: new SlashCommandBuilder()
+        .setName("remove")
+        .setDescription("Removes the track in a specified spot in the msuic queue.")
+        .setDMPermission(false)
+        .addIntegerOption(option =>
+            option.setName("track")
+                .setDescription("The position of the track to be removed.")
+                .setRequired(true)
+                .setMinValue(1)
+        ),
+    async execute(interaction) {
+        const index = require("../index.js");
+        let fetched = index.ops.active.get(interaction.guildId);
+        if (!fetched)
+            return interaction.reply({ content: "❌ There is currently no music playing in the server!", ephemeral: true });
+        if (!interaction.member.voice.channel)
+            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", ephemeral: true });
+        if (interaction.member.voice.channel.id != voice.getVoiceConnection(interaction.guildId).joinConfig.channelId)
+            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", ephemeral: true });
+        let number = interaction.options.getInteger("track");
+        if (!fetched.queue[number])
+            return interaction.reply({ content: "❌ This spot in the queue is not occupied! If you want to see the queue, type `/queue`!", ephemeral: true });
+        var removed = fetched.queue.splice(number, 1)[0];
+        index.ops.active.set(interaction.guildId, fetched);
+        interaction.reply("Successfully Removed `" + removed.songTitle + "` from the queue!");
+    }
 }

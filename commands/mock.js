@@ -1,83 +1,43 @@
-exports.category = "fun";
-exports.info = "Mocks the given statement in 2 ways!"
+const { SlashCommandBuilder } = require("discord.js");
 const Utils = require("../util.js");
-exports.run = async (message, args, client, ops) => {
-    let utils = new Utils();
-    if (!args[0]) return message.channel.send("❌ Enter a message first.");
-
-    var embed = {
-        "embed": {
-            "title": "**1: sUbScRiBe To PeWdIePiE**",
-            "description": "**2: SuBsCrIbE tO pEwDiEpIe**",
-            "url" : "",
-            "color": 4886754,
-            "footer": {
-                "icon_url": ops.owner.displayAvatarURL({
-                    size: 2048,
-                    format: "png"
-                }),
-                "text": "Bot Created by " + ops.owner.tag
-            },
-            "author": {
-                "name": "Choose a Style...",
-                "url": "",
-                "icon_url": client.user.displayAvatarURL({
-                    size: 2048,
-                    format: "png"
-                }),
-            },
-            "fields" : [
-              {
-                "name": "Type the number next to the style that you want!",
-                "value": "OR type 'cancel' to cancel!"
-              }
-            ]
+exports.category = "fun";
+exports.info = "Mocks the given string!"
+module.exports = {
+    category: "fun",
+    info: "Mocks the given string.",
+    data: new SlashCommandBuilder()
+        .setName("mock")
+        .setDescription("Mocks the given string.")
+        .setDMPermission(false)
+        .addStringOption(option =>
+            option.setName("string")
+                .setDescription("The string to be mocked.")
+                .setRequired(true)
+        )
+        .addStringOption(option =>
+            option.setName("style")
+                .setDescription("Choose the style of mockery.")
+                .setRequired(true)
+                .addChoices(
+                    { name: "oPtIoN oNe", value: "1" },
+                    { name: "OpTiOn TwO", value: "2" }
+                )
+        ),
+    async execute(interaction) {
+        let utils = new Utils();
+        let output = ""
+        var lower = interaction.options.getString("style") == "1" ? true : false;
+        for (const letter of interaction.options.getString("string")) {
+            if (letter.toLowerCase() != letter.toUpperCase()) {
+                output += lower ? letter.toLowerCase() : letter.toUpperCase();
+                lower = !lower;
+            }
+            else {
+                output += letter;
+            }
         }
+        output = output + " ";
+        output = await utils.insertEmotes(output, interaction.client);
+        interaction.reply(output);
     }
-
-    const filter = m => m.author.equals(message.author);
-    message.channel.send({embeds :[embed.embed]})
-    .then(msg => {
-        const collector = message.channel.createMessageCollector(filter);
-
-        collector.once('collect', async function(m) {
-            msg.delete();
-                if (!isNaN(m.content) && (m.content == 1 || m.content == 2)) {
-                    let output = ""
-                    for (i = 0; i < args.length; i++) {
-                        let letters = args[i].split('');
-                        for (j = 1; j <= letters.length; j++) {
-                            if (m.content == 1) {
-                                if (j % 2 == 0) {
-                                    output = output + letters[j-1].toUpperCase();
-                                }
-                                else {
-                                    output = output + letters[j-1].toLowerCase();
-                                }
-
-                            }
-                            else {
-                                if (j % 2 == 0) {
-                                    output = output + letters[j-1].toLowerCase();
-                                }
-                                else {
-                                    output = output + letters[j-1].toUpperCase();                              
-                                }
-                            }
-                        }
-                        output = output + " ";
-                    }
-                    output = await utils.insertEmotes(output, client) + "\n\n - " + message.author.tag;
-                    message.channel.send(output);
-                }  
-                else if (m.content.toUpperCase() == "CANCEL") {
-                    message.channel.send("**Cancelled!**");
-                    return;
-                }
-                else {
-                    return message.channel.send("❌ The message is invalid!");
-                }
-            
-        });
-    });
 }

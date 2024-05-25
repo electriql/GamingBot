@@ -1,32 +1,43 @@
-var index = require('../index.js');
-const Utils = require("../util.js");
-exports.category = "currency";
-exports.info = "Gives the a user a specified amount of diamonds!"
-exports.run = async (message, args, client, ops) => {
-    let utils = new Utils();
-    if (!args[0]) return message.channel.send("❌ You must specifiy someone to pay!");
-    if (args.length == 1) return message.channel.send("❌ Not enough arguments!");
-    if (isNaN(args[args.length - 1])) return message.channel.send("❌ The amount must be an integer!");
-    var member = message.author;
-    var name = "";
-    for (i = 0; i < args.length - 1; i++) {
-        name += args[i] + " "; 
+const { SlashCommandBuilder } = require("discord.js");
+module.exports = {
+    category: "currency",
+    info: "Gives a user a specified amount of diamonds.",
+    data: new SlashCommandBuilder()
+        .setName("pay")
+        .setDescription("Gives a user a specified amount of diamonds.")
+        .setDMPermission(false)
+        .addUserOption(option =>
+            option.setName("user")
+                .setDescription("The user to be paid.")
+                .setRequired(true)
+        )
+        .addIntegerOption(option =>
+            option.setName("payment")
+                .setDescription("The amount to be paid.")
+                .setMinValue(1)
+                .setRequired(true)
+        ),
+    async execute(interaction) {
+        const index = require("../index.js");
+        var sender = interaction.user;
+        var receiver = interaction.options.getUser("user");
+        if (receiver.bot || sender == receiver)
+            return interaction.reply({ content: "❌ This user isn't valid!", ephemeral: true });
+        var userData = index.getUserData();
+        if (!userData[sender.id]) {
+            userData[sender.id] = index.createUser(sender.id);
+            index.setUserData(userData);
+        }
+        if (!userData[receiver.id]) {
+            userData[receiver.id] = index.createUser(receiver.id);
+            index.setUserData(userData);
+        }
+        var pay = interaction.options.getInteger("payment");
+        if (userData[sender.id].diamonds - pay < 0)
+            return interaction.reply("❌ You can't afford this payment!");
+        userData[sender.id].diamonds -= pay;
+        userData[receiver.id].diamonds += pay;
+        index.setUserData(userData);
+        interaction.reply("Payment successful! Now you have 💎x" + userData[sender.id].diamonds + " and " + receiver.username + " has 💎x" + userData[receiver.id].diamonds);
     }
-    name = name.trim();
-    member = await utils.findUser(message, name);
-    if (!member) return message.channel.send("❌ This user isn't valid!");
-    if (member.bot) return message.channel.send("❌ This user isn't valid!");
-    if (member == message.author) return message.channel.send("❌ You can't pay yourself!");
-    if (args[args.length - 1] < 1) return message.channel.send("❌ The amount must be greater than 0!");
-    var pay = Math.floor(args[args.length - 1]);
-    index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', message.author.id, function(user) {
-        if (user.diamonds - pay < 0) return message.channel.send("❌ You can't afford this payment!");
-        
-        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', member.id, function(reciever) {
-            message.channel.send("Payment successful! Now you have 💎x" + (user.diamonds - pay) + " and " + member.username + " has 💎x" + (reciever.diamonds + pay));
-            index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', message.author.id, user.diamonds - pay);
-            index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', member.id, reciever.diamonds + pay);
-
-        });
-    });
 }

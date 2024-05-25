@@ -11,9 +11,8 @@ exports.run = async (message, args, client, ops) => {
       //message.channel.send((i + 1) + ". " + guilds[i].name + ", " + guilds[i].memberCount + " members, ID: " + guilds[i].id);
     })
     var embed = {
-
         "embed": {
-          "color": 4886754,
+          "color": ops.color,
           "author": {
             "name": "List of Servers",
             "url": "",

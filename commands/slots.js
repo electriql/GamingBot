@@ -1,125 +1,106 @@
-var index = require('../index.js');
-const fs = require('fs');
+const { SlashCommandBuilder } = require("discord.js");
 const symbols = ["⭕", "🔵", "🔶", "⬜", "❤", "🔺", "💠", "🔻"];
-let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
-
-exports.category = "currency";
-exports.info = "Rolls a slot machine where you can give a custom input."
-exports.run = async (message, args, client, ops) => {
-    var cooldown = ops.cooldown.get(message.author.id) || {};
-    if (cooldown.slots) return message.channel.send("❌ You can use this command again in **" + Math.round(cooldown.slots * 100) / 100 + "** seconds!")
-    
-    if (args[0] && (!isNaN(args[0]) || args[0].toLowerCase() == "all")) {
-        if (args[0].toLowerCase() != "all" && Math.floor(args[0]) < 1) return message.channel.send("❌ That number isn't valid!");
+module.exports = {
+    category: "currency",
+    info: "Gamble some diamonds in a slot machine!",
+    data: new SlashCommandBuilder()
+        .setName("slots")
+        .setDescription("Gamble some diamonds in a slot machine!")
+        .setDMPermission(false)
+        .addIntegerOption(option => 
+            option.setName("amount")
+                .setDescription("The amount to be gambled. (Leave out to gamble all diamonds)")
+                .setMinValue(1)
+        ),
+    async execute(interaction) {
+        const index = require("../index.js");
+        var user = interaction.user;
+        var userData = index.getUserData();
+        if (!userData[user.id]) {
+            userData[user.id] = index.createUser(user.id);
+            index.setUserData(userData);
+        }
+        var cooldown = index.ops.cooldown.get(user.id) || {};
+        if (cooldown.slots)
+            return interaction.reply({ content: "❌ You can use this command again in **" + Math.round(cooldown.slots * 100) / 100 + "** seconds!", ephemeral: true })
+        var pay = interaction.options.getInteger("amount") || userData[user.id].diamonds;
         cooldown.slots = 5;
-        ops.cooldown.set(message.author.id, cooldown);
-        var pay = args[0];
-        
-        var pool = index.pool;
+        index.ops.cooldown.set(user.id, cooldown);
+        if (userData[user.id].diamonds < pay || userData[user.id].diamonds == 0)
+            return interaction.reply({ content: "❌ You can't afford to pay this many diamonds!", ephemeral: true });
         var chance = Math.random();
-        var slot1 = Math.floor(Math.random() * symbols.length);
-        var slot2 = Math.floor(Math.random() * symbols.length);
-        var slot3 = Math.floor(Math.random() * symbols.length);
-        var slot4 = Math.floor(Math.random() * symbols.length); 
-        var slot5 = Math.floor(Math.random() * symbols.length);
-        var slot6 = Math.floor(Math.random() * symbols.length);
-        var slot7 = Math.floor(Math.random() * symbols.length);
-        var slot8 = Math.floor(Math.random() * symbols.length);
-        var slot9 = Math.floor(Math.random() * symbols.length);
-
-        index.dbSelect(pool, 'userdata', 'id', 'diamonds', message.author.id, function(data) {
-            var diamonds = data.diamonds;
-            if (args[0].toLowerCase() == "all") pay = diamonds;
-            if (diamonds < pay || pay <= 0) {
-                const slots = {
-                        "embed": {
-                        "title": "Slot Machine",
-                        "description": "**You don't have enough diamonds for the slot machine!**",
-                        "color": 5375
-                        }
-                    }
-                    message.channel.send({embeds: [slots.embed]});
+        var slots = [];
+        var result = [];
+        var multiplier = Math.floor((Math.random() * 15) + 15) / 10;
+        slots.push([symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                    ]);
+        if (chance <= 4 / 13) {
+            var middle = symbols[Math.floor(Math.random() * symbols.length)];
+            slots.push([middle, middle, middle]);
+            var prize = Math.round(multiplier * pay);
+            userData[user.id].diamonds += prize;
+            result.push(
+                {
+                    "name": "==========================",
+                    "value": "**And you win! You get 💎x" + prize + "! Also, you get your 💎x" + pay + " back.**"
+                },
+                {
+                    "name": "Prize Multiplier: " + multiplier + "x",
+                    "value": "**Total Diamonds: " + userData[user.id].diamonds + "**"
                 }
-            else {
-                var multiplier = Math.floor((Math.random() * 15) + 15) / 10;
-                // If slots 4, 5, and 6 are the same then they win.
-                if (chance <= (1.0/3) || (slot4 == slot5 && slot5 == slot6)) {
-                    var middle = Math.floor(Math.random() * symbols.length);
-                    var prize = Math.round(multiplier * pay);
-                    // The slot machine if someone wins
-                    const slots = {
-                        "embed": {
-                        "title": "Slot Machine",
-                        "description": "**You spend 💎x" + pay + " on the slot machine...**",
-                        "color": 5375,
-                        "fields": [
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[slot1] + " | " + symbols[slot2] + " | " + symbols[slot3] + " |"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[middle] + " | " + symbols[middle] + " | " + symbols[middle] + " | <<<"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[slot7] + " | " + symbols[slot8] + " | " + symbols[slot9] + " |"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "**And you win! You get 💎x" + prize + "! Also, you get your 💎x" + pay + " back.**"
-                            },
-                            {
-                            "name" : "Prize Multiplier: " + multiplier + "x",
-                            "value" : "**Total Diamonds: " + (diamonds + prize) + "**"
-                            }
-                        ]
-                        }
-                    }
-                    message.channel.send({embeds: [slots.embed]});
-                    index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, diamonds + prize); 
-                }
-                else {
-
-                    // The slot machine if someone loses
-                    const slots = {
-                        "embed": {
-                        "title": "Slot Machine",
-                        "description": "**You spend 💎x" + pay + " on the slot machine...**",
-                        "color": 5375,
-                        "fields": [
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[slot1] + " | " + symbols[slot2] + " | " + symbols[slot3] + " |"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[slot4] + " | " + symbols[slot5] + " | " + symbols[slot6] + " | <<<"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "| " + symbols[slot7] + " | " + symbols[slot8] + " | " + symbols[slot9] + " |"
-                            },
-                            {
-                            "name": "==========================",
-                            "value": "**And you lose. Better luck next time.**"
-                            },
-                            {
-                            "name" : "Your Prize Multiplier would have been " + multiplier + "x",
-                            "value" : "**Total Diamonds: " + (diamonds - pay) + "**"
-                            }
-                        ]
-                        }
-                    }
-                    var final = diamonds - pay;
-                    index.dbUpdate(pool, 'userdata', 'id', 'diamonds', message.author.id, final);
-                    
-                    message.channel.send({embeds: [slots.embed]});
-                }
+            )
+        }
+        else {
+            userData[user.id].diamonds -= pay;
+            var middle1 = symbols[Math.floor(Math.random() * symbols.length)];
+            var middle2 = symbols[Math.floor(Math.random() * symbols.length)];
+            var middle3 = symbols[Math.floor(Math.random() * symbols.length)];
+            while (middle1 == middle2 && middle2 == middle3) {
+                var middle1 = symbols[Math.floor(Math.random() * symbols.length)];
+                var middle2 = symbols[Math.floor(Math.random() * symbols.length)];
+                var middle3 = symbols[Math.floor(Math.random() * symbols.length)];
             }
-        });
-    }
-    else {
-        message.channel.send("❌ You must enter an integer that is greater than 0!");
+            slots.push([middle1, middle2, middle3]);
+            result.push(
+                {
+                    "name": "==========================",
+                    "value": "**And you lose. Better luck next time.**"
+                },
+                {
+                    "name": "Your Prize Multiplier would have been " + multiplier + "x",
+                    "value": "**Total Diamonds: " + userData[user.id].diamonds + "**"
+                }
+            )
+        }
+        slots.push([symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)],
+                    symbols[Math.floor(Math.random() * symbols.length)]
+                    ]);
+        var display = [
+            {
+                "name": "==========================",
+                "value": "| " + slots[0][0] + " | " + slots[0][1] + " | " + slots[0][2] + " |"
+            },
+            {
+                "name": "==========================",
+                "value": "| " + slots[1][0] + " | " + slots[1][1] + " | " + slots[1][2] + " | <<<"
+            },
+            {
+                "name": "==========================",
+                "value": "| " + slots[2][0] + " | " + slots[2][1] + " | " + slots[2][2] + " |"
+            }
+        ].concat(result);
+        const embed = {
+            "embed": {
+                "title": "Slot Machine",
+                "description": "**You spend 💎x" + pay + " on the slot machine...**",
+                "color": index.ops.color,
+                "fields": display
+            }
+        }
+        interaction.reply({ embeds: [embed.embed] })
+        index.setUserData(userData);
     }
 }

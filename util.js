@@ -32,7 +32,7 @@ class Utils {
                 string += str;
         })
         var end = 0;
-        for (i = 0; i < string.length; i++) {
+        for (var i = 0; i < string.length; i++) {
                 var emote = false;
                 if (string.charAt(i) == ':') {
                         end = string.indexOf(":", i + 1);

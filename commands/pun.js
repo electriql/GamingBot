@@ -1,4 +1,4 @@
-
+const { SlashCommandBuilder } = require("discord.js");
 //Puns
 const puns = [
 "Did you hear about the guy whose whole left side was cut off? He's all right now.",
@@ -21,11 +21,16 @@ const puns = [
 "I'm reading a book about anti-gravity. It's impossible to put down.",
 "I went to the dentist without lunch, and he gave me a plate.",
 "A prisoner's favorite punctuation mark is the period. It marks the end of his sentence."];
-
-exports.category = "fun";
-exports.info = "Gives a random pun."
-exports.run = async (message, args, client, ops) => {
+module.exports = {
+    category: "fun",
+    info: "Gives a random pun.",
+    data: new SlashCommandBuilder()
+        .setName("pun")
+        .setDescription("Gives a random pun.")
+        .setDMPermission(false),
+    async execute(interaction) {
         var pun = Math.floor(Math.random() * puns.length);
         var msg = puns[pun];
-        message.channel.send(msg + " *Ba doom, crash!*");
+        interaction.reply(msg + " *Ba doom, crash!*");
     }
+}

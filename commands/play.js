@@ -1,10 +1,98 @@
+const { SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 const search = require("yt-search");
 const YTDL = require('ytdl-core');
-const fs = require('fs');
-let serverData = JSON.parse(fs.readFileSync('Storage/serverData.json', 'utf8'));
-exports.category = "music";
-exports.info = "Plays a specified clip if in a voice channel."
+module.exports = {
+    category: "music",
+    info: "Plays a specified track if in a voice channel.",
+    data: new SlashCommandBuilder()
+        .setName("play")
+        .setDescription("Plays a specified track if in a voice channel.")
+        .setDMPermission(false)
+        .addStringOption(option =>
+            option.setName("media")
+                .setDescription("Enter keywords to search or a URL.")
+                .setRequired(true)
+        ),
+    async execute(interaction) {
+        if (!interaction.member.voice.channel)
+            return interaction.reply({ content: "❌ You must be in a voice channel!", ephemeral: true });
+        var args = interaction.options.getString("media") || interaction.options.getString("keywords");
+        if (!interaction.replied)
+            await interaction.deferReply();
+        if (!YTDL.validateURL(args)) {
+            const list = await search(args);
+            args = await list.videos[0].url;
+        }
+        this.playUrl(interaction, args);
+    },
+    async playUrl(interaction, args) {
+        const index = require("../index.js");
+        try {
+            YTDL.validateURL(args);
+        }
+        catch (e) {
+            console.log(e);
+            return interaction.editReply({ content: "❌ An error occurred.", ephemeral: true });
+        }
+        let data = index.ops.active.get(interaction.guildId) || {};
+
+        if (!data.connection) data.connection = voice.joinVoiceChannel({
+            channelId: interaction.member.voice.channel.id,
+            guildId: interaction.guildId,
+            adapterCreator: interaction.guild.voiceAdapterCreator,
+            selfDeaf: false,
+        })
+        if (!data.queue) {
+            data.queue = [];
+        }
+
+        data.guildID = interaction.guildId;
+        let info = await YTDL.getInfo(args);
+        let length = secondsToHms(info.videoDetails.lengthSeconds);
+
+        data.queue.push({
+            songTitle: info.videoDetails.title,
+            url: args.toString(),
+            announceChannel: interaction.channel.id,
+            requester: interaction.user,
+            duration: length,
+            looped: -1,
+        });
+        if (!data.dispatcher) {
+            play(interaction.client, index.ops, data, interaction, true);
+        }
+        else {
+            var embed1 = {
+                "embed": {
+                    "title": info.videoDetails.title,
+                    "description": "**Requested by:** " + interaction.user.toString() + 
+                                   "\n**Duration:** `" + length + "`" +
+                                   "\n**Queue position:** `" + (data.queue.length - 1) + "`",
+                    "url": args,
+                    "color": index.ops.color,
+                    "footer": {
+                        "icon_url": index.ops.owner.displayAvatarURL({
+                            size: 2048,
+                            format: "png"
+                        }),
+                        "text": "Bot Created by " + index.ops.owner.tag
+                    },
+                    "author": {
+                        "name": "Adding to queue...",
+                        "url": "",
+                        "icon_url": interaction.client.user.displayAvatarURL({
+                            size: 2048,
+                            format: "png"
+                        }),
+                    },
+                }
+            }
+            interaction.editReply({ embeds: [embed1.embed] });
+            index.ops.active.set(interaction.guildId, data);
+        }
+    }
+}
 function secondsToHms(d) {
     d = Number(d);
 
@@ -14,114 +102,19 @@ function secondsToHms(d) {
 
     return ('0' + h).slice(-2) + ":" + ('0' + m).slice(-2) + ":" + ('0' + s).slice(-2);
 }
-    exports.run = async (message, args, client, ops) => {
-        
-                if (!message.member.voice.channel) return message.channel.send("❌ You must be in a voice channel!");
-                
-                if (YTDL.validateURL(args[0])) {
-                    try {
-                    YTDL.validateURL(args[0]);
-                    }
-                    catch (e) {
-                        console.log(e);
-                        return message.channel.send("❌ An error occurred.");
-                    }
-                    let data = ops.active.get(message.guild.id) || {};
-                    
-                    if (!data.connection) data.connection = voice.joinVoiceChannel({
-                        channelId: message.member.voice.channel.id,
-                        guildId: message.guild.id,
-                        adapterCreator: message.guild.voiceAdapterCreator,
-                        selfDeaf: false,
-                    })
-                    if (!data.queue) {
-                        
-                         data.queue = [];
-                    }
-                    
-                    data.guildID = message.guild.id;
-                    let info = await YTDL.getInfo(args[0]);
-                    let length = secondsToHms(info.videoDetails.lengthSeconds); 
-
-                    data.queue.push({
-                        songTitle: info.videoDetails.title,
-                        url: args[0].toString(),
-                        announceChannel: message.channel.id,
-                        requester: message.author,
-                        duration: length,
-                        looped: -1,
-                    });
-                    if (!data.dispatcher) {
-                        play(client, ops, data, message);
-                    } 
-                    else {
-                        
-                        var embed1 = {
-                            "embed": {
-                                "title": "__**" + info.videoDetails.title + "**__",
-                                "description": "Requested By:" + message.author.toString() + ", Duration: `" + length + "`",
-                                "url" : args[0],
-                                "color": 4886754,
-                                "footer": {
-                                    "icon_url": ops.owner.displayAvatarURL({
-                                        size: 2048,
-                                        format: "png"
-                                    }),
-                                    "text": "Bot Created by " + ops.owner.tag
-                                },
-                                "author": {
-                                    "name": "Adding to queue...",
-                                    "url": "",
-                                    "icon_url": client.user.displayAvatarURL({
-                                        size: 2048,
-                                        format: "png"
-                                    }),
-                                },
-                                "fields": [
-                                {
-                                    "name": "__Position in Queue__",
-                                    "value": (data.queue.length - 1).toString()
-                                }
-                                ]
-                              
-                            }
-                        }
-                        message.channel.send({embeds: [embed1.embed]});
-                        ops.active.set(message.guild.id, data);
-                    }
-                
-                }
-                else {
-                search(args.join(' '), async function(err, res) {
-                    if (err) return message.channel.send("❌ An error occurred.");
-                    try {
-                        
-                        if (YTDL.validateURL(res.videos[0].url)) res.videos.splice(0, 1);
-                    }
-                    catch (e) {
-                        console.log(e);
-                        return message.channel.send("❌ An error occurred.");
-                    }
-                    let video = res.videos[0];
-                    
-                    let url = [video.url];
-                    let commandFile = require('./play.js');
-
-                    commandFile.run(message, url, client, ops);
-                });   
-    }
-}
-async function play(client, ops, data, message) {
+async function play(client, ops, data, interaction, first) {
     var l = data.queue.length - 1;
     var loop = "";
-    if (data.queue[0].looped == 1) loop = " (looped)";
+    if (data.queue[0].looped == 1) loop = " 🔁";
     if (data.queue) {
         var embed = {
             "embed": {
                 "title": data.queue[0].songTitle + loop,
-                "description": "Queue length: " + l  + ", Requested by: " + data.queue[0].requester.toString() + ", Duration: `" + data.queue[0].duration + "`",
-                "url" : data.queue[0].url,
-                "color": 4886754,
+                "description": "**Requested by:** " + data.queue[0].requester.toString() + 
+                               "\n**Duration:** `" + data.queue[0].duration + "`" +
+                               "\n**Queue length:** `" + l + "`",
+                "url": data.queue[0].url,
+                "color": ops.color,
                 "footer": {
                     "icon_url": ops.owner.displayAvatarURL({
                         size: 2048,
@@ -140,39 +133,53 @@ async function play(client, ops, data, message) {
             }
         }
     }
-    message.channel.send({embeds: [embed.embed]});
+    
+    if (first)
+        interaction.editReply({ embeds: [embed.embed] });
+    else
+        interaction.channel.send({ embeds: [embed.embed] });
+
     const player = voice.createAudioPlayer()
     data.dispatcher = player;
-    const resource = voice.createAudioResource(YTDL(data.queue[0].url, {filter: "audioonly", quality: "highestaudio"}), {
+    var audio = YTDL(data.queue[0].url, {
+        filter: "audioonly",
+        fmt: "mp3",
+        highWaterMark: 1 << 62,
+        liveBuffer: 1 << 62,
+        dlChunkSize: 0,
+        bitrate: 128,
+        quality: "highestaudio"
+    });
+    const resource = voice.createAudioResource(audio, {
         inlineVolume: true
     });
-    resource.volume.setVolumeDecibels(-15);
+    resource.volume.setVolumeDecibels(-10);
     data.dispatcher.play(resource);
-    voice.getVoiceConnection(message.guild.id).subscribe(player);
+    voice.getVoiceConnection(interaction.guildId).subscribe(player);
     data.dispatcher.guildID = data.guildID;
     ops.active.set(data.dispatcher.guildID, data);
-    data.dispatcher.on(voice.AudioPlayerStatus.Idle, async function() {
-        finish(client, ops, this, message, data);
+    data.dispatcher.on(voice.AudioPlayerStatus.Idle, async function () {
+        finish(client, ops, this, interaction, data);
     });
-    
-}
-async function finish(client, ops, dispatcher, message, data) {
-
-        if (data.queue[0]) {
-            if (data.queue[0].looped) {
-                if (data.queue[0].looped == -1) data.queue.shift();
-            }
-        }
-
-        if (data.queue.length > 0) {
-            ops.active.set(dispatcher.guildID, data);
-
-            play(client, ops, data, message);
-        }
-        else {
-            ops.active.delete(dispatcher.guildID);
-        }
 
 }
+async function finish(client, ops, dispatcher, interaction, data) {
 
- 
+    if (data.queue[0]) {
+        if (data.queue[0].looped) {
+            if (data.queue[0].looped == -1) data.queue.shift();
+        }
+    }
+
+    if (data.queue.length > 0) {
+        ops.active.set(dispatcher.guildID, data);
+
+        play(client, ops, data, interaction, false);
+    }
+    else {
+        ops.active.delete(dispatcher.guildID);
+    }
+
+}
+
+

@@ -1,21 +1,30 @@
+const { SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 exports.category = "music";
 exports.info = "I join the channel you are currently in."
-
-   exports.run = async (message, args, client, ops) => {
-        if (message.member.voice.channel) {
+module.exports = {
+    category: "music",
+    info: "I join the channel you are currently in.",
+    data: new SlashCommandBuilder()
+        .setName("join")
+        .setDescription("I join the channel you are currently in.")
+        .setDMPermission(false),
+    async execute(interaction) {
+        const index = require("../index.js");
+        if (interaction.member.voice.channel) {
             const connection = voice.joinVoiceChannel({
-                channelId: message.member.voice.channel.id,
-                guildId: message.guild.id,
-                adapterCreator: message.guild.voiceAdapterCreator,
+                channelId: interaction.member.voice.channel.id,
+                guildId: interaction.guildId,
+                adapterCreator: interaction.guild.voiceAdapterCreator,
                 selfDeaf: false,
             })
-            message.channel.send("**Successfully Joined!**");
-            let data = ops.active.get(message.guild.id) || {};
+            interaction.reply("Successfully Joined!");
+            let data = index.ops.active.get(interaction.guildId) || {};
             if (data.dispatcher)
                 connection.subscribe(data.dispatcher);
         }
         else {
-            message.channel.send("❌ You must be in a voice channel for me to join!");
+            interaction.reply({ content: "❌ You must be in a voice channel for me to join!", ephemeral: true });
         }
     }
+}

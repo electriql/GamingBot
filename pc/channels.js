@@ -1,4 +1,4 @@
-const { MessageButton, MessageActionRow } = require("discord.js");
+const {ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType} = require("discord.js");
 
 const discord = import("discord.js");
 const pageMax = 10;
@@ -18,13 +18,13 @@ exports.run = async (message, args, client, ops) => {
         var string = "";
         for (i = 0; i < currentChannels.length; i++) {
             channel = currentChannels[i];
-            string += "**" + (i + index + 1) + ". " + channel.name + "**, " + "ID: **" + channel.id + "** (" + channel.type + ")\n"
+            string += "**" + (i + index + 1) + ". " + channel.name + "**" + "ID: **" + channel.id + "** (" + ChannelType[channel.type] + ")\n"
         }
         var embed = {
     
             "embed": {
               "title" : "Channels #" + (index + 1) + "-" + (index + currentChannels.length),
-              "color": 4886754,
+              "color": ops.color,
               "author": {
                 "name": "List of Channels in " + guilds.get(args[0]).name,
                 "url": "",
@@ -33,29 +33,29 @@ exports.run = async (message, args, client, ops) => {
                     format: "png"
                 })
               },
-              "fields": {
+              "fields": [
+                {
                   "name" : "Page " + Math.floor((index / pageMax) + 1) + "/" + Math.ceil(channels.size / pageMax),
                   "value" : string
-              }
+                }
+              ]
             }
         }
         return embed;
     }
 
-    const forward = new MessageButton({
-        style: 'PRIMARY',
-        emoji: '▶',
-        customId: 'forward'
-    })
-    const back = new MessageButton({
-        style: 'PRIMARY',
-        emoji: '◀',
-        customId: 'back'
-    })
+    const forward = new ButtonBuilder()
+        .setCustomId("forward")
+        .setEmoji('▶')
+        .setStyle(ButtonStyle.Primary);
+    const back = new ButtonBuilder()
+        .setCustomId("back")
+        .setEmoji('◀')
+        .setStyle(ButtonStyle.Primary);
 
     const msg = await message.channel.send({
         embeds: [(await generateEmbed(0)).embed],
-        components: channels.size <= pageMax ? [] : [new MessageActionRow({components : [forward]})]
+        components: channels.size <= pageMax ? [] : [new ActionRowBuilder().addComponents(forward)]
     });
 
     if (channels.size > pageMax) {
@@ -70,9 +70,7 @@ exports.run = async (message, args, client, ops) => {
             if (currentIndex - pageMax >= 0) buttons.push(back);
             if (currentIndex + pageMax < channels.size) buttons.push(forward);
             if (buttons[0]) components = [
-                new MessageActionRow({
-                    components: buttons
-                })
+                new ActionRowBuilder().addComponents(buttons)
             ]
             await interaction.update({
                 embeds: [(await generateEmbed(currentIndex)).embed],

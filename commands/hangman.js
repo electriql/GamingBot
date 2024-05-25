@@ -1,12 +1,182 @@
 // "  ___\n|    |\n|   O\n|  /|\\\n    /\\"
-var randomWords = require('random-words');
-var person = ["  ___\n|    |\n|    \n|","  ___\n|    |\n|   O\n|","  ___\n|    |\n|   O\n|    |","  ___\n|    |\n|   O\n|  /| ","  ___\n|    |\n|   O\n|  /|\\","  ___\n|    |\n|   O\n|  /|\\\n   /","  ___\n|    |\n|   O\n|  /|\\\n    /\\"];
-exports.category = "fun";
-exports.info = "Users play the classic game of hangman! Only one game at a time! \n **g!hangman guess - ** guess a letter or the entire word. \n **g!hangman start <random/custom> -** Start a hangman game \n - **random** - the bot chooses a random word (whoever guesses the word wins diamonds!) \n - **custom** - the user chooses a custom word \n **g!hangman stop -** stops the game. \n **g!hangman view -** views the status of the current game. \n **Aliases:** `hm`"
+var person = ["  ___\n|    |\n|    \n|",
+              "  ___\n|    |\n|   O\n|",
+              "  ___\n|    |\n|   O\n|    |",
+              "  ___\n|    |\n|   O\n|  /| ",
+              "  ___\n|    |\n|   O\n|  /|\\",
+              "  ___\n|    |\n|   O\n|  /|\\\n   /",
+              "  ___\n|    |\n|   O\n|  /|\\\n    /\\"];
+const { SlashCommandBuilder } = require("discord.js");
+module.exports = {
+    category: "fun",
+    info: "Users play the classic game of hangman! Only one game at a time!\n" +
+          "__**Subcommands**__\n" +
+          "`/hangman guess` - Guess a letter or the entire word.\n" +
+          "`/hangman start <custom/random>` - Start a game of hangman, custom or random.\n" +
+          "`/hangman stop` - Stop the current game of hangman.\n" +
+          "`/hangman view` - View the current game of hangman.",
+    data: new SlashCommandBuilder()
+        .setName("hangman")
+        .setDescription("Play the classic game of hangman!")
+        .setDMPermission(false)
+        .addSubcommand(subcommand =>
+            subcommand.setName("guess")
+                .setDescription("Guess a letter or the entire word.")
+                .addStringOption(option =>
+                    option.setName("string")
+                        .setDescription("The letter or word to be guessed.")
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("start")
+                .setDescription("Start a game of hangman.")
+                .addStringOption(option =>
+                    option.setName("type")
+                        .setDescription("The type of hangman game to start.")
+                        .addChoices(
+                            { name: "random", value: "random" },
+                            { name: "custom", value: "custom" },
+                        )
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("stop")
+                .setDescription("Stop the current game of hangman.")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("view")
+                .setDescription("View the current game of hangman.")
+        ),
+    async execute(interaction) {
+        const index = require("../index.js");
+        let fetched = index.ops.hangman.get(interaction.guildId) || {};
+        if (interaction.options.getSubcommand() == "guess") {
+            if (!fetched.word)
+                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+            if (fetched.wrongGuesses >= person.length - 1)
+                return interaction.reply({ content: "❌ This hangman has expired!", ephemeral: true });
+            var guess = interaction.options.getString("string");
+            if (guess.length > 1 && guess.length != fetched.word.length)
+                return interaction.reply({ content: "❌ You can't guess this many letters!", ephemeral: true });
+            if (guess.length == 1 && fetched.guessedLetters.includes(guess.toUpperCase()))
+                return interaction.reply({ content: "❌ That letter has already been guessed!", ephemeral: true });
+            if (fetched.type == "custom" && fetched.host == message.author)
+                return interaction.reply({ content: "❌ You are the host of this hangman! Let other people guess your word!", ephemeral: true });
+            if (!guess.toLowerCase().match(/^[a-z]+$/i))
+                return interaction.reply({ content: "❌ The guess can only have letters a-z!", ephemeral: true });
+            var correct = "**" + guess.toUpperCase() + "** is not part of the word!";
+            var fetchedUser = fetched.guesses.get(interaction.user.id) || {};
+            if (!fetchedUser.correctGuesses) {
+                fetchedUser = {
+                    correctGuesses: 0,
+                    wrongGuesses: 0,
+                }
+            }
+
+
+            if (guess.length == 1) {
+                if (fetched.word.toUpperCase().includes(guess.toUpperCase())) {
+                    correct = "**" + guess.toUpperCase() + "** is part of the word!";
+                    fetchedUser.correctGuesses++;
+                }
+                else {
+                    fetchedUser.wrongGuesses++;
+                    fetched.wrongGuesses++;
+                }
+            }
+            else {
+                if (guess.toUpperCase() == fetched.word.toUpperCase()) {
+                    correct = "**" + guess.toUpperCase() + "** is the word!"
+                    for (i = 0; i < fetched.word.length; i++) {
+
+                        if (getHangman(interaction.client, index.ops, fetched).embed.description.charAt(i + 4) == "?") {
+                            if (!fetched.word.substring(0, i).includes(fetched.word.charAt(i)))
+                                fetchedUser.correctGuesses++;
+                        }
+
+                    }
+                }
+                else {
+                    correct = "**" + guess.toUpperCase() + "** is not the word!";
+                    fetchedUser.wrongGuesses++;
+                    fetched.wrongGuesses++;
+                }
+            }
+            fetched.guessedLetters.push(guess.toUpperCase());
+            var embed = getHangman(interaction.client, index.ops, fetched);
+            embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
+            interaction.reply({ embeds: [embed.embed] });
+            fetched.guesses.set(interaction.user.id, fetchedUser);
+            if (fetched.wrongGuesses >= person.length - 1) {
+                interaction.channel.send("You are out of guesses! The word is **" + fetched.word.toUpperCase() + "**!");
+                if (fetched.type == "random") {
+                    rewardUsers(interaction.client, index.ops, fetched, interaction);
+                }
+                fetched = {};
+            }
+            else if (embed.embed.description.startsWith("__**" + fetched.word.toUpperCase() + "**__")) {
+                interaction.channel.send("You guessed the word!");
+                if (fetched.type == "random") {
+                    rewardUsers(interaction.client, index.ops, fetched, interaction);
+                }
+                fetched = {};
+            }
+            index.ops.hangman.set(interaction.guildId, fetched);
+        }
+        else if (interaction.options.getSubcommand() == "start") {
+            if (fetched.word)
+                return interaction.reply({ content: "❌ There is already a hangman game in the server!", ephemeral: true });
+            if (interaction.options.getString("type") == "random") {
+                import('random-words').then(randomWords => {
+                    var word = randomWords.generate({ minLength: 4, maxLength: 20 });
+                    console.log(word);
+                    fetched = {
+                        word: word,
+                        wrongGuesses: 0,
+                        guessedLetters: [],
+                        host: interaction.user,
+                        guesses: new Map(),
+                        type: "random"
+                    }
+                    index.ops.hangman.set(interaction.guildId, fetched);
+                    interaction.channel.send({ embeds: [getHangman(interaction.client, index.ops, fetched).embed] });
+                    interaction.reply({ content: "Success!", ephemeral: true });
+                });
+            }
+            else if (interaction.options.getString("type") == "custom")
+                startCustom(interaction, interaction.client, index.ops, fetched);
+        }
+        else if (interaction.options.getSubcommand() == "stop") {
+            if (!fetched.word)
+                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+            if (!interaction.guild.members.cache.get(fetched.host.id)) {
+                index.ops.hangman.set(interaction.guildId, {});
+                return interaction.reply("The host isn't in the server! The game has been stopped automatically.");
+            }
+            if (interaction.user != fetched.host)
+                return interaction.reply({
+                    content: "❌ You must be the host of the hangman to stop it! The host is **" + fetched.host.tag + "**",
+                    ephemeral: true
+                });
+            index.ops.hangman.set(interaction.guildId, {});
+            interaction.reply("Hangman stopped!");
+        }
+        else if (interaction.options.getSubcommand() == "view") {
+            if (!fetched.word)
+                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+            interaction.reply({ embeds: [getHangman(interaction.client, index.ops, fetched).embed] });
+        }
+    }
+
+}
+
 function rewardUsers(client, ops, data, message) {
     var status = "The word wasn't guessed!"
     var rewards = "";
     var index = require('../index.js');
+    var userData = index.getUserData();
     data.guesses.forEach(function (value, key, map) {
         var diamonds = 0;
         diamonds += (value.correctGuesses * 25) - (value.wrongGuesses * 5);
@@ -14,10 +184,11 @@ function rewardUsers(client, ops, data, message) {
             diamonds = 5;
         }
         rewards += "**" + message.guild.members.cache.get(key).user.tag + "** earned 💎x" + diamonds + "\n";
-        index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', key, function(user) {
-            index.dbUpdate(index.pool, 'userdata', 'id', 'diamonds', key, user.diamonds + diamonds);
-        });
-    })
+        if (!userData[key])
+            userData[key] = index.createUser();
+        userData[key].diamonds += diamonds;
+        index.setUserData(userData);
+    });
     if (getHangman(client, ops, data).embed.description.startsWith("__**" + data.word.toUpperCase() + "**__")) {
         status = "The word was guessed!";
     }
@@ -25,8 +196,8 @@ function rewardUsers(client, ops, data, message) {
         "embed": {
             "title": "**" + status + "**",
             "description": rewards,
-            "url" : "",
-            "color": 4886754,
+            "url": "",
+            "color": ops.color,
             "author": {
                 "name": "Rewards",
                 "url": "",
@@ -35,14 +206,14 @@ function rewardUsers(client, ops, data, message) {
                     format: "png"
                 }),
             }
-          
+
         }
     }
-    
-    message.channel.send({embeds: [embed.embed]});
+
+    message.channel.send({ embeds: [embed.embed] });
 }
 function getHangman(client, ops, data) {
-    
+
     var word = "";
     var guessedLetters = "";
     if (!data.guessedLetters[0]) guessedLetters = "(None)"
@@ -72,8 +243,8 @@ function getHangman(client, ops, data) {
         "embed": {
             "title": person[data.wrongGuesses],
             "description": "__**" + word + "**__ " + " (" + word.length + " letters)",
-            "url" : "",
-            "color": 4886754,
+            "url": "",
+            "color": ops.color,
             "footer": {
                 "icon_url": ops.owner.displayAvatarURL({
                     size: 2048,
@@ -90,215 +261,97 @@ function getHangman(client, ops, data) {
                 }),
             },
             "fields": [
-            {
-                "name": "__Guesses__",
-                "value": guessedLetters
-            },
-            {
-                "name": "Started by: **" + data.host.tag + "**",
-                "value" : "Type: `" + data.type + "`"
-            }
+                {
+                    "name": "__Guesses__",
+                    "value": guessedLetters
+                },
+                {
+                    "name": "Started by: **" + data.host.tag + "**",
+                    "value": "Type: `" + data.type + "`"
+                }
             ]
-          
+
         }
     }
     return embed;
 }
-exports.run = async (message, args, client, ops) => {
-    let fetched = ops.hangman.get(message.guild.id) || {};
-     if (!args[0]) return message.channel.send("❌ The correct syntax of this command is g!hangman <start,guess,stop,view>!");
-     if (args[0].toLowerCase() == "start") {
-         if(!args[1]) return message.channel.send("❌ The correct syntax of this command is g!hangman start <random/custom>!");
-         
-         if (fetched.word) return message.channel.send("❌ There is already a hangman game in the server!");
-         if (args[1].toLowerCase() == "random") {
-            var word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
-            while (word.length < 4 || word.length > 20) {
-                word = randomWords.wordList[Math.floor(Math.random() * randomWords.wordList.length)];
-            }
-            console.log(word);
-            fetched = {
-                word : word,
-                wrongGuesses : 0,
-                guessedLetters : [],
-                host: message.author,
-                guesses: new Map(),
-                type : "random"
-            }
-            ops.hangman.set(message.guild.id, fetched);
-            message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
-         }
-         else if (args[1].toLowerCase() == "custom") {
-            message.channel.send("Check your DMs!");
-            try {
-                
-                message.author.send("What do you want the word to be? (Expires in 30 seconds)")
-                .then(async function(msg) {
-                    if (!fetched.host) fetched.host = message.author;
-                    else return msg.channel.send("❌ A hangman is being created by **" + fetched.host.tag + "**!");
-                    ops.hangman.set(message.guild.id, fetched);
-                    const filter = m => m.author.equals(message.author);
-                    var wordPromise = new Promise(function getWord(resolve, reject) {
-                        const collector = msg.channel.createMessageCollector({filter, time: 30000});
-                        var word = "";
-                        collector.once('collect', function(m) {
-                            word = m.content.replace(/\s/g,'');
-                            collector.stop();
-                        });
-                        collector.once('end', collected => {
-                            if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.first().content.length < 4 || collected.first().content.length > 20) {
-                                getWord(resolve, reject);
-                                return msg.channel.send("❌ That word is either too long or too short! The word must be 4-20 characters long! (Excluding spaces)");
-                            }
-                            for (i = 0; i < word.length; i++) {
-                                if (!word.charAt(i).toLowerCase().match(/[a-z]/i)) {
-                                    getWord(resolve, reject);
-                                    return msg.channel.send("❌ The word must have only letters a-z!");;
-                                }
-                            }
-                            resolve(word);
-                        });
+function startCustom(interaction, client, ops, fetched) {
+    interaction.reply({ content: "Check your DMs!", ephemeral: true });
+    try {
+        interaction.user.send("What do you want the word to be? (Expires in 30 seconds)")
+            .then(async function (msg) {
+                ops.hangman.set(interaction.guildId, fetched);
+                const filter = m => m.author.equals(interaction.user);
+                var wordPromise = new Promise(function getWord(resolve, reject) {
+                    const collector = msg.channel.createMessageCollector({ filter, time: 30000 });
+                    var word = "";
+                    collector.once('collect', function (m) {
+                        word = m.content.replace(/\s/g, '');
+                        collector.stop();
                     });
-                    let word = await wordPromise;
-                    
-                    msg.channel.send("Are you sure you want the word to be **" + word + "**? Type **Y** for yes and **N** to cancel. (Expires in 30 seconds)")
-                    var decisionPromise = new Promise(function getDecision(resolve, reject) {
-                        const collector = msg.channel.createMessageCollector({filter, time: 30000});
-                        var decision = "";
-                        collector.once('collect', function(m) {
-                            decision = m.content.trim();
-                            collector.stop();
-                        });
-                        collector.once('end', collected => {
-                            if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
-                            if (collected.first().content.toLowerCase() != "y" && collected.first().content.toLowerCase() != "n") {
-                                msg.channel.send("❌ You must type **Y** or **N**!");
-                                getDecision(resolve, reject);
-                            } 
-                            if (collected.first().content.toLowerCase() == "n") {
-                                message.channel.send(message.author.tag + " canceled their custom hangman!");
-                                ops.hangman.set(message.guild.id, {});
-                                return msg.channel.send("Canceled!");
-                            }
-                            resolve(decision);
-                        });
-                    });
-
-                    let decision = await decisionPromise;
-                    if (decision) {
-                        msg.channel.send("Hangman started!");
-                        fetched = {
-                            word : word,
-                            wrongGuesses : 0,
-                            guessedLetters : [],
-                            host: message.author,
-                            guesses: new Map(),
-                            type : "custom"
+                    collector.once('end', collected => {
+                        if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
+                        if (collected.first().content.length < 4 || collected.first().content.length > 20) {
+                            getWord(resolve, reject);
+                            return msg.channel.send("❌ That word is either too long or too short! The word must be 4-20 characters long! (Excluding spaces)");
                         }
-                        ops.hangman.set(message.guild.id, fetched);
-                        message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
-                        
-                    }
-                    else {
-                        msg.channel.send("❌ Something went wrong!");
-                    }
+                        for (i = 0; i < word.length; i++) {
+                            if (!word.charAt(i).toLowerCase().match(/[a-z]/i)) {
+                                getWord(resolve, reject);
+                                return msg.channel.send("❌ The word must have only letters a-z!");;
+                            }
+                        }
+                        resolve(word);
+                    });
                 });
-            }
-            catch (e) {
-                message.author.send("Please turn on DMs!");
-            }
-         }
-         else {
-            return message.channel.send("❌ The correct syntax of this command is g!hangman start <random/custom>!");
-         }
-        
-     }
-     else if (args[0].toLowerCase() == "view") {
-        if (!fetched.word) return message.channel.send("❌ There currently is no hangman game!");
-        message.channel.send({embeds: [getHangman(client, ops, fetched).embed]});
-     }
-     else if (args[0].toLowerCase() == "stop") {
-         if (!fetched.word) return message.channel.send("❌ There is currently no hangman game!");
-         if (!message.guild.members.cache.get(fetched.host.id)){
-            ops.hangman.set(message.guild.id, {});
-            return message.channel.send("The host isn't in the server! The game has been stopped automatically.");
-         } 
-         if (message.author != fetched.host) return message.channel.send("❌ You must be the host of the hangman to stop it! The host is **" + fetched.host.tag + "**");
-         ops.hangman.set(message.guild.id, {});
-         message.channel.send("Hangman stopped!");
-     }
-     else if (args[0].toLowerCase() == "guess") {
-        if (!fetched.word) return message.channel.send("❌ There currently is no hangman game!");
-        if (!args[1]) return message.channel.send("❌ You must guess a letter or the entire word!");
-        if (fetched.wrongGuesses >= person.length - 1) return message.channnel.send("❌ This hangman has expired!");
-        if (args[1].length > 1 && args[1].length != fetched.word.length) return message.channel.send("❌ You can't guess this many letters!");
-        if (args[1].length == 1 && fetched.guessedLetters.includes(args[1].toUpperCase())) return message.channel.send("❌ That letter has already been guessed!");
-        if (fetched.type == "custom" && fetched.host == message.author) return message.channel.send("❌ You are the host of this hangman! Let other people guess your word!");
-        if (!args[1].toLowerCase().match(/[a-z]/i)) return message.channel.send("❌ The guess can only have letters a-z!");
-        var correct = "**" + args[1].toUpperCase() + "** is not part of the word!";
-        var fetchedUser = fetched.guesses.get(message.author.id) || {};
-        if (!fetchedUser.correctGuesses) {
-            fetchedUser = {
-                correctGuesses : 0,
-                wrongGuesses : 0,
-            }
-        }
+                let word = await wordPromise;
 
-        
-        if (args[1].length == 1) {
-            if (fetched.word.toUpperCase().includes(args[1].toUpperCase())) {
-                correct = "**" + args[1].toUpperCase() + "** is part of the word!";
-                fetchedUser.correctGuesses++;
-            }
-            else {
-                fetchedUser.wrongGuesses++;
-                fetched.wrongGuesses++;
-            }
-        }
-        else {
-            if (args[1].toUpperCase() == fetched.word.toUpperCase()) {
-                correct = "**" + args[1].toUpperCase() + "** is the word!"
-                for (i = 0; i < fetched.word.length; i++) {
-                    var index = i + 4;
+                msg.channel.send("Are you sure you want the word to be **" + word + "**? Type **Y** for yes and **N** to cancel. (Expires in 30 seconds)")
+                var decisionPromise = new Promise(function getDecision(resolve, reject) {
+                    const collector = msg.channel.createMessageCollector({ filter, time: 30000 });
+                    var decision = "";
+                    collector.once('collect', function (m) {
+                        decision = m.content.trim();
+                        collector.stop();
+                    });
+                    collector.once('end', collected => {
+                        if (!collected.first()) return msg.channel.send("❌ You didn't send a valid message in time!");
+                        if (collected.first().content.toLowerCase() != "y" && collected.first().content.toLowerCase() != "n") {
+                            msg.channel.send("❌ You must type **Y** or **N**!");
+                            getDecision(resolve, reject);
+                        }
+                        if (collected.first().content.toLowerCase() == "n") {
+                            // message.channel.send(message.author.tag + " canceled their custom hangman!");
+                            ops.hangman.set(interaction.guildId, {});
+                            return msg.channel.send("Canceled!");
+                        }
+                        resolve(decision);
+                    });
+                });
 
-                    if (getHangman(client, ops, fetched).embed.description.charAt(index) == "?"){
-                        if (!fetched.word.substring(0, i).includes(fetched.word.charAt(i)))
-                            fetchedUser.correctGuesses++;
+                let decision = await decisionPromise;
+                if (decision) {
+                    if (ops.hangman.get(interaction.guildId).word)
+                        return msg.channel.send("❌ There is already a hangman game in the server!");
+                    msg.channel.send("Hangman started!");
+                    fetched = {
+                        word: word,
+                        wrongGuesses: 0,
+                        guessedLetters: [],
+                        host: interaction.user,
+                        guesses: new Map(),
+                        type: "custom"
                     }
-                        
+                    ops.hangman.set(interaction.guildId, fetched);
+                    interaction.channel.send({ embeds: [getHangman(client, ops, fetched).embed] });
+
                 }
-            }
-            else {
-                correct = "**" + args[1].toUpperCase() + "** is not the word!";
-                fetchedUser.wrongGuesses++;
-                fetched.wrongGuesses++;
-            }
-        }
-        fetched.guessedLetters.push(args[1].toUpperCase());
-        var embed = getHangman(client, ops, fetched);
-        embed.embed.fields[0].value = embed.embed.fields[0].value + "\n" + correct;
-        message.channel.send({embeds: [embed.embed]});
-        fetched.guesses.set(message.author.id, fetchedUser);
-        if (fetched.wrongGuesses >= person.length - 1) {
-            message.channel.send("You are out of guesses! The word is **" + fetched.word.toUpperCase() + "**!");
-            if (fetched.type == "random") {
-                rewardUsers(client, ops, fetched, message);
-            }
-            fetched = {};
-        }
-        else if (embed.embed.description.startsWith("__**" + fetched.word.toUpperCase() + "**__")) {
-            message.channel.send("You guessed the word!");
-            if (fetched.type == "random") {
-                rewardUsers(client, ops, fetched, message);
-            }
-            fetched = {};
-        }
-        ops.hangman.set(message.guild.id, fetched);
-     }
-     else {
-        
-        return message.channel.send("❌ The correct syntax of this command is g!hangman <guess,start,stop,view>!");
-     }
-    
+                else {
+                    msg.channel.send("❌ Something went wrong!");
+                }
+            });
+    }
+    catch (e) {
+        interaction.channel.reply({ content: "Please turn on DMs!", ephemeral: true });
+    }
 }

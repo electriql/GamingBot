@@ -1,4 +1,4 @@
-const { Message, SystemChannelFlags } = require("discord.js");
+const { ChannelType } = require("discord.js");
 
 exports.info = "Shows message history of a channel in a server. (excludes embeds)";
 exports.run = async (message, args, client, ops) => {
@@ -12,7 +12,7 @@ exports.run = async (message, args, client, ops) => {
 
     var channels = guilds.get(args[0]).channels.cache;
     if (channels.get(args[1]) == null) return message.channel.send("This channel is not valid.");
-    if (channels.get(args[1].type != "text")) return message.channel.send("This is not a text channel.");
+    if (channels.get(args[1]).type != ChannelType.GuildText) return message.channel.send("This is not a text channel.");
     
     var channel = channels.get(args[1]);
     if (!channel.viewable) return message.channel.send("I cannot see message history!");
@@ -23,22 +23,25 @@ exports.run = async (message, args, client, ops) => {
             length = args[2];
     channel.messages.fetch({limit : length}).then(map => {
         let messages = [];
-        map.forEach(msg => {
-            var embeds = "";
+        var msgs = 0;
+        for (const [key, msg] of map) {
+            if (msgs == 25)
+                break;
             if (msg.content) {
+                var trimmed = msg.content.length > 1024 ? msg.content.substring(0, 1021) + "..." : msg.content;
+                msgs++;
                 messages.push({
-                    "name" : msg.author.tag + " " + msg.createdAt.toString(),
-                    "value" : msg.content + "\n",
+                    "name" : msgs + ". " + msg.author.tag + " " + msg.createdAt.toString(),
+                    "value" : trimmed + "\n",
                 });
             }
-            else length--;
-        })
+        }
         var embed = {
 
             "embed": {
-              "color": 4886754,
+              "color": ops.color,
               "author": {
-                "name": "Showing " + length + " messages in " + channel.name,
+                "name": "Showing " + msgs + " messages in " + channel.name,
                 "url": "",
                 "icon_url": client.user.displayAvatarURL({
                     size: 2048,

@@ -1,4 +1,4 @@
-const { SystemChannelFlags, Options, ReactionUserManager } = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
 const answers = fs.readFileSync('Storage/wordleAnswers.txt', 'utf8').split('\n');
 const guesses = fs.readFileSync('Storage/wordleGuesses.txt', 'utf8').split('\n');
@@ -8,52 +8,85 @@ for (let i = 0; i < guesses.length; i++) {
 for (let i = 0; i < answers.length; i++) {
     answers[i] = answers[i].trim();
 }
-exports.category = "fun";
-exports.info = "Play a recreation of Wordle!"
-exports.run = async (message, args, client, ops) => {
-    let data = ops.wordles.get(message.author.id);
-    if (args.length > 0) {
-        if (args[0].toLowerCase() == "start") {
+module.exports = {
+    category: "fun",
+    info: "Play a recreation of Wordle!\n" +
+          "__**Subcommands**__\n" +
+          "`/wordle guess` - Guess a word.\n" +
+          "`/wordle start` - Start a game of Wordle.\n" +
+          "`/wordle stop` - Stop the current game of Wordle.\n" +
+          "`/wordle view` - View the current game of Wordle.",
+    data: new SlashCommandBuilder()
+        .setName("wordle")
+        .setDescription("Play a recreation of Wordle!")
+        .setDMPermission(false)
+        .addSubcommand(subcommand =>
+            subcommand.setName("guess")
+                .setDescription("Guess a word.")
+                .addStringOption(option =>
+                    option.setName("word")
+                        .setDescription("Type in a 5 letter word!")
+                        .setRequired(true)
+                        .setMinLength(5)
+                        .setMaxLength(5)
+                )
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("start")
+                .setDescription("Start a game of Wordle.")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("stop")
+                .setDescription("Stop the current game of Wordle.")
+        )
+        .addSubcommand(subcommand =>
+            subcommand.setName("view")
+                .setDescription("View the current game of Wordle.")
+        ),
+    async execute(interaction) {
+        const index = require('../index.js');
+        let data = index.ops.wordles.get(interaction.user.id);
+        if (interaction.options.getSubcommand() == "guess") {
+            if (!data)
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+            var guess = interaction.options.getString("word");
+            if (guesses.indexOf(guess.toLowerCase()) != -1) {
+                data.guessWord(guess);
+                data.display(interaction, interaction.client, index.ops);
+                if (data.checkWin() == 1) {
+                    interaction.channel.send("You guessed the word in **" + data.guesses + "** guess(es)!");
+                    return index.ops.wordles.delete(interaction.user.id);
+                }
+                else if (data.checkWin() == -1) {
+                    interaction.channel.send("Unlucky! The word was **" + data.word.toUpperCase() + "**!");
+                    return index.ops.wordles.delete(interaction.user.id);
+                }
+                return;
+            }
+            return interaction.reply({ content: "❌ Invalid guess!", ephemeral: true });
+        }
+        else if (interaction.options.getSubcommand() == "start") {
             if (!data) {
                 word = answers[Math.floor(Math.random() * answers.length)];
-                data = new Wordle(word, message.author)
-                ops.wordles.set(message.author.id, data);
-                return data.display(message.channel, client, ops);
+                data = new Wordle(word, interaction.user)
+                index.ops.wordles.set(interaction.user.id, data);
+                return data.display(interaction, interaction.client, index.ops);
             }
-            return message.channel.send("❌ You already have an ongoing wordle!");
+            return interaction.reply({ content: "❌ You already have an ongoing wordle!", ephemeral: true });
         }
-        else if (args[0].toLowerCase() == "guess") {
-            if (args.length > 1) {
-                if (!data) return message.channel.send("❌ You don't have an ongoing wordle!");
-                if (guesses.indexOf(args[1].toLowerCase()) != -1) {
-                    data.guessWord(args[1]);
-                    data.display(message.channel, client, ops);
-                    if (data.checkWin() == 1) {
-                        message.channel.send("You guessed the word in **" + data.guesses + "** guess(es)!");
-                        return ops.wordles.delete(message.author.id);
-                    }
-                    else if (data.checkWin() == -1) {
-                        message.channel.send("Unlucky! The word was **" + data.word.toUpperCase() + "**!");
-                        return ops.wordles.delete(message.author.id);
-                    }
-                    return;
-                }
-            }
-            return message.channel.send("❌ Invalid guess!");
+        else if (interaction.options.getSubcommand() == "stop") {
+            if (!data)
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+            index.ops.wordles.delete(interaction.user.id);
+            return interaction.reply("Stopped your wordle! The word was **" + data.word.toUpperCase() + "**.");
         }
-        else if (args[0].toLowerCase() == "stop") {
-            if (!data) return message.channel.send("❌ You don't have an ongoing wordle!");
-            ops.wordles.delete(message.author.id);
-            return message.channel.send("Stopped your wordle! The word was **" + data.word.toUpperCase() + "**.");
-        }
-        else if (args[0].toLowerCase() == "view") {
-            if (!data) return message.channel.send("❌ You don't have an ongoing wordle!");
-            return data.display(message.channel, client, ops);
+        else if (interaction.options.getSubcommand() == "view") {
+            if (!data)
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+            return data.display(interaction, interaction.client, index.ops);
         }
     }
-    return message.channel.send("❌ The correct syntax of this command is g!wordle <start,guess,stop,view>!");
 }
-
 class Wordle {
     owner;
     word;
@@ -92,10 +125,10 @@ class Wordle {
         })
         this.squares.push(str);
     }
-    display(channel, client, ops) {
+    display(interaction, client, ops) {
         let tempKeys = "Q W E R T Y U I O P\n" +
-                       "A S D F G H J K L\n" +
-                       "Z X C V B N M\n"
+            "A S D F G H J K L\n" +
+            "Z X C V B N M\n"
         let board = "";
         let green = new Set();
         let yellow = new Set();
@@ -153,8 +186,8 @@ class Wordle {
             "embed": {
                 "title": this.guesses + "/6",
                 "description": board,
-                "url" : "",
-                "color": 4886754,
+                "url": "",
+                "color": ops.color,
                 "footer": {
                     "icon_url": ops.owner.displayAvatarURL({
                         size: 2048,
@@ -172,7 +205,7 @@ class Wordle {
                 },
             }
         }
-        channel.send({embeds: [embed.embed]});
+        interaction.reply({ embeds: [embed.embed] });
     }
     checkWin() {
         if (this.squares.length <= 0)

@@ -1,30 +1,27 @@
-const { SystemChannelFlags } = require("discord.js");
-const Utils = require("../util.js");
-
-exports.info = "Gives the profile picture of the specified user!"
-exports.category = "misc";
-exports.run = async (message, args, client, ops) => {
-        let utils = new Utils();
-        var user = message.author;
-        if (args[0]) {
-                var name = "";
-                for (i = 0; i < args.length; i++) {
-                      name += args[i] + " "; 
-                }
-                name = name.trim();
-                
-                user = await utils.findUser(message, name);
-        }
-
+const { SlashCommandBuilder, SystemChannelFlags } = require("discord.js");
+module.exports = {
+    category: "misc",
+    info: "Gives the profile picture of you or the specified user.",
+    data: new SlashCommandBuilder()
+        .setName("pfp")
+        .setDescription("Gives the profile picture of you or the specified user.")
+        .setDMPermission(false)
+        .addUserOption(option =>
+            option.setName("user")
+                .setDescription("The user whose profile picture will be shown.")
+        ),
+    async execute(interaction) {
+        const user = interaction.options.getUser("user") || interaction.user;
         try {
-                var pfp = user.displayAvatarURL({
-                        size: 2048,
-                        format: "png"
-                });
-                return message.channel.send(pfp);
+            var pfp = user.displayAvatarURL({
+            size: 2048,
+                format: "png"
+            });
+            return interaction.reply(pfp);
         }
         catch (e) {
-                console.log(e);
-                message.channel.send("❌ That user is invalid!")
+            console.log(e);
+            interaction.reply("❌ That user is invalid!")
         }
+    }
 }

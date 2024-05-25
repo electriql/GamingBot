@@ -1,24 +1,27 @@
-exports.category = "hidden";
-exports.info = "A command that you aren't supposed to and can't use."
+const { SlashCommandBuilder } = require("discord.js");
 const Utils = require("../util.js");
-exports.run = async(message, args, client, ops, serverData) => {
-    let utils = new Utils();
-    if (message.author == ops.owner) {
-        if (args[0]) {
-            let str = "";
-            for (i = 0; i < args.length; i++) {
-                str = str + args[i] + " ";
-            }
-            str = await utils.insertEmotes(str, client);
-            message.channel.send(str);
+module.exports = {
+    info: "A command that you aren't supposed to and can't use.",
+    data: new SlashCommandBuilder()
+        .setName("speak")
+        .setDescription("A command that you aren't supposed to and can't use.")
+        .setDMPermission(false)
+        .addStringOption(option =>
+            option.setName("string")
+                .setDescription("The string to send.")
+                .setRequired(true)
+        ),
+    async execute(interaction) {
+        const index = require("../index.js");
+        if (interaction.user == index.ops.owner) {
+            let utils = new Utils();
+            let str = await utils.insertEmotes(interaction.options.getString("string"), interaction.client)
+            await interaction.reply({ content: "hehe", ephemeral: true });
+            interaction.deleteReply();
+            interaction.channel.send(str);
         }
         else {
-            message.channel.send("❌ You must give me something to say!");
+            interaction.reply({ content: "You shouldn't be using this command...", ephemeral: true });
         }
-        message.delete();
     }
-    else {
-        message.channel.send("You shouldn't be using this command...");
-    }
-    
 }

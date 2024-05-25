@@ -1,34 +1,23 @@
-var index = require('../index.js');
-const fs = require('fs');
-let userData = JSON.parse(fs.readFileSync('Storage/userData.json', 'utf8'));
-
-const Utils = require("../util.js");
-
-exports.category = "currency";
-exports.info = "Shows how many diamonds you currently have."
-exports.run = async (message, args, client, ops) => {
-    let utils = new Utils();
-    var user = message.author;
-    if (args[0]) {
-        var name = "";
-                for (i = 0; i < args.length; i++) {
-                      name += args[i] + " "; 
-                }
-                name = name.trim();
-                user = await utils.findUser(message, name);
-    }
-    index.pool.query('SELECT * FROM userdata WHERE id = ' + user.id, [], (err, res) => {
-        if (err)
-            return console.log(err);
-        if (!res.rows[0]) {
-            index.pool.query('INSERT INTO userdata(id, diamonds, daily) VALUES(' + user.id + ',0,0)', [], (err, res) => {
-                
-            })
+const { SlashCommandBuilder } = require("discord.js");
+module.exports = {
+    category: "currency",
+    info: "Shows how many diamonds you or a specified user currently has.",
+    data: new SlashCommandBuilder()
+        .setName("diamonds")
+        .setDescription("Shows how many diamonds you or a specified user currently has.")
+        .addUserOption(option => 
+            option.setName("user")
+                .setDescription("The user whose diamonds will be shown.")
+        )
+        .setDMPermission(false),
+    async execute(interaction) {
+        const index = require('../index.js');
+        var userData = index.getUserData();
+        var user = interaction.options.getUser("user") || interaction.user;
+        if (!userData[user.id]) {
+            userData[user.id] = index.createUser();
+            index.setUserData(userData);
         }
-    });
-    index.dbSelect(index.pool, 'userdata', 'id', 'diamonds', user.id, function(data) {
-        if (!data) return message.channel.send("**" + user.username + "** has 💎x0!");
-        var diamonds = data.diamonds;
-        message.channel.send("**" + user.username + "** has 💎x" + diamonds + "!");
-    })
+        interaction.reply("**" + user.username + "** has 💎x" + userData[user.id].diamonds + "!");
+    }
 }
