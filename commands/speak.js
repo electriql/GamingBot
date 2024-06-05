@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("discord.js");
-const Utils = require("../util.js");
 module.exports = {
     info: "A command that you aren't supposed to and can't use.",
     data: new SlashCommandBuilder()
@@ -14,11 +13,9 @@ module.exports = {
     async execute(interaction) {
         const index = require("../index.js");
         if (interaction.user == index.ops.owner) {
-            let utils = new Utils();
-            let str = await utils.insertEmotes(interaction.options.getString("string"), interaction.client)
             await interaction.reply({ content: "hehe", ephemeral: true });
             interaction.deleteReply();
-            interaction.channel.send(str);
+            interaction.channel.send(interaction.options.getString("string"));
         }
         else {
             interaction.reply({ content: "You shouldn't be using this command...", ephemeral: true });

@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require("discord.js");
-const Utils = require("../util.js");
 module.exports = {
     category: "fun",
     info: "Makes the bot say anything you would like.",
@@ -13,8 +12,6 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        let utils = new Utils();
-        let str = await utils.insertEmotes(interaction.options.getString("string"), interaction.client)
-        interaction.reply(str);
+        interaction.reply(interaction.options.getString("string"));
     }
 }
