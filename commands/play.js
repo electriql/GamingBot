@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 const search = require("yt-search");
-const YTDL = require('ytdl-core');
+const YTDL = require('@distube/ytdl-core');
 module.exports = {
     category: "music",
     info: "Plays a specified track if in a voice channel.",

@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const search = require("yt-search");
-const ytdl = require("ytdl-core");
+const ytdl = require("@distube/ytdl-core");
 const emotes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 module.exports = {
     category: "music",
