@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 module.exports = {
     category: "music",
@@ -15,18 +15,17 @@ module.exports = {
         ),
     async execute(interaction) {
         const index = require("../index.js");
-        let fetched = index.ops.active.get(interaction.guildId);
-        if (!fetched)
-            return interaction.reply({ content: "❌ There is currently no music playing in the server!", ephemeral: true });
+        const queue = interaction.client.distube.getQueue(interaction.guild)
+        if (!queue)
+            return interaction.reply({ content: "❌ There is currently no music playing in the server!", flags: MessageFlags.Ephemeral });
         if (!interaction.member.voice.channel)
-            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", ephemeral: true });
-        if (interaction.member.voice.channel.id != voice.getVoiceConnection(interaction.guildId).joinConfig.channelId)
-            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", ephemeral: true });
+            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", flags: MessageFlags.Ephemeral });
+        if (interaction.member.voice.channel.id != queue.voiceChannel.id)
+            return interaction.reply({ content: "❌ You must be in the same voice channel as me to pause.", flags: MessageFlags.Ephemeral });
         let number = interaction.options.getInteger("track");
-        if (!fetched.queue[number])
-            return interaction.reply({ content: "❌ This spot in the queue is not occupied! If you want to see the queue, type `/queue`!", ephemeral: true });
-        var removed = fetched.queue.splice(number, 1)[0];
-        index.ops.active.set(interaction.guildId, fetched);
-        interaction.reply("Successfully Removed `" + removed.songTitle + "` from the queue!");
+        if (!queue.songs[number])
+            return interaction.reply({ content: "❌ This spot in the queue is not occupied! If you want to see the queue, type `/queue`!", flags: MessageFlags.Ephemeral });
+        let removed = queue.songs.splice(number, 1)[0];
+        interaction.reply("Successfully Removed **`" + removed.name + "`** from the queue!");
     }
 }

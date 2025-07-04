@@ -10,20 +10,19 @@
   "author": "Electric",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.9.0",
-    "@discordjs/voice": "^0.17.0",
-    "@distube/ytdl-core": "^4.13.5",
-    "discord.js": "^14.15.2",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "@discordjs/opus": "^0.10.0",
+    "@discordjs/voice": "^0.18.0",
+    "@distube/soundcloud": "^2.0.4",
+    "@distube/youtube": "^1.0.4",
+    "discord.js": "^14.19.3",
+    "distube": "^5.0.7",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "ffmpeg-static": "^5.2.0",
-    "libsodium-wrappers": "^0.7.13",
+    "libsodium-wrappers": "^0.7.15",
     "npm-check": "^6.0.1",
-    "npm-check-updates": "^16.14.20",
+    "npm-check-updates": "^18.0.1",
     "random-words": "^2.0.1",
-    "yt-search": "^2.11.0"
-  },
-  "engines": {
-    "node": "^20.13.0"
+    "yt-search": "^2.13.1"
   }
 }

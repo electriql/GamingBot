@@ -1,8 +1,13 @@
+const prefix = "g!"
+const embed_color = 4886754
+const fs = require('fs');
+const { DisTube, RepeatMode } = require('distube')
+const { SoundCloudPlugin } = require('@distube/soundcloud')
+const { YouTubePlugin } = require('@distube/youtube')
 require('dotenv').config();
-const { ActivityType, ChannelType, Client, Collection, GatewayIntentBits, Partials } = require("discord.js");
+const { ActivityType, ChannelType, Client, Collection, EmbedBuilder, GatewayIntentBits, Partials } = require("discord.js");
 const bot = new Client({
     intents: [
-        GatewayIntentBits.GuildBans,
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildMessages,
@@ -24,9 +29,8 @@ const bot = new Client({
         }]
     }
 });
+
 // var toggleprofanity = require(__dirname + '/commands/toggleprofanity.js');
-const prefix = "g!"
-const fs = require('fs');
 const servers = {};
 const cooldown = new Map();
 const hangman = new Map();
@@ -36,7 +40,30 @@ const wordles = new Map();
 
 bot.login(process.env['BOT_TOKEN']);
 
-let client = bot;
+const scplugin = new SoundCloudPlugin()
+const ytplugin = new YouTubePlugin()
+bot.distube = new DisTube(bot, {
+    emitAddListWhenCreatingQueue: false,
+    emitAddSongWhenCreatingQueue: false,
+    emitNewSongOnly: false,
+    ffmpeg: {
+        path: require('ffmpeg-static')
+    },
+    joinNewVoiceChannel: true,
+    plugins: [
+        ytplugin,
+        scplugin,
+    ],
+    savePreviousSongs: true
+})
+
+bot.distube.on("debug", debug => {
+    console.log(debug)
+})
+
+// bot.distube.on("ffmpegDebug", debug => {
+//     console.log(debug)
+// })
 
 // JSON INTERACTIONS
 function getUserData() {
@@ -52,7 +79,87 @@ function createUser() {
     }
 }
 
-//Listners
+// Distube Listeners
+bot.distube.on("playSong", (queue, song) => {
+    queue.previousSongs = []
+    // UI
+    const embed = new EmbedBuilder().setColor(embed_color)
+        .setTitle(song.name + (queue.repeatMode == RepeatMode.SONG ? " ⟳" : ""))
+        .setDescription("**Requested by:** " + song.user.toString() + 
+                        "\n**Duration:** `" + song.formattedDuration + "`" +
+                        (queue.repeatMode == RepeatMode.QUEUE ? " ⟳" : ""))
+        .setURL(song.url)
+        .setFooter({
+            iconURL: song.metadata.bot_owner.displayAvatarURL({
+                size: 2048,
+                format: "png"
+            }),
+            text: "Bot Created by " + song.metadata.bot_owner.tag
+        })
+        .setAuthor({
+            name: "Now Playing...",
+            iconURL: queue.client.user.displayAvatarURL({
+                size: 2048,
+                format: "png"
+            }),
+        })
+        .setThumbnail(song.thumbnail)
+    
+    // Interaction Handling
+    if (song.metadata.editReply) {
+        song.metadata.interaction.editReply({ embeds: [embed] })
+        song.metadata.editReply = false
+    }
+    else {
+        song.metadata.interaction.channel.send({ embeds: [embed] })
+    }
+})
+bot.distube.on("addSong", (queue, song) => {
+    // UI
+    const embed = new EmbedBuilder().setColor(embed_color)
+        .setTitle(song.name)
+        .setDescription("**Requested by:** " + song.user.toString() + 
+                        "\n**Duration:** `" + song.formattedDuration + "`" +
+                        "\n**Queue position:** `" + (queue.songs.length - 1) + "`" + 
+                        (queue.repeatMode == RepeatMode.QUEUE ? " ⟳" : ""))
+        .setURL(song.url)
+        .setFooter({
+            iconURL: song.metadata.bot_owner.displayAvatarURL({
+                size: 2048,
+                format: "png"
+            }),
+            text: "Bot Created by " + song.metadata.bot_owner.tag
+        })
+        .setAuthor({
+            name: "Adding to queue...",
+            iconURL: queue.client.user.displayAvatarURL({
+                size: 2048,
+                format: "png"
+            }),
+        })
+        .setThumbnail(song.thumbnail)
+
+    // Interaction Handling
+    if (song.metadata.editReply) {
+        song.metadata.interaction.editReply({ embeds: [embed] })
+        song.metadata.editReply = false
+    }
+    else {
+        song.metadata.interaction.channel.send({ embeds: [embed] })
+    }
+
+})
+bot.distube.on("finishSong", async (queue, song) => {
+    // Refetch stream URL of the next song
+    if (queue.repeatMode == RepeatMode.SONG ||
+        (queue.repeatMode == RepeatMode.QUEUE && queue.songs.length == 1)) {
+        song.stream.url = undefined
+    } else if (queue.songs.length > 1) {
+        queue.songs[1].stream.url = undefined
+    }
+})
+
+// Listners
 bot.on('guildMemberRemove', member => {
     member.guild.systemChannel.send('**' + member.user.username + '** has left the server.');
 });
@@ -106,9 +213,7 @@ bot.on('messageCreate', async message => {
             try {
                 if (!fs.existsSync(__dirname + "/pc/" + cmd + ".js")) return message.channel.send("Unknown Command.");
                 let commandFile = require(__dirname + "/pc/" + cmd + ".js");
-    
-                let client = bot;
-    
+
                 let ops = {
                     active: active,
                     cooldown: cooldown,
@@ -118,7 +223,7 @@ bot.on('messageCreate', async message => {
                     wordles: wordles,
                 }
     
-                commandFile.run(message, args, client, ops);
+                commandFile.run(message, args, bot, ops);
     
             }
             catch (e) {
@@ -134,14 +239,14 @@ bot.on('guildCreate', guild => {
 bot.on('ready', async function () {
     var owner = (await bot.application.fetch()).owner;
 
-    client.commands = new Collection();
+    bot.commands = new Collection();
     const commandFiles = fs.readdirSync(__dirname + "/commands").filter(file =>
                          file.endsWith('.js'));
     for (const file of commandFiles) {
         const filePath = __dirname + "/commands/" + file;
         const command = require(filePath);
         if ('data' in command && 'execute' in command) {
-			client.commands.set(command.data.name, command);
+			bot.commands.set(command.data.name, command);
 		} else {
 			console.log(`[WARNING] The command at ${filePath} is missing a
                         required "data" or "execute" property.`);
@@ -152,7 +257,7 @@ bot.on('ready', async function () {
         active: active,
         hangman: hangman,
         cooldown: cooldown,
-        color: 4886754,
+        color: embed_color,
         prof: prof,
         owner: owner,
         wordles: wordles,
@@ -182,6 +287,8 @@ bot.on('ready', async function () {
             cooldown.set(key, updated);
         });
         module.exports = {
+            scplugin,
+            ytplugin,
             ops,
             getUserData,
             setUserData,

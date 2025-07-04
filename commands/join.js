@@ -12,16 +12,17 @@ module.exports = {
     async execute(interaction) {
         const index = require("../index.js");
         if (interaction.member.voice.channel) {
-            const connection = voice.joinVoiceChannel({
-                channelId: interaction.member.voice.channel.id,
-                guildId: interaction.guildId,
-                adapterCreator: interaction.guild.voiceAdapterCreator,
-                selfDeaf: false,
-            })
-            interaction.reply("Successfully Joined!");
-            let data = index.ops.active.get(interaction.guildId) || {};
-            if (data.dispatcher)
-                connection.subscribe(data.dispatcher);
+            interaction.client.distube.voices.join(interaction.member.voice.channel)
+                .then(interaction.reply("Successfully Joined!"))
+            // const connection = voice.joinVoiceChannel({
+            //     channelId: interaction.member.voice.channel.id,
+            //     guildId: interaction.guildId,
+            //     adapterCreator: interaction.guild.voiceAdapterCreator,
+            //     selfDeaf: false,
+            // })
+            // let data = index.ops.active.get(interaction.guildId) || {};
+            // if (data.dispatcher)
+            //     connection.subscribe(data.dispatcher);
         }
         else {
             interaction.reply({ content: "❌ You must be in a voice channel for me to join!", ephemeral: true });

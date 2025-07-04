@@ -1,7 +1,7 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 const search = require("yt-search");
-const YTDL = require('@distube/ytdl-core');
+const YTDL = require('distube');
 module.exports = {
     category: "music",
     info: "Plays a specified track if in a voice channel.",
@@ -15,16 +15,31 @@ module.exports = {
                 .setRequired(true)
         ),
     async execute(interaction) {
-        if (!interaction.member.voice.channel)
-            return interaction.reply({ content: "❌ You must be in a voice channel!", ephemeral: true });
-        var args = interaction.options.getString("media") || interaction.options.getString("keywords");
+        const index = require("../index.js");
+        var vc = interaction.member.voice.channel
+        if (!vc)
+            return interaction.reply({ content: "❌ You must be in a voice channel!", flags: MessageFlags.Ephemeral });
+        var args = interaction.options.getString("media")
         if (!interaction.replied)
             await interaction.deferReply();
-        if (!YTDL.validateURL(args)) {
-            const list = await search(args);
-            args = await list.videos[0].url;
-        }
-        this.playUrl(interaction, args);
+        interaction.client.distube.play(vc, args, {
+            member: interaction.member,
+            metadata: {
+                bot_owner: index.ops.owner,
+                interaction: interaction,
+                editReply: true 
+            },
+            textChannel: interaction.channel
+        }).catch((e) => {
+            console.log(e)
+            return interaction.editReply({ content: "❌ No results found!", flags: MessageFlags.Ephemeral });
+        })
+
+        // if (!YTDL.validateURL(args)) {
+        //     const list = await search(args);
+        //     args = await list.videos[0].url;
+        // }
+        // this.playUrl(interaction, args);
     },
     async playUrl(interaction, args) {
         const index = require("../index.js");
