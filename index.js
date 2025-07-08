@@ -3,9 +3,8 @@ const embed_color = 4886754
 const fs = require('fs');
 const { DisTube, RepeatMode } = require('distube')
 const { SoundCloudPlugin } = require('@distube/soundcloud')
-const { YouTubePlugin } = require('@distube/youtube')
 require('dotenv').config();
-const { ActivityType, ChannelType, Client, Collection, EmbedBuilder, GatewayIntentBits, Partials } = require("discord.js");
+const { ActivityType, ChannelType, Client, Collection, EmbedBuilder, GatewayIntentBits, Partials, MessageFlags } = require("discord.js");
 const bot = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -41,25 +40,20 @@ const wordles = new Map();
 bot.login(process.env['BOT_TOKEN']);
 
 const scplugin = new SoundCloudPlugin()
-const ytplugin = new YouTubePlugin()
 bot.distube = new DisTube(bot, {
     emitAddListWhenCreatingQueue: false,
     emitAddSongWhenCreatingQueue: false,
     emitNewSongOnly: false,
-    ffmpeg: {
-        path: require('ffmpeg-static')
-    },
     joinNewVoiceChannel: true,
     plugins: [
-        ytplugin,
         scplugin,
     ],
     savePreviousSongs: true
 })
 
-bot.distube.on("debug", debug => {
-    console.log(debug)
-})
+// bot.distube.on("debug", debug => {
+//     console.log(debug)
+// })
 
 // bot.distube.on("ffmpegDebug", debug => {
 //     console.log(debug)
@@ -169,12 +163,14 @@ bot.on('interactionCreate', async interaction => {
     const command = interaction.client.commands.get(interaction.commandName);
 
     if (!command) {
-        interaction.reply({
+        return interaction.reply({
             content: "❌ This command is invalid.",
-            ephemeral: true
+            flags: MessageFlags.Ephemeral
         });
-        return;
     }
+
+    if (!interaction.channel.permissionsFor(bot.user).has([PermissionsBitField.Flags.SendMessages]))
+        return interaction.reply({ content: "❌ I don't have permission to send messages here!", flags: MessageFlags.Ephemeral})
 
     try {
         await command.execute(interaction);
@@ -202,6 +198,9 @@ bot.on('messageCreate', async message => {
 
     // Private Commands
     if (message.author.bot) return;
+
+    if (message.mentions.has(bot.user))
+        message.reply("sup")
 
     var owner = (await bot.application.fetch()).owner;
     
@@ -288,7 +287,6 @@ bot.on('ready', async function () {
         });
         module.exports = {
             scplugin,
-            ytplugin,
             ops,
             getUserData,
             setUserData,
@@ -298,6 +296,7 @@ bot.on('ready', async function () {
 });
 
 const express = require('express');
+const { PermissionsBitField } = require('discord.js');
 const server = express();
 server.all('/', (req, res) => {
     res.send('Result: [OK].');
