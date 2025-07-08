@@ -1,11 +1,11 @@
-const { SlashCommandBuilder, SystemChannelFlags } = require("discord.js");
+const { InteractionContextType, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "misc",
     info: "Gives the profile picture of you or the specified user.",
     data: new SlashCommandBuilder()
         .setName("pfp")
         .setDescription("Gives the profile picture of you or the specified user.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addUserOption(option =>
             option.setName("user")
                 .setDescription("The user whose profile picture will be shown.")

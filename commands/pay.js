@@ -1,11 +1,11 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "currency",
     info: "Gives a user a specified amount of diamonds.",
     data: new SlashCommandBuilder()
         .setName("pay")
         .setDescription("Gives a user a specified amount of diamonds.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addUserOption(option =>
             option.setName("user")
                 .setDescription("The user to be paid.")
@@ -22,7 +22,7 @@ module.exports = {
         var sender = interaction.user;
         var receiver = interaction.options.getUser("user");
         if (receiver.bot || sender == receiver)
-            return interaction.reply({ content: "❌ This user isn't valid!", ephemeral: true });
+            return interaction.reply({ content: "❌ This user isn't valid!", flags: MessageFlags.Ephemeral });
         var userData = index.getUserData();
         if (!userData[sender.id]) {
             userData[sender.id] = index.createUser(sender.id);

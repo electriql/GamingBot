@@ -180,12 +180,12 @@ bot.on('interactionCreate', async interaction => {
         if (interaction.replied || interaction.deferred) {
 			await interaction.followUp({
                 content: '❌ There was an error while executing this command!',
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
 		} else {
 			await interaction.reply({
                 content: '❌ There was an error while executing this command!',
-                ephemeral: true
+                flags: MessageFlags.Ephemeral
             });
 		}
     }
@@ -199,8 +199,11 @@ bot.on('messageCreate', async message => {
     // Private Commands
     if (message.author.bot) return;
 
-    if (message.mentions.has(bot.user))
-        message.reply("sup")
+    if (message.mentions.has(bot.user) && message.channel.permissionsFor(bot.user).has([
+        PermissionsBitField.Flags.SendMessages,
+        PermissionsBitField.Flags.ReadMessageHistory
+    ]))
+        message.reply({ content: "sup" })
 
     var owner = (await bot.application.fetch()).owner;
     

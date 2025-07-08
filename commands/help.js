@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { MessageFlags, SlashCommandBuilder } = require("discord.js");
 const fs = require('fs');
 module.exports = {
     category: "misc",
@@ -17,10 +17,10 @@ module.exports = {
             try {
                 if (fs.existsSync(__dirname + "/" + commandFile + ".js")) {
                     let command = require(__dirname + "/" + commandFile + ".js");
-                    return interaction.reply({ content: "`/" + commandFile + "` - " + command.info, ephemeral: true });
+                    return interaction.reply({ content: "`/" + commandFile + "` - " + command.info, flags: MessageFlags.Ephemeral });
                 }
                 else
-                    return interaction.reply({ content: "❌ That command doesn't exist!", ephemeral: true})
+                    return interaction.reply({ content: "❌ That command doesn't exist!", flags: MessageFlags.Ephemeral})
             }
             catch (e) {
                 console.log(e.stack);
@@ -75,7 +75,7 @@ module.exports = {
                 "fields": fields
             }
         }
-        interaction.reply({ embeds: [help.embed], ephemeral: true })
+        interaction.reply({ embeds: [help.embed], flags: MessageFlags.Ephemeral })
     }
 }
 

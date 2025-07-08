@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const symbols = ["⭕", "🔵", "🔶", "⬜", "❤", "🔺", "💠", "🔻"];
 module.exports = {
     category: "currency",
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("slots")
         .setDescription("Gamble some diamonds in a slot machine!")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addIntegerOption(option => 
             option.setName("amount")
                 .setDescription("The amount to be gambled. (Leave out to gamble all diamonds)")
@@ -22,12 +22,12 @@ module.exports = {
         }
         var cooldown = index.ops.cooldown.get(user.id) || {};
         if (cooldown.slots)
-            return interaction.reply({ content: "❌ You can use this command again in **" + Math.round(cooldown.slots * 100) / 100 + "** seconds!", ephemeral: true })
+            return interaction.reply({ content: "❌ You can use this command again in **" + Math.round(cooldown.slots * 100) / 100 + "** seconds!", flags: MessageFlags.Ephemeral })
         var pay = interaction.options.getInteger("amount") || userData[user.id].diamonds;
         cooldown.slots = 5;
         index.ops.cooldown.set(user.id, cooldown);
         if (userData[user.id].diamonds < pay || userData[user.id].diamonds == 0)
-            return interaction.reply({ content: "❌ You can't afford to pay this many diamonds!", ephemeral: true });
+            return interaction.reply({ content: "❌ You can't afford to pay this many diamonds!", flags: MessageFlags.Ephemeral });
         var chance = Math.random();
         var slots = [];
         var result = [];

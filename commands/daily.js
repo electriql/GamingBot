@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const SECOND = 1000;
 const MINUTE = SECOND * 60;
 const HOUR = MINUTE * 60;
@@ -11,7 +11,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("daily")
         .setDescription("Gives your daily 100 diamonds. Obtainable once every 24 hours.")
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction) {
         const index = require("../index.js");
         var date = new Date();
@@ -38,7 +38,7 @@ module.exports = {
             var fracSec = Math.floor((milis / SECOND) * 100) / 100;
             var output = "❌ You have already received your daily reward! You can receive it again in " +
                          "**" + hours + "**h **" + minutes + "**m **" + (seconds + fracSec) + "**s!";
-            interaction.reply({ content: output, ephemeral: true });
+            interaction.reply({ content: output, flags: MessageFlags.Ephemeral });
         }
     }
 }

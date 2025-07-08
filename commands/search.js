@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, MessageFlags, SlashCommandBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder, InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const emotes = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣", "🔟"];
 module.exports = {
     category: "music",
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("search")
         .setDescription("Gives a list of up to 5 SoundCloud tracks you can choose to play.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addStringOption(option => 
             option.setName("keywords")
             .setDescription("The keywords for a SoundCloud search.")

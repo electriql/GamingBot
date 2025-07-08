@@ -1,4 +1,4 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, SlashCommandBuilder } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, ButtonStyle, InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const entries = 10;
 module.exports = {
     category: "currency",
@@ -6,12 +6,12 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("rich")
         .setDescription("Shows the richest people in the server.")
+        .setContexts(InteractionContextType.Guild)
         .addIntegerOption(option =>
             option.setName("page")
-                .setDescription("Show the menu at this page number.")
+                .setDescription("Specify a certain page.")
                 .setMinValue(1)
-        )
-        .setDMPermission(false),
+        ),
     async execute(interaction) {
         const index = require('../index.js');
         var server = interaction.guild;
@@ -41,7 +41,7 @@ module.exports = {
         var page = interaction.options.getInteger("page") || 1;
         var pages = Math.ceil((server.memberCount - bots) / entries);
         if (page > pages)
-            return interaction.reply({ content: "❌ There are only **" + pages + "** page(s)! Not **" + page + "**!", ephemeral: true });
+            return interaction.reply({ content: "❌ There are only **" + pages + "** page(s)! Not **" + page + "**!", flags: MessageFlags.Ephemeral });
         var rich = members.sort((a, b) => (a.diamonds < b.diamonds) ? 1 : -1);
         const generateEmbed = async page => {
             var str = "** ";
@@ -82,11 +82,11 @@ module.exports = {
         }
         const forward = new ButtonBuilder()
             .setCustomId("forward")
-            .setLabel('▶')
+            .setLabel('→')
             .setStyle(ButtonStyle.Primary);
         const back = new ButtonBuilder()
             .setCustomId("back")
-            .setLabel('◀')
+            .setLabel('←')
             .setStyle(ButtonStyle.Primary);
         var buttons = new ActionRowBuilder();
         var buttons = [];

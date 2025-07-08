@@ -1,11 +1,11 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "misc",
     info: "Makes a poll of up to 10 options.",
     data: new SlashCommandBuilder()
         .setName("poll")
         .setDescription("Makes a poll of up to 10 options.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addStringOption(option =>
             option.setName("question")
                 .setDescription("The question in question.")
@@ -95,6 +95,6 @@ module.exports = {
                 msg.react(emotes[i]);
             }
         });
-        interaction.reply({ content: "Success!", ephemeral: true })
+        interaction.reply({ content: "Success!", flags: MessageFlags.Ephemeral })
     }
 }

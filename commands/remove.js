@@ -1,4 +1,4 @@
-const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 module.exports = {
     category: "music",
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("remove")
         .setDescription("Removes the track in a specified spot in the msuic queue.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addIntegerOption(option =>
             option.setName("track")
                 .setDescription("The position of the track to be removed.")

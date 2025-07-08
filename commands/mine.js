@@ -25,20 +25,20 @@ var oScenarios = [
     "Your mom doesn't allow you to go mining!",
     "You see a sparkle in the wall... but it turns out its just gold lmao"
 ]
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "currency",
     info: "Mine for diamonds! However it might not always be successful...",
     data: new SlashCommandBuilder()
         .setName("mine")
         .setDescription("Mine for diamonds! However it might not always be successful...")
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction) {
         const index = require("../index.js");
         var user = interaction.user;
         var cooldown = index.ops.cooldown.get(user.id) || {};
         if (cooldown.mine)
-            return interaction.reply({ content: "❌ You can use this command again in **" + Math.round(cooldown.mine * 100) / 100 + "** seconds!", ephemeral: true })
+            return interaction.reply({ content: "❌ You can use this command again in **" + Math.round(cooldown.mine * 100) / 100 + "** seconds!", flags: MessageFlags.Ephemeral })
         cooldown.mine = 20;
         index.ops.cooldown.set(user.id, cooldown);
         var userData = index.getUserData();

@@ -1,4 +1,4 @@
-const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { RepeatMode } = require('distube')
 const voice = require('@discordjs/voice');
 module.exports = {
@@ -7,7 +7,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("skip")
         .setDescription("Skips the track that is currently playing or to a specified position.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addIntegerOption(option =>
             option.setName("track")
                 .setDescription("The track to skip to.")

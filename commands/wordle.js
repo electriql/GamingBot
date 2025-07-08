@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require('discord.js');
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require('discord.js');
 const fs = require('fs');
 const answers = fs.readFileSync('Storage/wordleAnswers.txt', 'utf8').split('\n');
 const guesses = fs.readFileSync('Storage/wordleGuesses.txt', 'utf8').split('\n');
@@ -19,7 +19,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("wordle")
         .setDescription("Play a recreation of Wordle!")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addSubcommand(subcommand =>
             subcommand.setName("guess")
                 .setDescription("Guess a word.")
@@ -48,7 +48,7 @@ module.exports = {
         let data = index.ops.wordles.get(interaction.user.id);
         if (interaction.options.getSubcommand() == "guess") {
             if (!data)
-                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", flags: MessageFlags.Ephemeral });
             var guess = interaction.options.getString("word");
             if (guesses.indexOf(guess.toLowerCase()) != -1) {
                 data.guessWord(guess);
@@ -63,7 +63,7 @@ module.exports = {
                 }
                 return;
             }
-            return interaction.reply({ content: "❌ Invalid guess!", ephemeral: true });
+            return interaction.reply({ content: "❌ Invalid guess!", flags: MessageFlags.Ephemeral });
         }
         else if (interaction.options.getSubcommand() == "start") {
             if (!data) {
@@ -72,17 +72,17 @@ module.exports = {
                 index.ops.wordles.set(interaction.user.id, data);
                 return data.display(interaction, interaction.client, index.ops);
             }
-            return interaction.reply({ content: "❌ You already have an ongoing wordle!", ephemeral: true });
+            return interaction.reply({ content: "❌ You already have an ongoing wordle!", flags: MessageFlags.Ephemeral });
         }
         else if (interaction.options.getSubcommand() == "stop") {
             if (!data)
-                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", flags: MessageFlags.Ephemeral });
             index.ops.wordles.delete(interaction.user.id);
             return interaction.reply("Stopped your wordle! The word was **" + data.word.toUpperCase() + "**.");
         }
         else if (interaction.options.getSubcommand() == "view") {
             if (!data)
-                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", ephemeral: true });
+                return interaction.reply({ content: "❌ You don't have an ongoing wordle!", flags: MessageFlags.Ephemeral });
             return data.display(interaction, interaction.client, index.ops);
         }
     }

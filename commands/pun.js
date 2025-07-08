@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, SlashCommandBuilder } = require("discord.js");
 //Puns
 const puns = [
 "Did you hear about the guy whose whole left side was cut off? He's all right now.",
@@ -27,7 +27,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("pun")
         .setDescription("Gives a random pun.")
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction) {
         var pun = Math.floor(Math.random() * puns.length);
         var msg = puns[pun];

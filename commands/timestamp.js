@@ -1,11 +1,11 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "misc",
     info: "Gives the timestamp of you or the specifed user. (In PT)",
     data: new SlashCommandBuilder()
         .setName("timestamp")
         .setDescription("Gives the timestamp of you or the specifed user. (In PT)")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addUserOption(option =>
             option.setName("user")
                 .setDescription("The user whose timestamp will be shown.")

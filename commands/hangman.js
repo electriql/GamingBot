@@ -6,7 +6,7 @@ var person = ["  ___\n|    |\n|    \n|",
               "  ___\n|    |\n|   O\n|  /|\\",
               "  ___\n|    |\n|   O\n|  /|\\\n   /",
               "  ___\n|    |\n|   O\n|  /|\\\n    /\\"];
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "fun",
     info: "Users play the classic game of hangman! Only one game at a time!\n" +
@@ -18,7 +18,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("hangman")
         .setDescription("Play the classic game of hangman!")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addSubcommand(subcommand =>
             subcommand.setName("guess")
                 .setDescription("Guess a letter or the entire word.")
@@ -54,18 +54,18 @@ module.exports = {
         let fetched = index.ops.hangman.get(interaction.guildId) || {};
         if (interaction.options.getSubcommand() == "guess") {
             if (!fetched.word)
-                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+                return interaction.reply({ content: "❌ There currently is no hangman game!", flags: MessageFlags.Ephemeral });
             if (fetched.wrongGuesses >= person.length - 1)
-                return interaction.reply({ content: "❌ This hangman has expired!", ephemeral: true });
+                return interaction.reply({ content: "❌ This hangman has expired!", flags: MessageFlags.Ephemeral });
             var guess = interaction.options.getString("string");
             if (guess.length > 1 && guess.length != fetched.word.length)
-                return interaction.reply({ content: "❌ You can't guess this many letters!", ephemeral: true });
+                return interaction.reply({ content: "❌ You can't guess this many letters!", flags: MessageFlags.Ephemeral });
             if (guess.length == 1 && fetched.guessedLetters.includes(guess.toUpperCase()))
-                return interaction.reply({ content: "❌ That letter has already been guessed!", ephemeral: true });
+                return interaction.reply({ content: "❌ That letter has already been guessed!", flags: MessageFlags.Ephemeral });
             if (fetched.type == "custom" && fetched.host == message.author)
-                return interaction.reply({ content: "❌ You are the host of this hangman! Let other people guess your word!", ephemeral: true });
+                return interaction.reply({ content: "❌ You are the host of this hangman! Let other people guess your word!", flags: MessageFlags.Ephemeral });
             if (!guess.toLowerCase().match(/^[a-z]+$/i))
-                return interaction.reply({ content: "❌ The guess can only have letters a-z!", ephemeral: true });
+                return interaction.reply({ content: "❌ The guess can only have letters a-z!", flags: MessageFlags.Ephemeral });
             var correct = "**" + guess.toUpperCase() + "** is not part of the word!";
             var fetchedUser = fetched.guesses.get(interaction.user.id) || {};
             if (!fetchedUser.correctGuesses) {
@@ -127,7 +127,7 @@ module.exports = {
         }
         else if (interaction.options.getSubcommand() == "start") {
             if (fetched.word)
-                return interaction.reply({ content: "❌ There is already a hangman game in the server!", ephemeral: true });
+                return interaction.reply({ content: "❌ There is already a hangman game in the server!", flags: MessageFlags.Ephemeral });
             if (interaction.options.getString("type") == "random") {
                 import('random-words').then(randomWords => {
                     var word = randomWords.generate({ minLength: 4, maxLength: 20 });
@@ -142,7 +142,7 @@ module.exports = {
                     }
                     index.ops.hangman.set(interaction.guildId, fetched);
                     interaction.channel.send({ embeds: [getHangman(interaction.client, index.ops, fetched).embed] });
-                    interaction.reply({ content: "Success!", ephemeral: true });
+                    interaction.reply({ content: "Success!", flags: MessageFlags.Ephemeral });
                 });
             }
             else if (interaction.options.getString("type") == "custom")
@@ -150,7 +150,7 @@ module.exports = {
         }
         else if (interaction.options.getSubcommand() == "stop") {
             if (!fetched.word)
-                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+                return interaction.reply({ content: "❌ There currently is no hangman game!", flags: MessageFlags.Ephemeral });
             if (!interaction.guild.members.cache.get(fetched.host.id)) {
                 index.ops.hangman.set(interaction.guildId, {});
                 return interaction.reply("The host isn't in the server! The game has been stopped automatically.");
@@ -158,14 +158,14 @@ module.exports = {
             if (interaction.user != fetched.host)
                 return interaction.reply({
                     content: "❌ You must be the host of the hangman to stop it! The host is **" + fetched.host.tag + "**",
-                    ephemeral: true
+                    flags: MessageFlags.Ephemeral
                 });
             index.ops.hangman.set(interaction.guildId, {});
             interaction.reply("Hangman stopped!");
         }
         else if (interaction.options.getSubcommand() == "view") {
             if (!fetched.word)
-                return interaction.reply({ content: "❌ There currently is no hangman game!", ephemeral: true });
+                return interaction.reply({ content: "❌ There currently is no hangman game!", flags: MessageFlags.Ephemeral });
             interaction.reply({ embeds: [getHangman(interaction.client, index.ops, fetched).embed] });
         }
     }
@@ -276,7 +276,7 @@ function getHangman(client, ops, data) {
     return embed;
 }
 function startCustom(interaction, client, ops, fetched) {
-    interaction.reply({ content: "Check your DMs!", ephemeral: true });
+    interaction.reply({ content: "Check your DMs!", flags: MessageFlags.Ephemeral });
     try {
         interaction.user.send("What do you want the word to be? (Expires in 30 seconds)")
             .then(async function (msg) {
@@ -352,6 +352,6 @@ function startCustom(interaction, client, ops, fetched) {
             });
     }
     catch (e) {
-        interaction.channel.reply({ content: "Please turn on DMs!", ephemeral: true });
+        interaction.channel.reply({ content: "Please turn on DMs!", flags: MessageFlags.Ephemeral });
     }
 }

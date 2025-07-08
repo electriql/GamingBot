@@ -46,11 +46,11 @@ exports.run = async (message, args, client, ops) => {
 
     const forward = new ButtonBuilder()
         .setCustomId("forward")
-        .setEmoji('▶')
+        .setEmoji('→')
         .setStyle(ButtonStyle.Primary);
     const back = new ButtonBuilder()
         .setCustomId("back")
-        .setEmoji('◀')
+        .setEmoji('←')
         .setStyle(ButtonStyle.Primary);
 
     const msg = await message.channel.send({

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, SlashCommandBuilder } = require("discord.js");
 const Utils = require("../util.js");
 exports.category = "fun";
 exports.info = "Mocks the given string!"
@@ -8,7 +8,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("mock")
         .setDescription("Mocks the given string.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addStringOption(option =>
             option.setName("string")
                 .setDescription("The string to be mocked.")

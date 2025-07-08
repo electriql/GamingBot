@@ -1,4 +1,4 @@
-const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const voice = require('@discordjs/voice');
 module.exports = {
     category: "music",
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("clear")
         .setDescription("Clears all the tracks in the music queue.")
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction) {
         const index = require("../index.js");
         let queue = interaction.client.distube.getQueue(interaction.guild);

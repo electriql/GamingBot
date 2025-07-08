@@ -1,4 +1,4 @@
-const { MessageFlags, SlashCommandBuilder } = require("discord.js");
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 const { RepeatMode } = require("distube")
 module.exports = {
     category: "music",
@@ -6,7 +6,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("loop")
         .setDescription("Loop the current track, the whole queue, or nothing.")
-        .setDMPermission(false)
+        .setContexts(InteractionContextType.Guild)
         .addStringOption(option =>
             option.setName("mode")
                 .setDescription("The looping setting.")

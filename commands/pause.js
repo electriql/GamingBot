@@ -1,12 +1,11 @@
-const { MessageFlags, SlashCommandBuilder } = require("discord.js");
-const voice = require('@discordjs/voice');
+const { InteractionContextType, MessageFlags, SlashCommandBuilder } = require("discord.js");
 module.exports = {
     category: "music",
     info: "Pauses the current track that is playing.",
     data: new SlashCommandBuilder()
         .setName("pause")
         .setDescription("Pauses the current track that is playing.")
-        .setDMPermission(false),
+        .setContexts(InteractionContextType.Guild),
     async execute(interaction) {
         let queue = interaction.client.distube.getQueue(interaction.guild)
         if (!queue)
